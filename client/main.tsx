@@ -1,4 +1,4 @@
-import { Component } from 'vldom/component';
+import { Component } from "vldom";
 
 export class ExampleComponent extends Component {
 	constructor() {

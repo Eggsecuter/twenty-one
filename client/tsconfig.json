@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "module": "CommonJS",
         "outDir": "dist",
         "target": "es6",
-        "resolveJsonModule": true,
+        "moduleResolution": "node",
         "jsx": "react",
 		"jsxFactory": "Component.createElement"
     }
