@@ -1,11 +1,12 @@
 import { Component, Router } from "vldom";
 import { registerDirectives } from "vldom-default-directives";
-import { PageComponent } from "./page.component";
-import { TestComponent } from "./test.component";
+import { PageComponent } from "./components/page.component";
+import { TestComponent } from "./components/test.component";
 
-const router = new Router(PageComponent
+const router = new Router(
+    PageComponent
         .route('/test', TestComponent)
-    );
+);
 
 registerDirectives(Component, router);
 

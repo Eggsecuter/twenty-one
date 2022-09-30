@@ -1,0 +1,14 @@
+// import vllayout
+@use "vllayout/main" with (
+	$page-color: #000,
+	$page-background: #fff,
+	$page-border-color: #ccc,
+	$page-hover-background: #ddd,
+
+	$page-accent-background: #007afa,
+	$page-accent-color: #fff,
+	$page-accent-active-background: #007afa,
+	$page-accent-active-color: #fff,
+	$page-accent-hover-background: #466079,
+	$page-accent-hover-color: #fff,
+);

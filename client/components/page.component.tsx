@@ -12,6 +12,8 @@ export class PageComponent extends Component {
 			<a ui-href="/" ui-href-active>Home</a>
 			<a ui-href="/test" ui-href-active>Test</a>
 
+			<ui-button>Test</ui-button>
+
 			{child}
 		</div>;
 	}
