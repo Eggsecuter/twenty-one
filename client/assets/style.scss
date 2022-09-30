@@ -1,3 +1,16 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 h1 {
-    color: red;
+    color: #50e;
+}
+
+a {
+    display: inline-block;
+    padding: .5rem;
+    margin: .5rem;
+
+    cursor: pointer;
+    background: #eee;
 }
