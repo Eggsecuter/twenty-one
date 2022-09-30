@@ -4,7 +4,7 @@ import express = require("express");
 const app = express();
 app.use(express.json());
 
-app.get('/test', (_, res) => res.send('Hello World'));
+app.get('/api', (_, res) => res.send('Hello World'));
 
 app.use('/', express.static(
     path.join(process.cwd(), '..', 'client', 'dist')
