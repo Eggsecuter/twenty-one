@@ -9,10 +9,12 @@ export class PageComponent extends Component {
 		return <div>
 			<h1>Card Game</h1>
 			
-			<a ui-href="/" ui-href-active>Home</a>
-			<a ui-href="/test" ui-href-active>Test</a>
-
-			<ui-button>Test</ui-button>
+			<ui-nav>
+				<ui-nav-items>
+					<ui-nav-item ui-href="/home" ui-href-active>Home</ui-nav-item>
+					<ui-nav-item ui-href="/test" ui-href-active>Test</ui-nav-item>
+				</ui-nav-items>
+			</ui-nav>
 
 			{child}
 		</div>;
