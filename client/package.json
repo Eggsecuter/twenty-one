@@ -2,7 +2,7 @@
     "name": "client",
     "version": "1.0.0",
     "scripts": {
-        "build": "parcel build index.html --no-source-maps --no-scope-hoist --no-content-hash && javascript-obfuscator dist/*.js -o dist/*.js",
+        "build": "parcel build index.html --no-source-maps --no-scope-hoist --no-content-hash",
         "watch": "parcel watch index.html --no-source-maps"
     },
     "dependencies": {
@@ -11,7 +11,8 @@
     },
     "devDependencies": {
         "@parcel/transformer-sass": "^2.7.0",
-        "parcel": "^2.7.0"
+        "parcel": "^2.7.0",
+        "parcel-transformer-vldom": "^1.0.1"
     },
     "workspaces": [
         "packages/*"

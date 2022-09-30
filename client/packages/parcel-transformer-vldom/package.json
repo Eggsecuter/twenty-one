@@ -1,9 +1,0 @@
-{
-    "name": "parcel-transformer-vldom",
-    "version": "1.0.0",
-    "description": "Compiles vldom",
-    "main": "index.js",
-    "devDependencies": {
-        "parcel": "^2.7.0"
-    }
-}

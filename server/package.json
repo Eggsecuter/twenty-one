@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "start": "node dist/index.js",
-        "build": "ncc build main.ts -m && javascript-obfuscator dist/*.js -o dist/*.js",
+        "build": "ncc build main.ts -m",
         "watch": "nodemon --exec \"ncc run\" main.ts"
     },
     "dependencies": {
