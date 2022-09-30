@@ -16,6 +16,7 @@ module.exports = new Transformer({
             return `${key}(0, _vldom.Component).accessor(() => ${value}, value => ${value} = value)${separator}`
         });
         
+        source = source.replaceAll('(0, _component.Component).createElement', 'this.createElement');
         source = source.replaceAll('(0, _vldom.Component).createElement', 'this.createElement');
 
         asset.setCode(source);
