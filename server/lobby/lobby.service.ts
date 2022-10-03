@@ -9,7 +9,13 @@ export class LobbyService {
     constructor(private server: http.Server) {}
 
     create(isPrivate: boolean): LobbyModel {
-        const token = this.generateToken();
+        let token;
+
+        // Prevent duplicate tokens
+        while (!token && !this.lobbies.some(l => l.token == token)) {
+            token = this.generateToken();
+        }
+
         const wss = new WsServer.Server({ noServer: true, path: `/${token}` });
 
         // Add websocket-server to http server
@@ -45,7 +51,7 @@ export class LobbyService {
 
         for (let i = 0; i < 4; i++) {
             tokenParts.push(
-                Math.random().toString(16).slice(2, 6).split('').map(c => Math.random() >= 0.8 ? c.toUpperCase() : c).join('')
+                Math.random().toString(32).slice(2, 6).split('').map(c => Math.random() >= 0.8 ? c.toUpperCase() : c).join('')
             );
         }
 
