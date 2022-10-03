@@ -1,28 +1,24 @@
-import path = require("path");
 import express = require("express");
-import { WebSocketServer } from "ws";
+import path = require("path");
+import http = require('http');
+import { LobbyAPI } from "./lobby/lobby.api";
 
 const app = express();
+const server = http.createServer(app);
+const PORT = 3000 || process.env.PORT;
+
 app.use(express.json());
 
-app.get('/api', (_, res) => res.send('Hello World'));
+LobbyAPI('/api/lobby', app, server);
 
 app.use('/', express.static(
     path.join(process.cwd(), '..', 'client', 'dist')
 ));
-
+    
 app.use('**', express.static(
     path.join(process.cwd(), '..', 'client', 'dist', 'index.html')
 ));
 
-const wss = new WebSocketServer({ port: +process.env.PORT || 3001 });
-
-wss.on('connection', ws => {
-    ws.on('message', data => {
-        wss.clients.forEach(client => {
-            client.send(data.toString());
-        });
-    });
+server.listen(PORT, () => {
+    console.log(`Server listening on http://localhost:${PORT}`)
 });
-
-app.listen(process.env.PORT || 3000, () => console.log('server started'));
