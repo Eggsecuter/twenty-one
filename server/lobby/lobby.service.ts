@@ -19,7 +19,7 @@ export class LobbyService {
         const wss = new WsServer.Server({ noServer: true, path: `/${token}` });
 
         // Add websocket-server to http server
-        this.server.on('upgrade', function upgrade(request, socket, head) {
+        this.server.on('upgrade', (request, socket, head) => {
             if (parse(request.url).pathname.slice(1) == token) {
                 wss.handleUpgrade(request, socket, head, function done(ws) {
                     wss.emit('connection', ws, request);
@@ -37,13 +37,30 @@ export class LobbyService {
     }
 
     join(token: string): LobbyModel {
+        return this.findLobby(token);
+    }
+
+    leave(token: string) {
+        const lobby = this.findLobby(token);
+
+        if (!lobby.wss.clients.size) {
+            console.log('Closing lobby', token);
+            
+            lobby.wss.close();
+            this.lobbies.splice(this.lobbies.indexOf(lobby), 1);
+
+            console.log('Lobbies left', this.lobbies.length, this.lobbies.map(l => l.token));
+        }
+    }
+
+    private findLobby(token: string): LobbyModel {
         const lobby = this.lobbies.find(lobby => lobby.token == token);
 
-        if (lobby) {
-            return lobby
+        if (!lobby) {
+            throw new Error('Lobby not found');
         }
-
-        throw new Error('Lobby not found');
+        
+        return lobby
     }
 
     private generateToken(): string {

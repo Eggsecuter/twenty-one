@@ -21,7 +21,7 @@ export const LobbyAPI = (basePath: string, app: Express, server: http.Server) =>
         const lobby = service.create(req.body.isPrivate ?? false);
 
         lobby.wss.on('connection', (ws) => {
-            console.log('Client connected to ', lobby.token);
+            console.log('Client connected to', lobby.token);
 
             ws.on('message', (data) => {
                 for (const client of lobby.wss.clients) {
@@ -30,7 +30,8 @@ export const LobbyAPI = (basePath: string, app: Express, server: http.Server) =>
             });
 
             ws.on('close', function(connection) {
-                console.log('Client disconnected from ', lobby.token);
+                console.log('Client disconnected from', lobby.token);
+                service.leave(lobby.token);
             });
         });
 

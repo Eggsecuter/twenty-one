@@ -56,7 +56,9 @@ export class LobbyComponent extends Component {
                     }
                     
                     <input $ui-value={this.message} />
-                    <button ui-click={() => this.sendTextMessage()}>Send</button>
+                    <ui-button ui-click={() => this.sendTextMessage()}>Send</ui-button>
+
+                    <ui-button ui-href="/home">Leave</ui-button>
                 </div>
             }
 
