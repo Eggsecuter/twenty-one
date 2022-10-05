@@ -2,6 +2,7 @@ import express = require("express");
 import path = require("path");
 import http = require('http');
 import { LobbyAPI } from "./lobby/lobby.api";
+import './polyfills';
 
 const app = express();
 const server = http.createServer(app);

@@ -1,10 +1,12 @@
 import { Component } from "vldom";
-import { websocketBasePath } from "../util/constants";
+import { SocketEventType } from "../models/socket-event.model";
+import { UserModel } from "../models/user.model";
+import WebSocketService from "../services/web-socket.service";
 
 export class LobbyComponent extends Component {
     declare params: { token: string };
 
-    ws?: WebSocket;
+    webSocket?: WebSocketService;
     messages: string[] = [];
     message: string = '';
 
@@ -21,10 +23,15 @@ export class LobbyComponent extends Component {
                 }
             })
             .then(() => {
-                this.ws = new WebSocket(`${websocketBasePath}/${this.params.token}`);
+                this.webSocket = new WebSocketService(this.params.token, { username: 'Eggsecuter', avatar: '' });
 
-                this.ws.addEventListener('message', event => {
-                    this.messages.push(event.data);
+                this.webSocket.on<UserModel>(SocketEventType.Join, (data) => {
+                    this.messages.push(`* User ${data.username} joined *`);
+                    this.update();
+                });
+
+                this.webSocket.on<string>(SocketEventType.ChatMessage, (data) => {
+                    this.messages.push(data);
                     this.update();
                 });
             })
@@ -32,11 +39,11 @@ export class LobbyComponent extends Component {
     }
 
     onunload() {
-        this.ws?.close();
+        this.webSocket?.close();
     }
 
     sendTextMessage() {
-        this.ws?.send(this.message);
+        this.webSocket?.emit(SocketEventType.ChatMessage, this.message);
     }
 
     render(child?) {
