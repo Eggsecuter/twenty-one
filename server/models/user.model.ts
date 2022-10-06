@@ -1,5 +1,7 @@
+import WsServer = require('ws');
+
 export interface UserModel {
-    id: string;
+    socket: WsServer.WebSocket;
     username: string;
     avatar: string;
 }

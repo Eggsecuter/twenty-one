@@ -1,11 +1,12 @@
 import { Express } from 'express-serve-static-core';
 import http = require('http');
-import { LobbyService } from './lobby.service';
+import { UserModel } from '../models/user.model';
+import { LobbyService } from '../services/lobby.service';
 
 export const LobbyAPI = (basePath: string, app: Express, server: http.Server) => {
     const service = new LobbyService(server);
 
-    app.post(`${basePath}/:token`, (req, res) => {
+    app.get(`${basePath}/:token`, (req, res) => {
         const token = req.params.token;
 
         try {

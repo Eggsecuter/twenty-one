@@ -8,9 +8,9 @@ export default class WebSocketService {
     constructor (lobbyToken: string, user: UserModel) {
         this.socket = new WebSocket(`${websocketBasePath}/${lobbyToken}`);
 
-        this.socket.addEventListener('open', () => {
+        this.socket.onopen = () => {
             this.emit(SocketEventType.Join, user);
-        });
+        };
     }
 
     on<T>(eventType: SocketEventType, handler: (data: T) => void) {

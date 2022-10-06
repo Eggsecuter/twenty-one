@@ -1,74 +1,67 @@
 import { Component } from "vldom";
-import { SocketEventType } from "../models/socket-event.model";
 import { UserModel } from "../models/user.model";
-import WebSocketService from "../services/web-socket.service";
+import APIService from "../services/api.service";
+import { storeAvatarKey, storeUsernameKey } from "../util/constants";
+import { GameComponent } from "./game.component";
+import { CreateLobbyComponent } from "./create-lobby.component";
+import { JoinLobbyComponent } from "./join-lobby.component";
 
 export class LobbyComponent extends Component {
     declare params: { token: string };
 
-    webSocket?: WebSocketService;
-    messages: string[] = [];
-    message: string = '';
+    private apiService: APIService<any>;
 
-    apiError: string = '';
+    private connected: boolean;
+    private user: UserModel;
+    private apiError: string;
 
-    async onload() {
-        await fetch(`/api/lobby/${this.params.token}`)
+    constructor() {
+        super();
+
+        this.apiService = new APIService('lobby');
+
+        this.connected = false;
+        this.user = {
+            username: localStorage.getItem(storeUsernameKey) ?? '',
+            avatar: localStorage.getItem(storeAvatarKey) ?? ''
+        }
+
+    }
+
+    create(isPrivate: boolean) {
+        this.apiService.post({ isPrivate })
             .then(res => {
-                if (!res.ok) {
-                    return res.text().then(text => { throw new Error(text) })
-                }
-                else {
-                    return res.text();
-                }
-            })
+                this.params.token = res;
+                this.join();
+            });
+    }
+
+    join() {
+        this.apiService.get(this.params.token)
             .then(() => {
-                this.webSocket = new WebSocketService(this.params.token, { username: 'Eggsecuter', avatar: '' });
-
-                this.webSocket.on<UserModel>(SocketEventType.Join, (data) => {
-                    this.messages.push(`* User ${data.username} joined *`);
-                    this.update();
-                });
-
-                this.webSocket.on<string>(SocketEventType.ChatMessage, (data) => {
-                    this.messages.push(data);
-                    this.update();
-                });
+                this.connected = true;
+                history.pushState(null, null, '#/' + this.params.token)
+                this.update();
             })
             .catch(err => this.apiError = err);
     }
 
-    onunload() {
-        this.webSocket?.close();
+    leave() {
+        this.navigate('/');
+        location.reload();
     }
 
-    sendTextMessage() {
-        this.webSocket?.emit(SocketEventType.ChatMessage, this.message);
-    }
-
-    render(child?) {
+    render() {
         return <div>
-            <h1>Home</h1>
-
-            <p>{this.apiError}</p>
-
             {
                 this.apiError ? 
-                <ui-alert ui-error>{this.apiError}</ui-alert> : 
-                <div>
-                    {
-                        this.messages.map(message => 
-                            <p>{message}</p>
-                        )
-                    }
-                    
-                    <input $ui-value={this.message} />
-                    <ui-button ui-click={() => this.sendTextMessage()}>Send</ui-button>
-
-                    <ui-button ui-href="/home">Leave</ui-button>
-                </div>
+                <ui-alert ui-error>{this.apiError}</ui-alert> :
+                this.connected ?
+                    new GameComponent(this.params.token, this.user, () => this.leave()) :
+                    this.params.token ?
+                        new JoinLobbyComponent(this.user, () => this.join()) :
+                        new CreateLobbyComponent(this.user, (_) => this.create(_))
             }
-
         </div>;
     }
 }

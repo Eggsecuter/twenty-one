@@ -3,6 +3,7 @@ import http = require('http');
 import { LobbyModel } from '../models/lobby.model';
 import { parse } from 'url';
 import { UserModel } from '../models/user.model';
+import { SocketEventModel, SocketEventType } from '../models/socket-event.model';
 
 export class LobbyService {
     lobbies: LobbyModel[] = [];
@@ -25,28 +26,27 @@ export class LobbyService {
         // Add websocket events
         wss.on('connection', ws => {
             console.log('Client connected to', lobby.token);
-            const id = this.getUniqueToken(lobby.users.map(u => u.id));
 
-            ws.on('message', (message) => {
-                const data = JSON.parse(message.toString());
-
-                if (data.eventType == 'join') {
+            ws.onmessage = message => {
+                const event: SocketEventModel = JSON.parse(message.data.toString());
+                
+                if (event.type == SocketEventType.Join) {
                     this.join(lobby, {
-                        id, username: data.username, avatar: data.avatar
+                        socket: ws, ...event.data.user
                     });
-
-                    console.log(data.username, 'joined!')
                 }
 
                 for (const client of lobby.wss.clients) {
-                    client.send(message.toString())
+                    if (event.type != SocketEventType.Join || client != ws) {
+                        client.send(JSON.stringify(event));
+                    }
                 }
-            });
+            }
 
-            ws.on('close', () => {
+            ws.onclose = () => {
                 console.log('Client disconnected from', lobby.token);
-                this.leave(lobby.token, id);
-            });
+                this.leave(lobby.token, ws);
+            };
         });
 
         const lobby: LobbyModel = {
@@ -72,10 +72,10 @@ export class LobbyService {
         lobby.users.push(user);
     }
 
-    private leave(token: string, id: string) {
+    private leave(token: string, socket: WsServer.WebSocket) {
         const lobby = this.findLobby(token);
 
-        lobby.users.remove(lobby.users.find(u => u.id == id));
+        lobby.users.remove(lobby.users.find(u => u.socket == socket));
 
         if (!lobby.wss.clients.size) {
             console.log('Closing lobby', token);
