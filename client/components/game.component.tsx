@@ -10,21 +10,21 @@ export class GameComponent extends Component {
     private message: string = '';
 
 	constructor(
-		private token: string,
-		private user: UserModel,
+		token: string,
+		user: UserModel,
 		private leave: () => void
 	) {
 		super();
 
 		this.webSocket = new WebSocketService(token, user);
 
-		this.webSocket.on<UserModel>(SocketEventType.Join, (user) => {
+		this.webSocket.on<UserModel>(SocketEventType.Join, (sender, user) => {
 			this.messages.push(`${user.username} joined!`);
 			this.update();
 		});
 
-		this.webSocket.on<string>(SocketEventType.ChatMessage, (message) => {
-			this.messages.push(message);
+		this.webSocket.on<string>(SocketEventType.ChatMessage, (sender, message) => {
+			this.messages.push(`${sender.username}: ${message}`);
 			this.update();
 		});
 	}

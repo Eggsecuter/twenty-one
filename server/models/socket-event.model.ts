@@ -1,5 +1,8 @@
+import { UserModel } from "./user.model"
+
 export interface SocketEventModel {
     type: SocketEventType,
+    sender: UserModel,
     data: any
 }
 
