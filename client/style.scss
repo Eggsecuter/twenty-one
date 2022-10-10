@@ -12,3 +12,7 @@
 	$page-accent-hover-background: #466079,
 	$page-accent-hover-color: #fff,
 );
+
+ui-button[disabled="true"] {
+	opacity: 0.7;
+}

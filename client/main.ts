@@ -2,6 +2,7 @@ import { Component, Router } from "vldom";
 import { registerDirectives } from "vldom-default-directives";
 import { LobbyComponent } from "./components/lobby.component";
 import { PageComponent } from "./components/page.component";
+import './directives/index';
 
 if (!location.hash) {
     location.hash = '#/';

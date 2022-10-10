@@ -28,7 +28,14 @@ export class LobbyComponent extends Component {
 
     }
 
+    updateStorage() {
+        localStorage.setItem(storeAvatarKey, this.user.avatar);
+        localStorage.setItem(storeUsernameKey, this.user.username);
+    }
+
     create(isPrivate: boolean) {
+        this.updateStorage();
+
         this.apiService.post({ isPrivate })
             .then(res => {
                 this.params.token = res;
@@ -37,6 +44,8 @@ export class LobbyComponent extends Component {
     }
 
     join() {
+        this.updateStorage();
+
         this.apiService.get(this.params.token)
             .then(() => {
                 this.connected = true;

@@ -4,7 +4,6 @@ import { UserSetupComponent } from "./user-setup.component";
 
 export class CreateLobbyComponent extends Component {
     private isPrivate: boolean;
-    private isValid: boolean;
 
     constructor(
         private user: UserModel,
@@ -13,26 +12,26 @@ export class CreateLobbyComponent extends Component {
         super();
 
         this.isPrivate = true;
-        this.validate();
-    }
-
-    validate() {
-        this.isValid = !!this.user.username && !!this.user.avatar;
-        this.update();
     }
 
     render() {
+        let isSubmittable = false;
+        let submitButton: HTMLButtonElement = <ui-button ui-click={() => isSubmittable && this.createLobby(this.isPrivate)}>
+                Create Lobby
+            </ui-button>;
+
         return <div>
-            {new UserSetupComponent(this.user, () => this.validate())}
+            {new UserSetupComponent(this.user, isValid => {
+                submitButton.setAttribute('disabled', !isValid + '');
+                isSubmittable = isValid;
+            })}
             
             <p>
                 <input type="checkbox" $ui-value={this.isPrivate} />
                 Private
             </p>
 
-            <ui-button ui-click={() => this.isValid && this.createLobby(this.isPrivate)} disabled={!this.isValid}>
-                Create Lobby
-            </ui-button>
+            {submitButton}
         </div>;
     }
 }
