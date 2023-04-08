@@ -1,6 +1,5 @@
 import { Express } from 'express-serve-static-core';
 import http = require('http');
-import { UserModel } from '../models/user.model';
 import { LobbyService } from '../services/lobby.service';
 
 export const LobbyAPI = (basePath: string, app: Express, server: http.Server) => {

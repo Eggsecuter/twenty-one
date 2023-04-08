@@ -5,3 +5,4 @@ Component.directives['ui-keyup'] = (element: HTMLInputElement, value) => {
 		value(element.value);
 	}
 }
+ 

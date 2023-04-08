@@ -1,18 +1,22 @@
+import { app } from "../main";
 import { SocketEventModel, SocketEventType } from "../models/socket-event.model";
 import { UserModel } from "../models/user.model";
 import { websocketBasePath } from "../util/constants";
 
 export default class WebSocketService {
     private socket: WebSocket;
-    private currentUser: UserModel;
 
-    constructor (lobbyToken: string, user: UserModel) {
+    constructor (lobbyToken: string, onConnectionLost: () => void) {
         this.socket = new WebSocket(`${websocketBasePath}/${lobbyToken}`);
-        this.currentUser = user;
 
         this.socket.onopen = () => {
-            this.emit(SocketEventType.Join, user);
+            this.emit(SocketEventType.Join, app.currentUser);
         };
+
+        this.socket.onclose = () => {
+            this.close();
+            onConnectionLost();
+        }
     }
 
     on<T>(eventType: SocketEventType, handler: (sender: UserModel, data: T) => void) {
@@ -27,7 +31,7 @@ export default class WebSocketService {
 
     emit(eventType: SocketEventType, data: any) {
         const socketEvent: SocketEventModel = {
-            type: eventType, sender: this.currentUser, data
+            type: eventType, sender: app.currentUser, data
         }
 
         this.socket.send(

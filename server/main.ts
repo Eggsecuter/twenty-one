@@ -15,7 +15,7 @@ LobbyAPI('/api/lobby', app, server);
 app.use('/', express.static(
     path.join(process.cwd(), '..', 'client', 'dist')
 ));
-    
+
 app.use('**', express.static(
     path.join(process.cwd(), '..', 'client', 'dist', 'index.html')
 ));
