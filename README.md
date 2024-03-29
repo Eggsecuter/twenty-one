@@ -1,42 +1,18 @@
-# Card Game
+# Delivery
+A card game inspired by the Resident Evil 7 DLC
 
-**Online multiplayer card game**
+## Server
+Backend
 
-## Setup
-
+Development (no auto reload)
 ```
-npm install -g @vercel/ncc
-
-cd server
-npm install
-
-cd client
-npm install
+npm start
 ```
 
-### Development
+## Page
+Webpage
 
+Development (with auto compile)
 ```
-cd server
 npm run watch
 ```
-
-```
-cd client
-npm run watch
-```
-
-### Production
-**Build**
-
-```
-cd server
-npm run build
-
-cd client
-npm run build
-```
-
-**Start**
-
-`cd server && npm run start`

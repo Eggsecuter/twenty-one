@@ -1,7 +1,0 @@
-{
-    "extends": "@parcel/config-default",
-    "transformers": {
-        "*.js": ["...", "parcel-transformer-vldom"]
-    },
-    "reporters":  ["...", "parcel-reporter-static-files-copy"]
-}

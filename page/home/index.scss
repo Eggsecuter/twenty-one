@@ -1,0 +1,37 @@
+ui-home {
+	display: block;
+	max-width: 35rem;
+	margin: 0 auto;
+	padding: 2rem;
+
+	ui-join {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2rem;
+
+		input {
+			@include text-field;
+
+			text-transform: uppercase;
+
+			&[ui-error] {
+				animation: 0.3s shake;
+
+				border-color: var(--page-error);
+			}
+		}
+
+		ui-action {
+			@include primary-action;
+		}
+	}
+
+	ui-create {
+		display: block;
+
+		ui-action[ui-create] {
+			@include action;
+		}
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "page",
+	"scripts": {
+		"watch": "parcel watch index.html --no-hmr --no-cache --dist-dir built",
+		"build": "parcel build index.html --no-source-maps --no-scope-hoist --no-cache --dist-dir built"
+	},
+	"devDependencies": {
+		"@parcel/transformer-sass": "^2.9.3"
+	},
+	"dependencies": {
+		"@acryps/page": "^1.2.0",
+		"@acryps/page-default-directives": "^1.1.4",
+		"@acryps/page-observable": "^1.4.1",
+		"@acryps/parcel-transformer-page": "^1.0.1",
+		"qrcode": "^1.5.3"
+	}
+}

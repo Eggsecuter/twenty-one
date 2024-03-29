@@ -1,0 +1,48 @@
+@import './components.scss';
+@import './animations.scss';
+
+@import './game/index.scss';
+@import './home/index.scss';
+
+:root {
+	--primary-color: #ff5b56;
+	--primary-contrast-color: #232323;
+
+	--secondary-color: #ffa16a;
+	--secondary-contrast-color: #000;
+
+	--page-color: #fff;
+	--page-color-dimmed: #ddd;
+	--page-background: #000;
+	--page-error: #ff0000;
+
+	--page-border-color: #e5e5e5;
+	--page-border: 1px solid var(--page-border-color);
+
+	--panel-background: #525252;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+
+	font-family: Arial, Helvetica, sans-serif;
+
+	color: var(--page-color);
+	background: var(--page-background);
+}
+
+ui-page {
+	display: block;
+}
+
+ui-navigation {
+	position: sticky;
+	top: 0;
+
+	display: block;
+	padding: 1rem;
+
+	background: var(--page-background);
+	border-bottom: var(--page-border);
+}
