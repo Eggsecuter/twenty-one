@@ -3,18 +3,10 @@ import { ServerMessage } from "../../shared/messages";
 import { generateToken } from "../../shared/token";
 
 export class Game {
-	readonly ticksPerSecond = 30;
-	readonly tickMillisecondsInterval = 1 / this.ticksPerSecond * 1000;
-
 	readonly token: string;
-	
+
 	players: Player[] = [];
-
-	private gameLoop: NodeJS.Timeout;
-
-	get isRunning() {
-		return !!this.gameLoop;
-	}
+	isRunning = false;
 
 	constructor(
 		private onclose: () => void
@@ -26,7 +18,7 @@ export class Game {
 	}
 
 	join(player: Player) {
-		if (this.gameLoop) {
+		if (this.isRunning) {
 			console.warn(`user ${player.name} tried to join running game ${this.token}`);
 			throw new Error();
 		}
@@ -68,28 +60,18 @@ export class Game {
 			start: true
 		});
 
-		let lastTick = Date.now();
-
-		this.gameLoop = setInterval(() => {
-			if (Date.now() > lastTick + this.tickMillisecondsInterval) {
-				const deltaTime = (Date.now() - lastTick) / 1000;
-
-				// update
-
-				lastTick = Date.now();
-			}
-		});
+		this.isRunning = true;
 
 		console.log(`started game ${this.token}`);
 	}
 
 	private stop() {
-		if (this.gameLoop) {
-			clearInterval(this.gameLoop);
-
+		if (this.isRunning) {
 			this.broadcast({
 				stop: true
 			});
+
+			this.isRunning = false;
 
 			console.log(`stopped game "${this.token}"`);
 		}
