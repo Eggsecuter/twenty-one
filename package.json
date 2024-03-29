@@ -1,5 +1,5 @@
 {
-  "name": "re7-card-game",
+  "name": "card-game",
   "version": "0.0.1",
   "dependencies": {
     "parcel": "^2.12.0"
