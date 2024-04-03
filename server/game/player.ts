@@ -14,12 +14,18 @@ const characters: string[] = [
 ];
 
 export class Player {
-	readonly id = generateToken();
-	readonly name = characters[Math.floor(Math.random() * characters.length)];
+	readonly id: string;
+	readonly name: string;
+
+	cards: number[];
 
 	constructor (
 		public socket: WebSocket
-	) {}
+	) {
+		this.id = generateToken();
+		this.name = characters[Math.floor(Math.random() * characters.length)];
+		this.cards = [];
+	}
 
 	toJSON() {
 		return {
