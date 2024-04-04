@@ -1,21 +1,29 @@
-import { Player } from "./player"
-
 export class PlayerState {
-	private cards: number[];
-	private health: number;
+	private health: number = 5;
+	private cards: number[] = [];
 
 	constructor (
-		public participant: () => Player
-	) {
-		this.reset();
+		private onDeath: () => void
+	) {}
+
+	get sum() {
+		return this.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 	}
 
 	reset() {
 		this.cards = [];
-		this.health = 5;
 	}
 
-	addCard(card: number) {
+	draw(card: number) {
 		this.cards.push(card);
+	}
+
+	takeDamage(damage: number) {
+		this.health -= damage;
+
+		if (this.health <= 0) {
+			this.health == 0;
+			this.onDeath();
+		}
 	}
 }

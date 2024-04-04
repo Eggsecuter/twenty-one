@@ -10,6 +10,10 @@ export class Game {
 	players: Player[];
 	isRunning: boolean;
 
+	playerOne: PlayerState;
+	playerTwo: PlayerState;
+	round: Round;
+
 	constructor(
 		private onclose: () => void
 	) {
@@ -61,12 +65,14 @@ export class Game {
 		this.isRunning = true;
 		console.log(`started game ${this.token}`);
 
-		const round = new Round(
-			new PlayerState(() => this.players[0]),
-			new PlayerState(() => this.players[1])
-		);
+		this.playerOne = new PlayerState(() => this.stop());
+		this.playerTwo = new PlayerState(() => this.stop());
 
-		round.start();
+		const startNewRound = (index: number = 0) => {
+			this.round = new Round(index, this.playerOne, this.playerTwo, () => startNewRound(index + 1));
+		}
+
+		startNewRound();
 	}
 
 	private stop() {
