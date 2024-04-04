@@ -34,11 +34,6 @@ export class Game {
 	}
 
 	join(player: Player) {
-		if (this.isRunning) {
-			console.warn(`user ${player.name} tried to join running game ${this.token}`);
-			throw new Error();
-		}
-
 		this.players.push(player);
 		
 		this.broadcast({
