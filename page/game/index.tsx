@@ -58,6 +58,18 @@ export class GameComponent extends Component {
 				if ('stop' in data) {
 					
 				}
+
+				if ('stay' in data) {
+					console.debug(`Player ${data.stay.playerOne ? 'one' : 'two'} stayed`);
+				}
+
+				if ('draw' in data) {
+					console.debug(`Player ${data.draw.playerOne ? 'one' : 'two'} drew a ${data.draw.card}`);
+				}
+
+				if ('hiddenDraw' in data) {
+					console.debug(`Player ${data.hiddenDraw.playerOne ? 'one' : 'two'} drew a hidden card`);
+				}
 			};
 		};
 	}

@@ -1,3 +1,4 @@
+import { ServerMessage } from "../../shared/messages";
 import { generateToken } from "../../shared/token";
 
 const characters: string[] = [
@@ -18,10 +19,14 @@ export class Player {
 	readonly name: string;
 
 	constructor (
-		public socket: WebSocket
+		private socket: WebSocket
 	) {
 		this.id = generateToken();
 		this.name = characters[Math.floor(Math.random() * characters.length)];
+	}
+
+	send(message: ServerMessage) {
+		this.socket.send(JSON.stringify(message));
 	}
 
 	toJSON() {

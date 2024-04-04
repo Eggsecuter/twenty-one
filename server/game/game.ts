@@ -69,7 +69,7 @@ export class Game {
 		this.playerTwo = new PlayerState(() => this.stop());
 
 		const startNewRound = (index: number = 0) => {
-			this.round = new Round(index, this.playerOne, this.playerTwo, () => startNewRound(index + 1));
+			this.round = new Round(index, this.players, this.playerOne, this.playerTwo, () => startNewRound(index + 1));
 		}
 
 		startNewRound();
@@ -99,7 +99,7 @@ export class Game {
 
 	private broadcast(message: ServerMessage) {
 		for (const player of this.players) {
-			player.socket.send(JSON.stringify(message));
+			player.send(message);
 		}
 	}
 }

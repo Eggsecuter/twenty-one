@@ -6,7 +6,11 @@ export interface PlayerJoinMessage extends PlayerMessage {
 	name: string;
 }
 
-export interface PlayerDraw extends PlayerMessage {
+export interface PlayerActionMessage {
+	playerOne: boolean;
+}
+
+export interface PlayerDraw extends PlayerActionMessage {
 	card: number;
 }
 
@@ -22,6 +26,7 @@ export interface ServerMessage {
 	start?: boolean,
 	stop?: boolean,
 
-	hiddenDraw?: PlayerMessage,
-	draw?: PlayerDraw
+	hiddenDraw?: PlayerActionMessage,
+	draw?: PlayerDraw,
+	stay?: PlayerActionMessage
 }
