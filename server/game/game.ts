@@ -24,6 +24,10 @@ export class Game {
 		console.log(`game "${this.token}" created`);
 	}
 
+	static sleep(seconds: number) {
+		return new Promise<void>(done => setTimeout(() => done(), seconds * 1000));
+	}
+
 	join(player: Player) {
 		this.players.push(player);
 		

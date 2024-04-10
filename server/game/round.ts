@@ -2,6 +2,7 @@ import { Deck } from "./deck";
 import { Player } from "./player";
 import { Competitor } from "./competitor";
 import { defaultPerfectSum } from "../../shared/game-settings";
+import { Game } from "./game";
 
 export class Round {
 	private deck = new Deck();
@@ -30,9 +31,14 @@ export class Round {
 		this.competitorOne.reset();
 		this.competitorTwo.reset();
 
-		for (let repetition = 0; repetition < 4; repetition++) {
-			this.draw();
+		const initialize = async () => {
+			for (let repetition = 0; repetition < 4; repetition++) {
+				this.draw();
+				await Game.sleep(0.5);
+			}
 		}
+
+		initialize();
 	}
 
 	stay() {
