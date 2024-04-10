@@ -2,17 +2,17 @@ import { Component } from "@acryps/page";
 import { Player } from "./player";
 import { LobbyComponent } from "./lobby";
 import { ServerMessage } from "../../shared/messages";
+import { BoardComponent } from "./board";
 
 export class GameComponent extends Component {
 	declare parameters: { token };
 	declare rootNode: HTMLElement;
 
-	id: string;
-	players: Player[] = [];
+	private id: string;
+	private players: Player[] = [];
+	private socket: WebSocket;
 
-	lobby = new LobbyComponent();
-
-	socket: WebSocket;
+	private screen = new LobbyComponent();
 
 	get player() {
 		return this.players.find(player => player.id == this.id);
@@ -41,18 +41,19 @@ export class GameComponent extends Component {
 				if ('join' in data) {
 					this.players.push(Player.from(data.join));
 
-					this.lobby.update();
+					this.screen.update();
 				}
 
 				if ('leave' in data) {
 					const playerIndex = this.players.findIndex(player => player.id == Player.from(data.leave).id);
 					this.players.splice(playerIndex, 1);
 
-					this.lobby.update();
+					this.screen.update();
 				}
 
 				if ('start' in data) {
-					this.lobby.remove();
+					this.screen = new BoardComponent(data.start);
+					this.update();
 				}
 
 				if ('stop' in data) {
@@ -60,15 +61,15 @@ export class GameComponent extends Component {
 				}
 
 				if ('stay' in data) {
-					console.debug(`Player ${data.stay.playerOne ? 'one' : 'two'} stayed`);
+					(this.screen as BoardComponent).stay();
 				}
 
 				if ('draw' in data) {
-					console.debug(`Player ${data.draw.playerOne ? 'one' : 'two'} drew a ${data.draw.card}`);
+					(this.screen as BoardComponent).draw(data.draw);
 				}
 
 				if ('hiddenDraw' in data) {
-					console.debug(`Player ${data.hiddenDraw.playerOne ? 'one' : 'two'} drew a hidden card`);
+					(this.screen as BoardComponent).hiddenDraw(data.hiddenDraw);
 				}
 			};
 		};
@@ -76,7 +77,7 @@ export class GameComponent extends Component {
 
 	render() {
 		return <ui-game>
-			{this.lobby}
+			{this.screen}
 		</ui-game>;
 	}
 }

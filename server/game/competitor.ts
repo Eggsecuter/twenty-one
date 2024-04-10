@@ -1,8 +1,12 @@
-export class PlayerState {
-	private health: number = 5;
+import { competitorStartHealth } from "../../shared/game-settings";
+import { Player } from "./player";
+
+export class Competitor {
+	private health: number = competitorStartHealth;
 	private cards: number[] = [];
 
 	constructor (
+		public player: Player,
 		private onDeath: () => void
 	) {}
 

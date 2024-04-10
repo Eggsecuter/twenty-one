@@ -1,26 +1,18 @@
 import { Deck } from "./deck";
 import { Player } from "./player";
-import { PlayerState } from "./player-state";
+import { Competitor } from "./competitor";
+import { defaultPerfectSum } from "../../shared/game-settings";
 
 export class Round {
 	private deck = new Deck();
-	private perfectSum = 21;
+	private perfectSum = defaultPerfectSum;
 
 	private turns = 0;
-	private playerOneStarts: boolean;
-
 	private continuosStayCounter = 0;
 
-	private get isPlayerOne() {
-		return this.turns % 2 == (this.playerOneStarts ? 0 : 1);
-	}
-
-	private get currentPlayer() {
-		if (this.isPlayerOne) {
-			return this.playerOne;
-		} else {
-			return this.playerTwo;
-		}
+	private get currentCompetitor() {
+		// the starting competitor switches every round
+		return this.turns % 2 == this.index % 2 ? this.competitorOne : this.competitorTwo;
 	}
 
 	private get bet() {
@@ -30,16 +22,13 @@ export class Round {
 	constructor (
 		private index: number,
 		private players: Player[],
-		private playerOne: PlayerState,
-		private playerTwo: PlayerState,
+		private competitorOne: Competitor,
+		private competitorTwo: Competitor,
 		private onConclude: () => void
 	) {
-		// the starting player switches every round
-		this.playerOneStarts = index % 2 == 0;
-
 		// initialize drawn cards
-		this.playerOne.reset();
-		this.playerTwo.reset();
+		this.competitorOne.reset();
+		this.competitorTwo.reset();
 
 		for (let repetition = 0; repetition < 4; repetition++) {
 			this.draw();
@@ -49,40 +38,41 @@ export class Round {
 	stay() {
 		this.continuosStayCounter++;
 
-		for (let index = 0; index < this.players.length; index++) {
-			this.players[index].send({
+		for (const player of this.players) {
+			player.send({
 				stay: {
-					playerOne: this.isPlayerOne
+					id: this.currentCompetitor.player.id
 				}
-			});
+			})
 		}
 
 		this.endTurn();
 	}
 
 	draw() {
-		this.continuosStayCounter = 0;
-
-		if (this.currentPlayer.sum > this.perfectSum) {
+		if (this.currentCompetitor.sum > this.perfectSum) {
 			this.stay();
 			return;
 		}
 
-		const card = this.deck.draw();
-		this.currentPlayer.draw(card);
+		this.continuosStayCounter = 0;
 
-		for (let index = 0; index < this.players.length; index++) {
-			if (this.turns > 4 || index == (this.isPlayerOne ? 0 : 1)) {
-				this.players[index].send({
+		const card = this.deck.draw();
+		this.currentCompetitor.draw(card);
+
+		for (const player of this.players) {
+			// the first 2 cards of each competitor are hidden
+			if (player.id == this.currentCompetitor.player.id || this.turns > 4) {
+				player.send({
 					draw: {
-						playerOne: this.isPlayerOne,
+						id: this.currentCompetitor.player.id,
 						card: card
 					}
 				});
 			} else {
-				this.players[index].send({
+				player.send({
 					hiddenDraw: {
-						playerOne: this.isPlayerOne
+						id: this.currentCompetitor.player.id
 					}
 				});
 			}
@@ -94,7 +84,7 @@ export class Round {
 	private endTurn() {
 		this.turns++;
 
-		// both players stayed in succession
+		// both players stayed in succession ends the round
 		if (this.continuosStayCounter == 2) {
 			this.conclude();
 		}
@@ -102,15 +92,15 @@ export class Round {
 
 	private conclude() {
 		// tie if both overshot or have the same sum
-		if (this.playerOne.sum <= this.perfectSum || this.playerTwo.sum <= this.perfectSum) {
-			if (this.playerOne.sum > this.perfectSum) {
-				this.playerTwo.takeDamage(this.bet);
-			} else if (this.playerTwo.sum > this.perfectSum) {
-				this.playerOne.takeDamage(this.bet);
-			} else if (this.playerOne.sum > this.playerTwo.sum) {
-				this.playerTwo.takeDamage(this.bet);
-			} else if (this.playerTwo.sum > this.playerOne.sum) {
-				this.playerOne.takeDamage(this.bet);
+		if (this.competitorOne.sum <= this.perfectSum || this.competitorTwo.sum <= this.perfectSum) {
+			if (this.competitorOne.sum > this.perfectSum) {
+				this.competitorTwo.takeDamage(this.bet);
+			} else if (this.competitorTwo.sum > this.perfectSum) {
+				this.competitorOne.takeDamage(this.bet);
+			} else if (this.competitorOne.sum > this.competitorTwo.sum) {
+				this.competitorTwo.takeDamage(this.bet);
+			} else if (this.competitorTwo.sum > this.competitorOne.sum) {
+				this.competitorOne.takeDamage(this.bet);
 			}
 		}
 

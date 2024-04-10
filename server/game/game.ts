@@ -2,7 +2,7 @@ import { Player } from "./player";
 import { ServerMessage } from "../../shared/messages";
 import { generateToken } from "../../shared/token";
 import { Round } from "./round";
-import { PlayerState } from "./player-state";
+import { Competitor } from "./competitor";
 
 export class Game {
 	readonly token: string;
@@ -10,8 +10,8 @@ export class Game {
 	players: Player[];
 	isRunning: boolean;
 
-	playerOne: PlayerState;
-	playerTwo: PlayerState;
+	competitorOne: Competitor;
+	competitorTwo: Competitor;
 	round: Round;
 
 	constructor(
@@ -37,6 +37,14 @@ export class Game {
 	leave(player: Player) {
 		this.players.splice(this.players.indexOf(player), 1);
 
+		if (this.competitorOne.player?.id == player.id) {
+			this.competitorOne.player = null;
+		}
+
+		if (this.competitorTwo.player?.id == player.id) {
+			this.competitorTwo.player = null;
+		}
+
 		this.broadcast({
 			leave: player
 		});
@@ -58,18 +66,30 @@ export class Game {
 			return;
 		}
 
+		if (this.players.length < 2) {
+			console.warn(`host ${player.name} tried to start the game alone`);
+			return;
+		}
+
+		this.competitorOne = new Competitor(this.players[0], () => this.stop());
+		this.competitorTwo = new Competitor(this.players[1], () => this.stop());
+
 		this.broadcast({
-			start: true
+			start: {
+				competitorOne: {
+					id: this.competitorOne.player.id
+				},
+				competitorTwo: {
+					id: this.competitorTwo.player.id
+				}
+			}
 		});
 
 		this.isRunning = true;
 		console.log(`started game ${this.token}`);
 
-		this.playerOne = new PlayerState(() => this.stop());
-		this.playerTwo = new PlayerState(() => this.stop());
-
 		const startNewRound = (index: number = 0) => {
-			this.round = new Round(index, this.players, this.playerOne, this.playerTwo, () => startNewRound(index + 1));
+			this.round = new Round(index, this.players, this.competitorOne, this.competitorTwo, () => startNewRound(index + 1));
 		}
 
 		startNewRound();
