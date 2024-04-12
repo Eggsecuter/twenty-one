@@ -1,14 +1,13 @@
 import { Component } from "@acryps/page";
 import { GameComponent } from ".";
 import { CompetitorComponent } from "./competitor";
-import { CompetitorMessage, PlayerDrawMessage, PlayerMessage, ServerMessage } from "../../shared/messages";
+import { CompetitorMessage, PlayerMessage, ServerMessage } from "../../shared/messages";
 import { ControlsComponent } from "./controls";
 
 export class BoardComponent extends Component {
 	declare parent: GameComponent;
 
-	private isLocalTurn = false;
-	private roundStarted = false;
+	activeCompetitorId: string;
 
 	private front: CompetitorComponent;
 	private back: CompetitorComponent;
@@ -22,7 +21,7 @@ export class BoardComponent extends Component {
 	onload() {
 		// defaults to competitor one being in front
 		// competitor two in front if it's the local player
-		if (this.parent.id == this.competitors.competitorTwo.id) {
+		if (this.parent.playerId == this.competitors.competitorTwo.id) {
 			this.front = new CompetitorComponent(this.competitors.competitorTwo.id);
 			this.back = new CompetitorComponent(this.competitors.competitorOne.id);
 		} else {
@@ -33,28 +32,14 @@ export class BoardComponent extends Component {
 		this.parent.socket.onmessage = event => {
 			const data = JSON.parse(event.data) as ServerMessage;
 
-			if ('roundStart' in data) {
-				this.roundStarted = true;
-
-				this.update();
-			}
-
 			if ('stay' in data) {
-				this.toggleControls(data.stay);
-
+				this.activeCompetitorId = data.stay.next.id;
 				this.update();
 			}
 
 			if ('draw' in data) {
 				this.getAffectedCompetitor(data.draw).draw(data.draw.card);
-				this.toggleControls(data.draw);
-
-				this.update();
-			}
-
-			if ('hiddenDraw' in data) {
-				this.getAffectedCompetitor(data.hiddenDraw).draw();
-				this.toggleControls(data.hiddenDraw);
+				this.activeCompetitorId = data.draw.next.id;
 
 				this.update();
 			}
@@ -66,13 +51,8 @@ export class BoardComponent extends Component {
 			{this.back}
 			{this.front}
 
-			{this.isLocalTurn && this.roundStarted ? new ControlsComponent() : ''}
+			{this.activeCompetitorId == this.parent.playerId ? new ControlsComponent() : ''}
 		</ui-board>;
-	}
-
-	private toggleControls(message: PlayerMessage) {
-		// if local player is active and the opponent had his turn
-		this.isLocalTurn = this.parent.id == this.front.playerId && message.id == this.back.playerId;
 	}
 
 	private getAffectedCompetitor(message: PlayerMessage) {

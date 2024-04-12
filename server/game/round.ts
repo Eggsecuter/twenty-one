@@ -37,10 +37,6 @@ export class Round {
 				this.draw();
 				await Game.sleep(0.5);
 			}
-
-			this.broadcast({
-				roundStart: true
-			});
 		}
 
 		initialize();
@@ -49,13 +45,16 @@ export class Round {
 	stay() {
 		this.continuosStayCounter++;
 
-		this.broadcast({
-			stay: {
-				id: this.currentCompetitor.player.id
-			}
-		});
+		const next = this.endTurn();
 
-		this.endTurn();
+		this.broadcast(() => ({
+			stay: {
+				id: this.currentCompetitor.player.id,
+				next: {
+					id: next
+				}
+			}
+		}));
 	}
 
 	draw() {
@@ -64,34 +63,33 @@ export class Round {
 		const card = this.deck.draw();
 		this.currentCompetitor.draw(card);
 
-		for (const player of this.players) {
-			// the first 2 cards of each competitor are hidden
-			if (player.id == this.currentCompetitor.player.id || this.turns > 4) {
-				player.send({
-					draw: {
-						id: this.currentCompetitor.player.id,
-						card: card
-					}
-				});
-			} else {
-				player.send({
-					hiddenDraw: {
-						id: this.currentCompetitor.player.id
-					}
-				});
-			}
-		}
+		const next = this.endTurn();
 
-		this.endTurn();
+		// initial cards are hidden from other players
+		this.broadcast(player => ({
+			draw: {
+				id: this.currentCompetitor.player.id,
+				card: this.turns > initialCardCount || player.id == this.currentCompetitor.player.id ? card : null,
+				next: {
+					id: next
+				}
+			}
+		}));
 	}
 
+	// returns next competitor action is needed
+	// while initializing or if complete no action is needed and null is returned
 	private endTurn() {
 		this.turns++;
 
 		// no more cards left or both players stayed in succession ends the round
 		if (this.deck.empty || this.continuosStayCounter == 2) {
 			this.conclude();
+		} else if (this.turns > initialCardCount - 1) {
+			return this.currentCompetitor.player.id;
 		}
+
+		return null;
 	}
 
 	private conclude() {
@@ -111,9 +109,9 @@ export class Round {
 		this.onConclude();
 	}
 
-	private broadcast(message: ServerMessage) {
+	private broadcast(message: (player: Player) => ServerMessage) {
 		for (const player of this.players) {
-			player.send(message);
+			player.send(message(player));
 		}
 	}
 }

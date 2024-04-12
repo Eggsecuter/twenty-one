@@ -125,18 +125,22 @@ ui-game {
 	}
 
 	> ui-board {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-
+		display: block;
 		max-width: 30rem;
 		padding: 1rem;
 
 		> ui-competitor {
 			display: block;
 
+			&:not(:last-of-type) {
+				margin-bottom: 10rem;
+			}
+
 			> ui-cards {
 				display: flex;
+				height: 10rem;
+
+				align-items: center;
 				gap: 0.5rem;
 
 				> ui-card {

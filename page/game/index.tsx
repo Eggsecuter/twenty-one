@@ -8,7 +8,7 @@ export class GameComponent extends Component {
 	declare parameters: { token };
 	declare rootNode: HTMLElement;
 
-	id: string;
+	playerId: string;
 	players: Player[] = [];
 	socket: WebSocket;
 
@@ -19,11 +19,11 @@ export class GameComponent extends Component {
 	}
 
 	get player() {
-		return this.players.find(player => player.id == this.id);
+		return this.players.find(player => player.id == this.playerId);
 	}
 
 	get isHost() {
-		return this.players.findIndex(player => player.id == this.id) == 0;
+		return this.players.findIndex(player => player.id == this.playerId) == 0;
 	}
 
 	onrouteleave() {
@@ -36,7 +36,7 @@ export class GameComponent extends Component {
 
 		this.socket.onmessage = event => {
 			const join = JSON.parse(event.data);
-			this.id = join.id;
+			this.playerId = join.id;
 			this.players = join.peers.map(player => Player.from(player));
 
 			this.socket.onmessage = event => {
