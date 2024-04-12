@@ -59,11 +59,6 @@ export class Round {
 	}
 
 	draw() {
-		if (this.currentCompetitor.sum > this.perfectSum) {
-			this.stay();
-			return;
-		}
-
 		this.continuosStayCounter = 0;
 
 		const card = this.deck.draw();
@@ -93,8 +88,8 @@ export class Round {
 	private endTurn() {
 		this.turns++;
 
-		// both players stayed in succession ends the round
-		if (this.continuosStayCounter == 2) {
+		// no more cards left or both players stayed in succession ends the round
+		if (this.deck.empty || this.continuosStayCounter == 2) {
 			this.conclude();
 		}
 	}

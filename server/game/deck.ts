@@ -1,12 +1,16 @@
 export class Deck {
 	private availableCards: number[];
 
+	get empty() {
+		return !this.availableCards.length;
+	}
+
 	constructor() {
 		this.availableCards = Array(11).fill(0).map((_, index) => index + 1);
 	}
 
 	draw() {
-		if (!this.availableCards.length) {
+		if (this.empty) {
 			return;
 		}
 
