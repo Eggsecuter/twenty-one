@@ -2,13 +2,18 @@ import { Component } from "@acryps/page";
 import { competitorStartHealth } from "../../shared/game-settings";
 
 export class CompetitorComponent extends Component {
-	health = competitorStartHealth;
-	cards: number[] = [];
+	private health = competitorStartHealth;
+	private cards: number[] = [];
 
 	constructor (
 		public playerId: string
 	) {
 		super();
+	}
+
+	draw(card?: number) {
+		this.cards.push(card);
+		this.update();
 	}
 
 	render() {

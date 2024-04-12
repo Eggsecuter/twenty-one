@@ -1,8 +1,9 @@
 import { Deck } from "./deck";
 import { Player } from "./player";
 import { Competitor } from "./competitor";
-import { defaultPerfectSum } from "../../shared/game-settings";
+import { defaultPerfectSum, initialCardCount } from "../../shared/game-settings";
 import { Game } from "./game";
+import { ServerMessage } from "../../shared/messages";
 
 export class Round {
 	private deck = new Deck();
@@ -32,10 +33,14 @@ export class Round {
 		this.competitorTwo.reset();
 
 		const initialize = async () => {
-			for (let repetition = 0; repetition < 4; repetition++) {
+			for (let repetition = 0; repetition < initialCardCount; repetition++) {
 				this.draw();
 				await Game.sleep(0.5);
 			}
+
+			this.broadcast({
+				roundStart: true
+			});
 		}
 
 		initialize();
@@ -44,13 +49,11 @@ export class Round {
 	stay() {
 		this.continuosStayCounter++;
 
-		for (const player of this.players) {
-			player.send({
-				stay: {
-					id: this.currentCompetitor.player.id
-				}
-			})
-		}
+		this.broadcast({
+			stay: {
+				id: this.currentCompetitor.player.id
+			}
+		});
 
 		this.endTurn();
 	}
@@ -111,5 +114,11 @@ export class Round {
 		}
 
 		this.onConclude();
+	}
+
+	private broadcast(message: ServerMessage) {
+		for (const player of this.players) {
+			player.send(message);
+		}
 	}
 }

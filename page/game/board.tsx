@@ -1,56 +1,85 @@
 import { Component } from "@acryps/page";
 import { GameComponent } from ".";
 import { CompetitorComponent } from "./competitor";
-import { CompetitorMessage, PlayerDrawMessage, PlayerMessage } from "../../shared/messages";
+import { CompetitorMessage, PlayerDrawMessage, PlayerMessage, ServerMessage } from "../../shared/messages";
+import { ControlsComponent } from "./controls";
 
 export class BoardComponent extends Component {
 	declare parent: GameComponent;
 
-	private competitorOne: CompetitorComponent;
-	private competitorTwo: CompetitorComponent;
+	private isLocalTurn = false;
+	private roundStarted = false;
+
+	private front: CompetitorComponent;
+	private back: CompetitorComponent;
 
 	constructor (
-		competitors: CompetitorMessage
+		private competitors: CompetitorMessage
 	) {
 		super();
-
-		this.competitorOne = new CompetitorComponent(competitors.competitorOne.id);
-		this.competitorTwo = new CompetitorComponent(competitors.competitorTwo.id);
 	}
 
-	stay() {
-
-	}
-
-	draw(message: PlayerDrawMessage) {
-		if (message.id == this.competitorOne.playerId) {
-			this.competitorOne.cards.push(message.card);
-		} else if (message.id == this.competitorTwo.playerId) {
-			this.competitorTwo.cards.push(message.card);
+	onload() {
+		// defaults to competitor one being in front
+		// competitor two in front if it's the local player
+		if (this.parent.id == this.competitors.competitorTwo.id) {
+			this.front = new CompetitorComponent(this.competitors.competitorTwo.id);
+			this.back = new CompetitorComponent(this.competitors.competitorOne.id);
+		} else {
+			this.front = new CompetitorComponent(this.competitors.competitorOne.id);
+			this.back = new CompetitorComponent(this.competitors.competitorTwo.id);
 		}
 
-		this.update();
-	}
+		this.parent.socket.onmessage = event => {
+			const data = JSON.parse(event.data) as ServerMessage;
 
-	hiddenDraw(message: PlayerMessage) {
-		if (message.id == this.competitorOne.playerId) {
-			this.competitorOne.cards.push(null);
-		} else if (message.id == this.competitorTwo.playerId) {
-			this.competitorTwo.cards.push(null);
+			if ('roundStart' in data) {
+				this.roundStarted = true;
+
+				this.update();
+			}
+
+			if ('stay' in data) {
+				this.toggleControls(data.stay);
+
+				this.update();
+			}
+
+			if ('draw' in data) {
+				this.getAffectedCompetitor(data.draw).draw(data.draw.card);
+				this.toggleControls(data.draw);
+
+				this.update();
+			}
+
+			if ('hiddenDraw' in data) {
+				this.getAffectedCompetitor(data.hiddenDraw).draw();
+				this.toggleControls(data.hiddenDraw);
+
+				this.update();
+			}
 		}
-
-		this.update();
 	}
 
 	render() {
-		// defaults to competitor one being in front
-		// competitor two in front if it is the local player
-		const competitors = this.parent.player.id == this.competitorTwo.playerId ?
-			[this.competitorTwo, this.competitorOne] :
-			[this.competitorOne, this.competitorTwo];
-
 		return <ui-board>
-			{competitors}
+			{this.back}
+			{this.front}
+
+			{this.isLocalTurn && this.roundStarted ? new ControlsComponent() : ''}
 		</ui-board>;
+	}
+
+	private toggleControls(message: PlayerMessage) {
+		// if local player is active and the opponent had his turn
+		this.isLocalTurn = this.parent.id == this.front.playerId && message.id == this.back.playerId;
+	}
+
+	private getAffectedCompetitor(message: PlayerMessage) {
+		if (message.id == this.front.playerId) {
+			return this.front;
+		} else if (message.id == this.back.playerId) {
+			return this.back;
+		}
 	}
 }

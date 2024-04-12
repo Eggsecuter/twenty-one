@@ -27,6 +27,7 @@ export interface ServerMessage {
 	start?: CompetitorMessage,
 	stop?: boolean,
 
+	roundStart?: boolean,
 	hiddenDraw?: PlayerMessage,
 	draw?: PlayerDrawMessage,
 	stay?: PlayerMessage

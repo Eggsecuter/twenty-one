@@ -8,11 +8,15 @@ export class GameComponent extends Component {
 	declare parameters: { token };
 	declare rootNode: HTMLElement;
 
-	private id: string;
-	private players: Player[] = [];
-	private socket: WebSocket;
+	id: string;
+	players: Player[] = [];
+	socket: WebSocket;
 
 	private screen = new LobbyComponent();
+
+	get board() {
+		return this.screen as BoardComponent;
+	}
 
 	get player() {
 		return this.players.find(player => player.id == this.id);
@@ -58,18 +62,6 @@ export class GameComponent extends Component {
 
 				if ('stop' in data) {
 					
-				}
-
-				if ('stay' in data) {
-					(this.screen as BoardComponent).stay();
-				}
-
-				if ('draw' in data) {
-					(this.screen as BoardComponent).draw(data.draw);
-				}
-
-				if ('hiddenDraw' in data) {
-					(this.screen as BoardComponent).hiddenDraw(data.hiddenDraw);
 				}
 			};
 		};
