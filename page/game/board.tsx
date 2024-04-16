@@ -34,7 +34,6 @@ export class BoardComponent extends Component {
 
 			if ('draw' in data) {
 				this.getAffectedCompetitor(data.draw).draw(data.draw.card);
-				console.debug(data.draw, this.front.player, this.back.player);
 				this.activeCompetitorId = data.draw.next.id;
 
 				this.update();
