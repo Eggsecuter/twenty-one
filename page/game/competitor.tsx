@@ -1,6 +1,7 @@
 import { Component } from "@acryps/page";
 import { competitorStartHealth } from "../../shared/game-settings";
 import { BoardComponent } from "./board";
+import { Player } from "./player";
 
 export class CompetitorComponent extends Component {
 	declare parent: BoardComponent;
@@ -9,7 +10,7 @@ export class CompetitorComponent extends Component {
 	private cards: number[] = [];
 
 	constructor (
-		public playerId: string
+		public player: Player
 	) {
 		super();
 	}
@@ -20,7 +21,7 @@ export class CompetitorComponent extends Component {
 	}
 
 	render() {
-		return <ui-competitor ui-active={this.parent.activeCompetitorId == this.playerId}>
+		return <ui-competitor ui-active={this.parent.activeCompetitorId == this.player.id}>
 			<ui-cards>
 				{this.cards.map(card => <ui-card>{card ?? 'H'}</ui-card>)}
 			</ui-cards>

@@ -3,6 +3,7 @@ import { GameComponent } from ".";
 import { CompetitorComponent } from "./competitor";
 import { CompetitorMessage, PlayerMessage, ServerMessage } from "../../shared/messages";
 import { ControlsComponent } from "./controls";
+import { Player } from "./player";
 
 export class BoardComponent extends Component {
 	declare parent: GameComponent;
@@ -13,22 +14,16 @@ export class BoardComponent extends Component {
 	private back: CompetitorComponent;
 
 	constructor (
-		private competitors: CompetitorMessage
+		competitorFront: Player,
+		competitorBack: Player,
 	) {
 		super();
+
+		this.front = new CompetitorComponent(competitorFront);
+		this.back = new CompetitorComponent(competitorBack);
 	}
 
 	onload() {
-		// defaults to competitor one being in front
-		// competitor two in front if it's the local player
-		if (this.parent.playerId == this.competitors.competitorTwo.id) {
-			this.front = new CompetitorComponent(this.competitors.competitorTwo.id);
-			this.back = new CompetitorComponent(this.competitors.competitorOne.id);
-		} else {
-			this.front = new CompetitorComponent(this.competitors.competitorOne.id);
-			this.back = new CompetitorComponent(this.competitors.competitorTwo.id);
-		}
-
 		this.parent.socket.onmessage = event => {
 			const data = JSON.parse(event.data) as ServerMessage;
 
@@ -39,6 +34,7 @@ export class BoardComponent extends Component {
 
 			if ('draw' in data) {
 				this.getAffectedCompetitor(data.draw).draw(data.draw.card);
+				console.debug(data.draw, this.front.player, this.back.player);
 				this.activeCompetitorId = data.draw.next.id;
 
 				this.update();
@@ -51,14 +47,16 @@ export class BoardComponent extends Component {
 			{this.back}
 			{this.front}
 
+			{this.front.player.name}
+
 			{this.activeCompetitorId == this.parent.playerId ? new ControlsComponent() : ''}
 		</ui-board>;
 	}
 
 	private getAffectedCompetitor(message: PlayerMessage) {
-		if (message.id == this.front.playerId) {
+		if (message.id == this.front.player.id) {
 			return this.front;
-		} else if (message.id == this.back.playerId) {
+		} else if (message.id == this.back.player.id) {
 			return this.back;
 		}
 	}

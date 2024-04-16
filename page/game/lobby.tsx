@@ -31,9 +31,9 @@ export class LobbyComponent extends Component {
 			</ui-players>
 
 			{this.parent.isHost ? <ui-action ui-start ui-click={event => {
-				this.parent.socket.send(JSON.stringify({
+				this.parent.send({
 					start: true
-				}));
+				});
 
 				const element = (event.target as HTMLElement);
 				element.innerText = 'Starting ...';

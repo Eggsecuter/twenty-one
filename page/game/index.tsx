@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { Player } from "./player";
 import { LobbyComponent } from "./lobby";
-import { ServerMessage } from "../../shared/messages";
+import { ClientMessage, ServerMessage } from "../../shared/messages";
 import { BoardComponent } from "./board";
 
 export class GameComponent extends Component {
@@ -56,7 +56,17 @@ export class GameComponent extends Component {
 				}
 
 				if ('start' in data) {
-					this.screen = new BoardComponent(data.start);
+					const competitorOne = this.players.find(player => player.id == data.start.competitorOne.id);
+					const competitorTwo = this.players.find(player => player.id == data.start.competitorTwo.id);
+
+					// defaults to competitor one being in front
+					// competitor two in front if it's the local player
+					if (this.playerId == competitorTwo.id) {
+						this.screen = new BoardComponent(competitorTwo, competitorOne);
+					} else {
+						this.screen = new BoardComponent(competitorOne, competitorTwo);
+					}
+
 					this.update();
 				}
 
@@ -65,6 +75,10 @@ export class GameComponent extends Component {
 				}
 			};
 		};
+	}
+
+	send(message: ClientMessage) {
+		this.socket.send(JSON.stringify(message));
 	}
 
 	render() {

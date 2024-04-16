@@ -1,12 +1,19 @@
 import { Component } from "@acryps/page";
+import { BoardComponent } from "./board";
 
 export class ControlsComponent extends Component {
-	draw() {
+	declare parent: BoardComponent;
 
+	draw() {
+		this.parent.parent.send({
+			draw: true
+		});
 	}
 
 	stay() {
-
+		this.parent.parent.send({
+			stay: true
+		});
 	}
 
 	render() {

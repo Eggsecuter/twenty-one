@@ -34,7 +34,7 @@ export class Round {
 
 		const initialize = async () => {
 			for (let repetition = 0; repetition < initialCardCount; repetition++) {
-				this.draw();
+				this.draw(this.currentCompetitor.player);
 				await Game.sleep(0.5);
 			}
 		}
@@ -42,14 +42,19 @@ export class Round {
 		initialize();
 	}
 
-	stay() {
+	stay(player: Player) {
+		if (player.id != this.currentCompetitor.player.id) {
+			return;
+		}
+
+		const currentPlayerId = player.id;
 		this.continuosStayCounter++;
 
 		const next = this.endTurn();
 
 		this.broadcast(() => ({
 			stay: {
-				id: this.currentCompetitor.player.id,
+				id: currentPlayerId,
 				next: {
 					id: next
 				}
@@ -57,9 +62,14 @@ export class Round {
 		}));
 	}
 
-	draw() {
+	draw(player: Player) {
+		if (player.id != this.currentCompetitor.player.id) {
+			return;
+		}
+
 		this.continuosStayCounter = 0;
 
+		const currentPlayerId = player.id;
 		const card = this.deck.draw();
 		this.currentCompetitor.draw(card);
 
@@ -68,8 +78,8 @@ export class Round {
 		// initial cards are hidden from other players
 		this.broadcast(player => ({
 			draw: {
-				id: this.currentCompetitor.player.id,
-				card: this.turns > initialCardCount || player.id == this.currentCompetitor.player.id ? card : null,
+				id: currentPlayerId,
+				card: this.turns > initialCardCount || player.id == currentPlayerId ? card : null,
 				next: {
 					id: next
 				}

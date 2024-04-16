@@ -22,6 +22,7 @@ export interface CompetitorMessage {
 export interface ClientMessage {
 	start?: boolean;
 	draw?: boolean;
+	stay?: boolean;
 }
 
 export interface ServerMessage {

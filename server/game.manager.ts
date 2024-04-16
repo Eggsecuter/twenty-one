@@ -44,10 +44,18 @@ export function gameManager(app) {
 		}
 
 		socket.on('message', data => {
-			const gameMessage: ClientMessage = JSON.parse(data);
+			const message: ClientMessage = JSON.parse(data);
 
-			if (gameMessage.start) {
+			if (message.start) {
 				game.start(player);
+			}
+
+			if (message.draw) {
+				game.round.draw(player);
+			}
+
+			if (message.stay) {
+				game.round.stay(player);
 			}
 		});
 
