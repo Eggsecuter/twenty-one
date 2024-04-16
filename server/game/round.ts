@@ -103,18 +103,42 @@ export class Round {
 	}
 
 	private conclude() {
+		let winner: Player;
+
 		// tie if both overshot or have the same sum
 		if (this.competitorOne.sum <= this.perfectSum || this.competitorTwo.sum <= this.perfectSum) {
 			if (this.competitorOne.sum > this.perfectSum) {
 				this.competitorTwo.takeDamage(this.bet);
+				winner = this.competitorOne.player;
 			} else if (this.competitorTwo.sum > this.perfectSum) {
 				this.competitorOne.takeDamage(this.bet);
+				winner = this.competitorTwo.player;
 			} else if (this.competitorOne.sum > this.competitorTwo.sum) {
 				this.competitorTwo.takeDamage(this.bet);
+				winner = this.competitorOne.player;
 			} else if (this.competitorTwo.sum > this.competitorOne.sum) {
 				this.competitorOne.takeDamage(this.bet);
+				winner = this.competitorTwo.player;
 			}
 		}
+
+		this.broadcast(() => ({
+			conclude: {
+				competitorOne: {
+					id: this.competitorOne.player.id,
+					health: this.competitorOne.health,
+					cards: this.competitorOne.cards
+				},
+				competitorTwo: {
+					id: this.competitorTwo.player.id,
+					health: this.competitorTwo.health,
+					cards: this.competitorTwo.cards
+				},
+				winner: {
+					id: winner?.id
+				}
+			}
+		}));
 
 		this.onConclude();
 	}

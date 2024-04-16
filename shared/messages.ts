@@ -6,6 +6,11 @@ export interface PlayerJoinMessage extends PlayerMessage {
 	name: string;
 }
 
+export interface PlayerStatsMessage extends PlayerMessage {
+	health: number,
+	cards: number[]
+}
+
 export interface PlayerActionMessage extends PlayerMessage {
 	next: PlayerMessage;
 }
@@ -17,6 +22,13 @@ export interface PlayerDrawMessage extends PlayerActionMessage {
 export interface CompetitorMessage {
 	competitorOne: PlayerMessage;
 	competitorTwo: PlayerMessage;
+}
+
+export interface RoundConcludeMessage {
+	competitorOne: PlayerStatsMessage,
+	competitorTwo: PlayerStatsMessage,
+
+	winner: PlayerMessage
 }
 
 export interface ClientMessage {
@@ -33,5 +45,7 @@ export interface ServerMessage {
 	stop?: boolean,
 
 	draw?: PlayerDrawMessage,
-	stay?: PlayerActionMessage
+	stay?: PlayerActionMessage,
+
+	conclude?: RoundConcludeMessage
 }

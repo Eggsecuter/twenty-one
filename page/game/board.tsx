@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { GameComponent } from ".";
 import { CompetitorComponent } from "./competitor";
-import { CompetitorMessage, PlayerMessage, ServerMessage } from "../../shared/messages";
+import { PlayerMessage, ServerMessage } from "../../shared/messages";
 import { ControlsComponent } from "./controls";
 import { Player } from "./player";
 
@@ -12,6 +12,8 @@ export class BoardComponent extends Component {
 
 	private front: CompetitorComponent;
 	private back: CompetitorComponent;
+
+	private winnerMessage: string;
 
 	constructor (
 		competitorFront: Player,
@@ -29,12 +31,34 @@ export class BoardComponent extends Component {
 
 			if ('stay' in data) {
 				this.activeCompetitorId = data.stay.next.id;
+
 				this.update();
 			}
 
 			if ('draw' in data) {
-				this.getAffectedCompetitor(data.draw).draw(data.draw.card);
+				if (this.winnerMessage) {
+					this.front.reset();
+					this.back.reset();
+					this.winnerMessage = '';
+				}
+
+				this.getCompetitor(data.draw).draw(data.draw.card);
 				this.activeCompetitorId = data.draw.next.id;
+
+				this.update();
+			}
+
+			if ('conclude' in data) {
+				this.getCompetitor(data.conclude.competitorOne).conclude(data.conclude.competitorOne);
+				this.getCompetitor(data.conclude.competitorTwo).conclude(data.conclude.competitorTwo);
+
+				const winner = this.getCompetitor(data.conclude.winner);
+
+				if (!winner) {
+					this.winnerMessage = 'It is a tie';
+				} else {
+					this.winnerMessage = `${winner.player.name} wins`;
+				}
 
 				this.update();
 			}
@@ -44,15 +68,14 @@ export class BoardComponent extends Component {
 	render() {
 		return <ui-board>
 			{this.back}
+			{this.winnerMessage}
 			{this.front}
-
-			{this.front.player.name}
 
 			{this.activeCompetitorId == this.parent.playerId ? new ControlsComponent() : ''}
 		</ui-board>;
 	}
 
-	private getAffectedCompetitor(message: PlayerMessage) {
+	private getCompetitor(message: PlayerMessage) {
 		if (message.id == this.front.player.id) {
 			return this.front;
 		} else if (message.id == this.back.player.id) {

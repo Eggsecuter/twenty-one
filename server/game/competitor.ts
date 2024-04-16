@@ -2,17 +2,17 @@ import { competitorStartHealth } from "../../shared/game-settings";
 import { Player } from "./player";
 
 export class Competitor {
-	private health: number = competitorStartHealth;
-	private cards: number[] = [];
+	public health: number = competitorStartHealth;
+	public cards: number[] = [];
+
+	get sum() {
+		return this.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+	}
 
 	constructor (
 		public player: Player,
 		private onDeath: () => void
 	) {}
-
-	get sum() {
-		return this.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-	}
 
 	reset() {
 		this.cards = [];

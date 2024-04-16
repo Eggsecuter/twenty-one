@@ -3,6 +3,7 @@ import { ServerMessage } from "../../shared/messages";
 import { generateToken } from "../../shared/token";
 import { Round } from "./round";
 import { Competitor } from "./competitor";
+import { resultShowDurationSeconds } from "../../shared/game-settings";
 
 export class Game {
 	readonly token: string;
@@ -93,7 +94,10 @@ export class Game {
 		console.log(`started game ${this.token}`);
 
 		const startNewRound = (index: number = 0) => {
-			this.round = new Round(index, this.players, this.competitorOne, this.competitorTwo, () => startNewRound(index + 1));
+			this.round = new Round(index, this.players, this.competitorOne, this.competitorTwo, async () => {
+				await Game.sleep(resultShowDurationSeconds);
+				startNewRound(index + 1);
+			});
 		}
 
 		startNewRound();
