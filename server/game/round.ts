@@ -43,7 +43,7 @@ export class Round {
 	}
 
 	stay(player: Player) {
-		if (player.id != this.currentCompetitor.player.id) {
+		if (player.id != this.currentCompetitor.player?.id) {
 			return;
 		}
 
@@ -63,7 +63,7 @@ export class Round {
 	}
 
 	draw(player: Player) {
-		if (player.id != this.currentCompetitor.player.id) {
+		if (player.id != this.currentCompetitor.player?.id) {
 			return;
 		}
 
@@ -96,7 +96,7 @@ export class Round {
 		if (this.deck.empty || this.continuosStayCounter == 2) {
 			this.conclude();
 		} else if (this.turns > initialCardCount - 1) {
-			return this.currentCompetitor.player.id;
+			return this.currentCompetitor.player?.id;
 		}
 
 		return null;
@@ -125,12 +125,12 @@ export class Round {
 		this.broadcast(() => ({
 			conclude: {
 				competitorOne: {
-					id: this.competitorOne.player.id,
+					id: this.competitorOne.player?.id,
 					health: this.competitorOne.health,
 					cards: this.competitorOne.cards
 				},
 				competitorTwo: {
-					id: this.competitorTwo.player.id,
+					id: this.competitorTwo.player?.id,
 					health: this.competitorTwo.health,
 					cards: this.competitorTwo.cards
 				},

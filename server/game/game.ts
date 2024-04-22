@@ -42,11 +42,11 @@ export class Game {
 	leave(player: Player) {
 		this.players.splice(this.players.indexOf(player), 1);
 
-		if (this.competitorOne.player?.id == player.id) {
+		if (this.competitorOne?.player?.id == player.id) {
 			this.competitorOne.player = null;
 		}
 
-		if (this.competitorTwo.player?.id == player.id) {
+		if (this.competitorTwo?.player?.id == player.id) {
 			this.competitorTwo.player = null;
 		}
 
