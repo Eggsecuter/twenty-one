@@ -29,6 +29,10 @@ export class Player {
 		this.socket.send(JSON.stringify(message));
 	}
 
+	kick() {
+		this.socket.close();
+	}
+
 	toJSON() {
 		return {
 			id: this.id,

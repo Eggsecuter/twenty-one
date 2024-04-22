@@ -42,12 +42,14 @@ export class Game {
 	leave(player: Player) {
 		this.players.splice(this.players.indexOf(player), 1);
 
-		if (this.competitorOne?.player?.id == player.id) {
-			this.competitorOne.player = null;
-		}
+		// close running game if any competitor leaves
+		if (player.id == this.competitorOne?.player.id || player.id == this.competitorTwo?.player.id) {
+			for (const player of this.players) {
+				player.kick();
+			}
 
-		if (this.competitorTwo?.player?.id == player.id) {
-			this.competitorTwo.player = null;
+			this.close();
+			return;
 		}
 
 		this.broadcast({
