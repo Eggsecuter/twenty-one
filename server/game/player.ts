@@ -32,11 +32,4 @@ export class Player {
 	kick() {
 		this.socket.close();
 	}
-
-	toJSON() {
-		return {
-			id: this.id,
-			name: this.name
-		}
-	}
 }
