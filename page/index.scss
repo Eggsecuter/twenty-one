@@ -40,6 +40,11 @@ ui-navigation {
 
 	background: var(--color-background-dimmed);
 	border-bottom: var(--page-border);
+
+	> ui-brand {
+		display: block;
+		cursor: pointer;
+	}
 }
 
 @mixin action {
