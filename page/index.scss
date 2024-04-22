@@ -1,25 +1,21 @@
-@import './components.scss';
 @import './animations.scss';
 
-@import './game/index.scss';
 @import './home/index.scss';
+@import './game/index.scss';
 
 :root {
-	--primary-color: #ff5b56;
-	--primary-contrast-color: #232323;
+	--color-primary: #6B2E27;
+	--color-primary-dimmed: #2D1211;
+	--color-primary-detail: #BE3627;
 
-	--secondary-color: #ffa16a;
-	--secondary-contrast-color: #000;
+	--color-text: #DBC5A7;
+	--color-text-dimmed: #928579;
 
-	--page-color: #fff;
-	--page-color-dimmed: #ddd;
-	--page-background: #000;
-	--page-error: #ff0000;
+	--color-background: #3A3D5D;
+	--color-background-dimmed: #161A21;
 
-	--page-border-color: #e5e5e5;
-	--page-border: 1px solid var(--page-border-color);
-
-	--panel-background: #525252;
+	--page-border: 1px solid var(--color-text);
+	--page-border-dimmed: 1px solid var(--color-text-dimmed);
 }
 
 body {
@@ -28,21 +24,64 @@ body {
 
 	font-family: Arial, Helvetica, sans-serif;
 
-	color: var(--page-color);
-	background: var(--page-background);
+	color: var(--color-text);
+	background: var(--color-background);
 }
 
 ui-page {
-	display: block;
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
 }
 
 ui-navigation {
-	position: sticky;
-	top: 0;
-
 	display: block;
 	padding: 1rem;
 
-	background: var(--page-background);
+	background: var(--color-background-dimmed);
 	border-bottom: var(--page-border);
+}
+
+@mixin action {
+	display: block;
+	text-align: center;
+
+	&:not([ui-disabled]) {
+		cursor: pointer;
+	}
+}
+
+ui-action {
+	@include action;
+
+	padding: 1rem 1.5rem;
+	background-color: var(--color-primary);
+
+	&:hover:not([ui-disabled]) {
+		filter: brightness(1.2);
+	}
+}
+
+ui-secondary-action {
+	@include action;
+
+	padding: 0.5rem 1.5rem;
+	color: var(--color-primary);
+	border: 1px solid var(--color-primary);
+
+	&:hover:not([ui-disabled]) {
+		color: var(--color-text);
+		background-color: var(--color-primary);
+	}
+}
+
+input {
+	all: initial;
+	padding: 1em;
+
+	border: var(--page-border);
+	color: var(--color-text);
+	background: var(--color-background);
+
+	font-family: inherit;
 }

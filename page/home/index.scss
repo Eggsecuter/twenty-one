@@ -1,37 +1,32 @@
 ui-home {
-	display: block;
-	max-width: 35rem;
-	margin: 0 auto;
-	padding: 2rem;
+	display: flex;
+	margin-inline: auto;
+	padding: 1rem;
+	align-items: center;
 
-	ui-join {
+	max-width: 20rem;
+	flex-grow: 1;
+
+	> ui-panel {
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
 		gap: 1rem;
-		margin-bottom: 2rem;
+		padding: 1rem;
 
-		input {
-			@include text-field;
+		background: var(--color-background-dimmed);
+		border: var(--page-border);
 
-			text-transform: uppercase;
-
-			&[ui-error] {
-				animation: 0.3s shake;
-
-				border-color: var(--page-error);
+		> ui-join {
+			display: flex;
+	
+			> input {
+				flex-grow: 1;
+				text-transform: uppercase;
 			}
 		}
-
-		ui-action {
-			@include primary-action;
-		}
-	}
-
-	ui-create {
-		display: block;
-
-		ui-action[ui-create] {
-			@include action;
+	
+		> ui-create {
+			display: block;
 		}
 	}
 }

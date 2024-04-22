@@ -1,7 +1,6 @@
 import { Component } from "@acryps/page";
 import { Service } from "../service";
 import { gameTokenLength } from "../../shared/token";
-import { Observable } from "@acryps/page-observable";
 
 export class HomeComponent extends Component {
 	private token = '';
@@ -28,19 +27,21 @@ export class HomeComponent extends Component {
 
 	render() {
 		return <ui-home>
-			<ui-join>
-				<input $ui-value={this.token} maxlength={gameTokenLength} placeholder='Code' ui-error={this.invalidToken} />
+			<ui-panel>
+				<ui-join>
+					<input $ui-value={this.token} maxlength={gameTokenLength} placeholder='Code' ui-error={this.invalidToken} />
 
-				<ui-action ui-join ui-click-text='Joining...' ui-click={() => this.join()}>
-					Join
-				</ui-action>
-			</ui-join>
+					<ui-action ui-join ui-click-text='Joining...' ui-click={() => this.join()}>
+						Join
+					</ui-action>
+				</ui-join>
 
-			<ui-create>
-				<ui-action ui-create ui-click-text='Preparing Game...' ui-click={() => this.create()}>
-					Create Game
-				</ui-action>
-			</ui-create>
+				<ui-create>
+					<ui-action ui-create ui-click-text='Preparing Game...' ui-click={() => this.create()}>
+						Create Game
+					</ui-action>
+				</ui-create>
+			</ui-panel>
 		</ui-home>
 	}
 }

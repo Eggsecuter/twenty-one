@@ -18,8 +18,8 @@ export class ControlsComponent extends Component {
 
 	render() {
 		return <ui-controls>
-			<ui-button ui-click={() => this.draw()}>Draw</ui-button>
-			<ui-button ui-click={() => this.stay()}>Stay</ui-button>
+			<ui-action ui-click={() => this.draw()}>Draw</ui-action>
+			<ui-action ui-click={() => this.stay()}>Stay</ui-action>
 		</ui-controls>;
 	}
 }
