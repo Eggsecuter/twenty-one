@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { Player } from "./player";
 import { LobbyComponent } from "./lobby";
-import { ClientMessage, ServerMessage } from "../../shared/messages";
+import { ClientMessage, CompetitorMessage, ServerMessage } from "../../shared/messages";
 import { BoardComponent } from "./board";
 
 export class GameComponent extends Component {
@@ -56,24 +56,18 @@ export class GameComponent extends Component {
 				}
 
 				if ('start' in data) {
-					const competitorOne = this.players.find(player => player.id == data.start.competitorOne.id);
-					const competitorTwo = this.players.find(player => player.id == data.start.competitorTwo.id);
-
-					// defaults to competitor one being in front
-					// competitor two in front if it's the local player
-					if (this.playerId == competitorTwo.id) {
-						this.screen = new BoardComponent(competitorTwo, competitorOne);
-					} else {
-						this.screen = new BoardComponent(competitorOne, competitorTwo);
-					}
-
-					this.update();
+					this.start(data.start);
 				}
 
 				if ('stop' in data) {
 					
 				}
 			};
+
+			// handle join running game
+			if (join.competitors) {
+				this.start(join.competitors, true);
+			}
 		};
 	}
 
@@ -85,5 +79,20 @@ export class GameComponent extends Component {
 		return <ui-game>
 			{this.screen}
 		</ui-game>;
+	}
+
+	private start(message: CompetitorMessage, waitUntilRoundEnd = false) {
+		const competitorOne = this.players.find(player => player.id == message.competitorOne.id);
+		const competitorTwo = this.players.find(player => player.id == message.competitorTwo.id);
+
+		// defaults to competitor one being in front
+		// competitor two in front if it's the local player
+		if (this.playerId == competitorTwo.id) {
+			this.screen = new BoardComponent(competitorTwo, competitorOne, waitUntilRoundEnd);
+		} else {
+			this.screen = new BoardComponent(competitorOne, competitorTwo, waitUntilRoundEnd);
+		}
+
+		this.update();
 	}
 }

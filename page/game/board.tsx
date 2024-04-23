@@ -18,6 +18,7 @@ export class BoardComponent extends Component {
 	constructor (
 		competitorFront: Player,
 		competitorBack: Player,
+		private waitUntilRoundEnd: boolean
 	) {
 		super();
 
@@ -29,23 +30,25 @@ export class BoardComponent extends Component {
 		this.parent.socket.onmessage = event => {
 			const data = JSON.parse(event.data) as ServerMessage;
 
-			if ('stay' in data) {
-				this.activeCompetitorId = data.stay.next.id;
-
-				this.update();
-			}
-
-			if ('draw' in data) {
-				if (this.winnerMessage) {
-					this.front.reset();
-					this.back.reset();
-					this.winnerMessage = '';
+			if (!this.waitUntilRoundEnd) {
+				if ('stay' in data) {
+					this.activeCompetitorId = data.stay.next.id;
+	
+					this.update();
 				}
-
-				this.getCompetitor(data.draw).draw(data.draw.card);
-				this.activeCompetitorId = data.draw.next.id;
-
-				this.update();
+	
+				if ('draw' in data) {
+					if (this.winnerMessage) {
+						this.front.reset();
+						this.back.reset();
+						this.winnerMessage = '';
+					}
+	
+					this.getCompetitor(data.draw).draw(data.draw.card);
+					this.activeCompetitorId = data.draw.next.id;
+	
+					this.update();
+				}
 			}
 
 			if ('conclude' in data) {
@@ -61,12 +64,16 @@ export class BoardComponent extends Component {
 				}
 
 				this.update();
+
+				this.waitUntilRoundEnd = false;
 			}
 		}
 	}
 
 	render() {
-		return <ui-board>
+		return this.waitUntilRoundEnd ? <ui-board>
+			Please wait until the current round has ended...
+		</ui-board> : <ui-board>
 			{this.back}
 			{this.winnerMessage}
 			{this.front}

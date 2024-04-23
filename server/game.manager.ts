@@ -15,12 +15,7 @@ export function gameManager(app) {
 	app.get('/game/:token', async (request, response) => {
 		const game = games.find(game => game.token == request.params.token.toLowerCase());
 
-		// only join existing open lobbies
-		if (!game) {
-			response.json(false);
-		} else {
-			response.json(!game.isRunning);
-		}
+		response.json(!!game);
 	});
 
 	app.ws('/join/:token', (socket, request) => {
@@ -34,7 +29,15 @@ export function gameManager(app) {
 
 		socket.send(JSON.stringify({
 			id: player.id,
-			peers: game.players
+			peers: game.players,
+			competitors: game.isRunning ? {
+				competitorOne: {
+					id: game.competitorOne.player.id
+				},
+				competitorTwo: {
+					id: game.competitorTwo.player.id
+				}
+			} : null
 		}));
 
 		try {
