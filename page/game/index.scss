@@ -91,4 +91,60 @@ ui-game {
 			border-top: var(--page-border-dimmed);
 		}
 	}
+
+	> ui-board {
+		display: grid;
+		height: 100%;
+
+		grid-template-columns: minmax(5rem, 15%) 1fr minmax(5rem, 15%);
+		grid-template-rows: 1fr 2fr 0.5fr 2fr 1fr;
+
+		> ui-competitor {
+			display: contents;
+
+			&:first-of-type {
+				> ui-stats {
+					grid-column: 1;
+					grid-row: 1;
+				}
+
+				> ui-cards {
+					grid-column: 2;
+					grid-row: 2;
+				}
+			}
+
+			&:last-of-type {
+				> ui-stats {
+					grid-column: 1;
+					grid-row: 5;
+				}
+
+				> ui-cards {
+					grid-column: 2;
+					grid-row: 4;
+				}
+			}
+
+			> ui-stats {
+				display: block;
+			}
+
+			> ui-cards {
+				display: flex;
+				gap: 1rem;
+			}
+		}
+
+		> ui-controls {
+			display: flex;
+	
+			grid-column: 2;
+			grid-row: 5;
+	
+			gap: 1rem;
+			align-items: end;
+			justify-content: center;
+		}
+	}
 }

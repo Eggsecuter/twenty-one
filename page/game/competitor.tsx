@@ -31,12 +31,14 @@ export class CompetitorComponent extends Component {
 
 	render() {
 		return <ui-competitor ui-active={this.parent.activeCompetitorId == this.player.id}>
+			<ui-stats>
+				<ui-name>{this.player.name}</ui-name>
+				<ui-health>{this.health} ♥</ui-health>
+			</ui-stats>
+
 			<ui-cards>
 				{this.cards.map(card => <ui-card>{card ?? 'H'}</ui-card>)}
 			</ui-cards>
-
-			<ui-health>{this.health} ♥</ui-health>
-			<ui-name>{this.player.name}</ui-name>
 		</ui-competitor>;
 	}
 }

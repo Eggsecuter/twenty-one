@@ -32,13 +32,15 @@ export class LobbyComponent extends Component {
 
 			<ui-actions>
 				{this.parent.isHost ? <ui-action ui-start ui-click={event => {
-					this.parent.send({
-						start: true
-					});
-
-					const element = (event.target as HTMLElement);
-					element.innerText = 'Starting ...';
-					element.setAttribute('ui-click-pending', '');
+					if (this.parent.players.length >= 2) {
+						this.parent.send({
+							start: true
+						});
+	
+						const element = (event.target as HTMLElement);
+						element.innerText = 'Starting ...';
+						element.setAttribute('ui-click-pending', '');
+					}
 				}}>
 					Start Game
 				</ui-action> : <ui-action ui-disabled>Waiting for host ...</ui-action>}
