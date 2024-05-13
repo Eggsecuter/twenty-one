@@ -33,7 +33,7 @@ export class CompetitorComponent extends Component {
 		return <ui-competitor ui-active={this.parent.activeCompetitorId == this.player.id}>
 			<ui-stats>
 				<ui-name>{this.player.name}</ui-name>
-				<ui-health>{this.health} ♥</ui-health>
+				<ui-health>{Array(competitorStartHealth).fill('').map((_, index) => this.health > index ? '♥' : '♡')}</ui-health>
 			</ui-stats>
 
 			<ui-cards>

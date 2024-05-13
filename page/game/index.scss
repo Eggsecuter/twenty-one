@@ -106,11 +106,13 @@ ui-game {
 				> ui-stats {
 					grid-column: 1;
 					grid-row: 1;
+					align-self: start;
 				}
 
 				> ui-cards {
 					grid-column: 2;
 					grid-row: 2;
+					align-self: start;
 				}
 			}
 
@@ -118,22 +120,52 @@ ui-game {
 				> ui-stats {
 					grid-column: 1;
 					grid-row: 5;
+					align-self: end;
 				}
 
 				> ui-cards {
 					grid-column: 2;
 					grid-row: 4;
+					align-self: end;
 				}
+			}
+
+			&[ui-active] > ui-stats {
+				text-shadow: 0 0 0.5rem var(--color-text);
 			}
 
 			> ui-stats {
 				display: block;
+
+				> ui-name {
+					display: block;
+				}
+
+				> ui-health {
+					display: block;
+					
+					font-family: monospace;
+					font-size: 1.5rem;
+					letter-spacing: 0.2rem;
+				}
 			}
 
 			> ui-cards {
 				display: flex;
 				gap: 1rem;
 			}
+		}
+
+		> ui-round-result {
+			display: block;
+
+			grid-column: 2;
+			grid-row: 3;
+
+			align-self: center;
+			justify-self: center;
+
+			font-size: 1.2rem;
 		}
 
 		> ui-controls {

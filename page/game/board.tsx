@@ -13,7 +13,7 @@ export class BoardComponent extends Component {
 	private front: CompetitorComponent;
 	private back: CompetitorComponent;
 
-	private winnerMessage: string;
+	private roundResult: string;
 
 	constructor (
 		competitorFront: Player,
@@ -38,10 +38,10 @@ export class BoardComponent extends Component {
 				}
 	
 				if ('draw' in data) {
-					if (this.winnerMessage) {
+					if (this.roundResult) {
 						this.front.reset();
 						this.back.reset();
-						this.winnerMessage = '';
+						this.roundResult = '';
 					}
 	
 					this.getCompetitor(data.draw).draw(data.draw.card);
@@ -58,9 +58,9 @@ export class BoardComponent extends Component {
 				const winner = this.getCompetitor(data.conclude.winner);
 
 				if (!winner) {
-					this.winnerMessage = 'It is a tie';
+					this.roundResult = 'It is a tie';
 				} else {
-					this.winnerMessage = `${winner.player.name} wins`;
+					this.roundResult = `${winner.player.name} wins`;
 				}
 
 				this.update();
@@ -75,7 +75,7 @@ export class BoardComponent extends Component {
 			Please wait until the current round has ended...
 		</ui-board> : <ui-board>
 			{this.back}
-			{this.winnerMessage}
+			<ui-round-result>{this.roundResult}</ui-round-result>
 			{this.front}
 
 			{this.activeCompetitorId == this.parent.playerId ? new ControlsComponent() : ''}
