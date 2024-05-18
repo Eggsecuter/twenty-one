@@ -10,6 +10,10 @@ export class BoardComponent extends Component {
 
 	activeCompetitorId: string;
 
+	private turnIndicator: HTMLElement = <ui-turn-indicator>
+		<ui-arrow></ui-arrow>
+	</ui-turn-indicator>;
+
 	private front: CompetitorComponent;
 	private back: CompetitorComponent;
 
@@ -66,7 +70,21 @@ export class BoardComponent extends Component {
 				this.update();
 
 				this.waitUntilRoundEnd = false;
+				this.activeCompetitorId = null;
 			}
+
+			requestAnimationFrame(() => {
+				this.turnIndicator.removeAttribute('ui-up');
+				this.turnIndicator.removeAttribute('ui-down');
+				
+				if (this.activeCompetitorId) {
+					if (this.activeCompetitorId == this.front.player.id) {
+						this.turnIndicator.setAttribute('ui-down', '');
+					} else if (this.activeCompetitorId == this.back.player.id) {
+						this.turnIndicator.setAttribute('ui-up', '');
+					}
+				}
+			});
 		}
 	}
 
@@ -74,6 +92,8 @@ export class BoardComponent extends Component {
 		return this.waitUntilRoundEnd ? <ui-board>
 			Please wait until the current round has ended...
 		</ui-board> : <ui-board>
+			{this.turnIndicator}
+
 			{this.back}
 			<ui-round-result>{this.roundResult}</ui-round-result>
 			{this.front}

@@ -18,7 +18,8 @@ export class Round {
 	}
 
 	private get bet() {
-		return this.index + 1;
+		// default is one. increases depending on trump cards
+		return 1;
 	}
 
 	constructor (

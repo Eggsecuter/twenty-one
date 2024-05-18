@@ -53,6 +53,8 @@ export class CompetitorComponent extends Component {
 				<ui-health>{Array(competitorStartHealth).fill('').map((_, index) => this.health > index ? '♥' : '♡')}</ui-health>
 			</ui-stats>
 
+			<ui-bet>1</ui-bet>
+
 			<ui-placements>
 				<ui-cards>
 					{this.cards.map(card => <ui-card>

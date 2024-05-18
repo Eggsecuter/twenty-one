@@ -94,10 +94,11 @@ ui-game {
 
 	> ui-board {
 		display: grid;
+		gap: 0.5rem;
 		height: 100%;
 
 		grid-template-columns: minmax(5rem, 15%) 1fr minmax(5rem, 15%);
-		grid-template-rows: 1fr 2fr 0.5fr 2fr 1fr;
+		grid-template-rows: auto 2fr 1fr 2fr auto;
 
 		> ui-competitor {
 			display: contents;
@@ -107,6 +108,12 @@ ui-game {
 					grid-column: 1;
 					grid-row: 1;
 					align-self: start;
+				}
+
+				> ui-bet {
+					grid-column: 1;
+					grid-row: 2;
+					align-self: end;
 				}
 
 				> ui-placements {
@@ -122,6 +129,12 @@ ui-game {
 					grid-column: 1;
 					grid-row: 5;
 					align-self: end;
+				}
+
+				> ui-bet {
+					grid-column: 1;
+					grid-row: 4;
+					align-self: start;
 				}
 
 				> ui-placements {
@@ -150,6 +163,11 @@ ui-game {
 					font-size: 1.5rem;
 					letter-spacing: 0.2rem;
 				}
+			}
+
+			> ui-bet {
+				justify-self: start;
+				font-size: 1.5rem;
 			}
 
 			> ui-placements {
@@ -194,6 +212,46 @@ ui-game {
 	
 					background: var(--color-background-dimmed);
 				}
+			}
+		}
+
+		> ui-turn-indicator {
+			display: block;
+			aspect-ratio: 1;
+			margin: 1rem;
+
+			grid-column: 1;
+			grid-row: 3;
+
+			justify-self: start;
+			align-self: stretch;
+
+			border: 1rem solid var(--color-primary);
+			border-radius: 50%;
+
+			> ui-arrow {
+				display: block;
+				width: calc(100% + 2rem);
+				height: calc(100% + 2rem);
+				margin: -1rem;
+
+				border: 1rem solid var(--color-primary);
+				border-bottom-left-radius: 50%;
+				border-bottom-right-radius: 50%;
+				border-top-right-radius: 50%;
+
+				box-sizing: border-box;
+
+				transform: rotate(135deg);
+				transition: transform 0.5s ease-out;
+			}
+
+			&[ui-down] > ui-arrow {
+				transform: rotate(225deg);
+			}
+
+			&[ui-up] > ui-arrow {
+				transform: rotate(45deg);
 			}
 		}
 
