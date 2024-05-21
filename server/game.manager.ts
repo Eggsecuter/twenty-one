@@ -5,8 +5,8 @@ import { ClientMessage } from "../shared/messages";
 export function gameManager(app) {
 	const games: Game[] = [];
 
-	app.post('/game', async (_, response) => {
-		const game = new Game(() => games.splice(games.indexOf(game), 1));
+	app.post('/game', async (request, response) => {
+		const game = new Game(request.body.roundCount, () => games.splice(games.indexOf(game), 1));
 		games.push(game);
 
 		response.json(game.token);
@@ -29,6 +29,7 @@ export function gameManager(app) {
 
 		socket.send(JSON.stringify({
 			id: player.id,
+			roundCount: game.roundCount,
 			peers: game.players,
 			competitors: game.isRunning ? {
 				competitorOne: {

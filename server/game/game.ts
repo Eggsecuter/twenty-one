@@ -16,6 +16,7 @@ export class Game {
 	round: Round;
 
 	constructor(
+		public readonly roundCount: number,
 		private onclose: () => void
 	) {
 		this.token = generateToken();

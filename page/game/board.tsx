@@ -92,6 +92,7 @@ export class BoardComponent extends Component {
 		return this.waitUntilRoundEnd ? <ui-board>
 			Please wait until the current round has ended...
 		</ui-board> : <ui-board>
+			<ui-round-indicator>Round {this.parent.currentRound}/{this.parent.roundCount}</ui-round-indicator>
 			{this.turnIndicator}
 
 			{this.back}

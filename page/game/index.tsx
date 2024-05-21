@@ -12,6 +12,9 @@ export class GameComponent extends Component {
 	players: Player[] = [];
 	socket: WebSocket;
 
+	roundCount: number;
+	currentRound = 1;
+
 	private screen = new LobbyComponent();
 
 	get board() {
@@ -37,6 +40,7 @@ export class GameComponent extends Component {
 		this.socket.onmessage = event => {
 			const join = JSON.parse(event.data);
 			this.playerId = join.id;
+			this.roundCount = join.roundCount;
 			this.players = join.peers.map(player => Player.from(player));
 
 			this.socket.onmessage = event => {

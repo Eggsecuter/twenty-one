@@ -4,7 +4,7 @@ ui-home {
 	padding: 1rem;
 	align-items: center;
 
-	max-width: 20rem;
+	max-width: 25rem;
 	flex-grow: 1;
 
 	> ui-panel {
@@ -27,6 +27,29 @@ ui-home {
 	
 		> ui-create {
 			display: block;
+			padding: 1rem;
+
+			background: var(--color-background);
+
+			> ui-property {
+				display: block;
+				margin-bottom: 1rem;
+
+				> ui-description {
+					display: block;
+					margin-top: 0.1rem;
+
+					font-size: 0.8rem;
+					color: var(--color-text-dimmed);
+				}
+
+				> select {
+					display: block;
+					margin-top: 0.5rem;
+
+					background: var(--color-background-dimmed)
+				}
+			}
 		}
 	}
 }

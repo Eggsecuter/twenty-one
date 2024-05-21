@@ -255,6 +255,18 @@ ui-game {
 			}
 		}
 
+		> ui-round-indicator {
+			display: block;
+
+			grid-column: 3;
+			grid-row: 1;
+
+			align-self: start;
+			justify-self: end;
+
+			font-size: 1.2rem;
+		}
+
 		> ui-round-result {
 			display: block;
 
