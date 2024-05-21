@@ -31,7 +31,7 @@ export class LobbyComponent extends Component {
 			</ui-players>
 
 			<ui-actions>
-				{this.parent.isHost ? <ui-action ui-start ui-click={event => {
+				{this.parent.isHost ? <ui-action ui-start ui-disabled={this.parent.players.length < 2} ui-click={event => {
 					if (this.parent.players.length >= 2) {
 						this.parent.send({
 							start: true
@@ -42,7 +42,7 @@ export class LobbyComponent extends Component {
 						element.setAttribute('ui-click-pending', '');
 					}
 				}}>
-					Start Game
+					{this.parent.players.length >= 2 ? 'Start Game' : 'Waiting for others ...'}
 				</ui-action> : <ui-action ui-disabled>Waiting for host ...</ui-action>}
 
 				<ui-secondary-action ui-leave ui-href='/'>Leave</ui-secondary-action>
