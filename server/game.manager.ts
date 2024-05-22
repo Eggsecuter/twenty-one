@@ -1,12 +1,13 @@
 import { Game } from "./game/game";
 import { Player } from "./game/player";
 import { ClientMessage } from "../shared/messages";
+import { defaultRoundCount } from "../shared/game-settings";
 
 export function gameManager(app) {
 	const games: Game[] = [];
 
 	app.post('/game', async (request, response) => {
-		const game = new Game(request.body.roundCount, () => games.splice(games.indexOf(game), 1));
+		const game = new Game(request.body.roundCount ?? defaultRoundCount, () => games.splice(games.indexOf(game), 1));
 		games.push(game);
 
 		response.json(game.token);
@@ -60,6 +61,10 @@ export function gameManager(app) {
 
 			if (message.stay) {
 				game.round.stay(player);
+			}
+
+			if (message.startRound) {
+				game.startRound(player);
 			}
 		});
 

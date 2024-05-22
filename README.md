@@ -1,5 +1,5 @@
-# Delivery
-A card game inspired by the Resident Evil 7 DLC
+# TWENTY-ONE
+A card game inspired by the Resident Evil 7 DLC "21"
 
 ## Server
 Backend

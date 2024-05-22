@@ -3,7 +3,6 @@ import { ServerMessage } from "../../shared/messages";
 import { generateToken } from "../../shared/token";
 import { Round } from "./round";
 import { Competitor } from "./competitor";
-import { resultShowDurationSeconds } from "../../shared/game-settings";
 
 export class Game {
 	readonly token: string;
@@ -13,7 +12,9 @@ export class Game {
 
 	competitorOne: Competitor;
 	competitorTwo: Competitor;
+
 	round: Round;
+	currentRound: number;
 
 	constructor(
 		public readonly roundCount: number,
@@ -79,8 +80,8 @@ export class Game {
 			return;
 		}
 
-		this.competitorOne = new Competitor(this.players[0], () => this.stop());
-		this.competitorTwo = new Competitor(this.players[1], () => this.stop());
+		this.competitorOne = new Competitor(this.players[0]);
+		this.competitorTwo = new Competitor(this.players[1]);
 
 		this.broadcast({
 			start: {
@@ -96,14 +97,33 @@ export class Game {
 		this.isRunning = true;
 		console.log(`started game ${this.token}`);
 
-		const startNewRound = (index: number = 0) => {
-			this.round = new Round(index, this.players, this.competitorOne, this.competitorTwo, async () => {
-				await Game.sleep(resultShowDurationSeconds);
-				startNewRound(index + 1);
-			});
+		this.startRound();
+	}
+
+	startRound(player?: Player) {
+		if (player && !this.isHost(player)) {
+			return;
 		}
 
-		startNewRound();
+		if (this.currentRound) {
+			this.currentRound++;
+		} else {
+			this.currentRound = 1;
+		}
+
+		if (this.currentRound > this.roundCount) {
+			return;
+		}
+
+		this.round = new Round(this.players, this.competitorOne, this.competitorTwo, winner => {
+			if (this.currentRound < this.roundCount) {
+				this.broadcast({
+					endRound: winner
+				});
+			} else {
+				// todo conclude whole game
+			}
+		});
 	}
 
 	private stop() {

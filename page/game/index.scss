@@ -1,4 +1,6 @@
 ui-game {
+	position: relative;
+
 	display: block;
 	padding: 2rem;
 
@@ -267,7 +269,7 @@ ui-game {
 			font-size: 1.2rem;
 		}
 
-		> ui-round-result {
+		> ui-result {
 			display: block;
 
 			grid-column: 2;
@@ -288,6 +290,33 @@ ui-game {
 			gap: 1rem;
 			align-items: end;
 			justify-content: center;
+		}
+
+		> ui-round-end {
+			position: absolute;
+			inset: 0;
+
+			display: grid;
+			justify-content: center;
+			align-items: center;
+
+			background: #0008;
+
+			> ui-panel {
+				display: block;
+				padding: 1rem;
+
+				border: var(--page-border);
+				background: var(--color-background-dimmed);
+
+				> ui-winner {
+					display: block;
+				}
+
+				> ui-action {
+					margin-top: 1rem;
+				}
+			}
 		}
 	}
 }

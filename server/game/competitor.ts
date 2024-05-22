@@ -9,9 +9,12 @@ export class Competitor {
 		return this.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 	}
 
+	get dead() {
+		return this.health <= 0;
+	}
+
 	constructor (
-		public player: Player,
-		private onDeath: () => void
+		public player: Player
 	) {}
 
 	reset() {
@@ -26,8 +29,7 @@ export class Competitor {
 		this.health -= damage;
 
 		if (this.health <= 0) {
-			this.health == 0;
-			this.onDeath();
+			this.health = 0;
 		}
 	}
 }

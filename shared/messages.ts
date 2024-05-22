@@ -35,6 +35,7 @@ export interface ClientMessage {
 	start?: boolean;
 	draw?: boolean;
 	stay?: boolean;
+	startRound?: boolean;
 }
 
 export interface ServerMessage {
@@ -46,6 +47,7 @@ export interface ServerMessage {
 
 	draw?: PlayerDrawMessage,
 	stay?: PlayerActionMessage,
+	endRound?: PlayerMessage,
 
 	conclude?: RoundConcludeMessage
 }

@@ -4,6 +4,8 @@ import { CompetitorComponent } from "./competitor";
 import { PlayerMessage, ServerMessage } from "../../shared/messages";
 import { ControlsComponent } from "./controls";
 import { Player } from "./player";
+import { RoundEndComponent } from "./round-end";
+import { resultShowDurationSeconds } from "../../shared/game-settings";
 
 export class BoardComponent extends Component {
 	declare parent: GameComponent;
@@ -17,7 +19,8 @@ export class BoardComponent extends Component {
 	private front: CompetitorComponent;
 	private back: CompetitorComponent;
 
-	private roundResult: string;
+	private result: string;
+	private roundWinner: Player;
 
 	constructor (
 		competitorFront: Player,
@@ -37,46 +40,58 @@ export class BoardComponent extends Component {
 			if (!this.waitUntilRoundEnd) {
 				if ('stay' in data) {
 					this.activeCompetitorId = data.stay.next.id;
-	
+
 					this.update();
 				}
-	
+
 				if ('draw' in data) {
-					if (this.roundResult) {
+					if (this.result) {
 						this.front.reset();
 						this.back.reset();
-						this.roundResult = '';
+
+						this.result = '';
+						this.roundWinner = null;
 					}
-	
+
 					this.getCompetitor(data.draw).draw(data.draw.card);
 					this.activeCompetitorId = data.draw.next.id;
-	
+
 					this.update();
 				}
 			}
 
 			if ('conclude' in data) {
-				this.getCompetitor(data.conclude.competitorOne).conclude(data.conclude.competitorOne);
-				this.getCompetitor(data.conclude.competitorTwo).conclude(data.conclude.competitorTwo);
-
-				const winner = this.getCompetitor(data.conclude.winner);
-
-				if (!winner) {
-					this.roundResult = 'It is a tie';
-				} else {
-					this.roundResult = `${winner.player.name} wins`;
-				}
-
+				this.result = 'And the winner is ...';
 				this.update();
 
-				this.waitUntilRoundEnd = false;
-				this.activeCompetitorId = null;
+				setTimeout(() => {
+					this.getCompetitor(data.conclude.competitorOne).conclude(data.conclude.competitorOne);
+					this.getCompetitor(data.conclude.competitorTwo).conclude(data.conclude.competitorTwo);
+
+					const winner = this.getCompetitor(data.conclude.winner);
+
+					if (winner) {
+						this.result = `${winner.player.name} wins`;
+					} else {
+						this.result = 'It is a tie';
+					}
+
+					this.update();
+
+					this.waitUntilRoundEnd = false;
+					this.activeCompetitorId = null;
+				}, resultShowDurationSeconds / 2);
+			}
+
+			if ('endRound' in data) {
+				this.roundWinner = this.getCompetitor(data.endRound).player;
+				this.update();
 			}
 
 			requestAnimationFrame(() => {
 				this.turnIndicator.removeAttribute('ui-up');
 				this.turnIndicator.removeAttribute('ui-down');
-				
+
 				if (this.activeCompetitorId) {
 					if (this.activeCompetitorId == this.front.player.id) {
 						this.turnIndicator.setAttribute('ui-down', '');
@@ -96,10 +111,12 @@ export class BoardComponent extends Component {
 			{this.turnIndicator}
 
 			{this.back}
-			<ui-round-result>{this.roundResult}</ui-round-result>
+			<ui-result>{this.result}</ui-result>
 			{this.front}
 
 			{this.activeCompetitorId == this.parent.playerId ? new ControlsComponent() : ''}
+
+			{this.roundWinner && new RoundEndComponent(this.roundWinner, this.parent.currentRound)}
 		</ui-board>;
 	}
 

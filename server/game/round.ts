@@ -1,46 +1,39 @@
 import { Deck } from "./deck";
 import { Player } from "./player";
 import { Competitor } from "./competitor";
-import { defaultPerfectSum, initialCardCount } from "../../shared/game-settings";
+import { defaultBet, defaultPerfectSum, initialCardCount, resultShowDurationSeconds } from "../../shared/game-settings";
 import { Game } from "./game";
 import { ServerMessage } from "../../shared/messages";
 
 export class Round {
-	private deck = new Deck();
-	private perfectSum = defaultPerfectSum;
+	private iteration: number;
 
-	private turns = 0;
-	private continuosStayCounter = 0;
+	private deck: Deck;
+	private turns: number;
+	private continuosStayCounter: number;
 
 	private get currentCompetitor() {
 		// the starting competitor switches every round
-		return this.turns % 2 == this.index % 2 ? this.competitorOne : this.competitorTwo;
+		return this.turns % 2 == this.iteration % 2 ? this.competitorOne : this.competitorTwo;
 	}
 
 	private get bet() {
-		// default is one. increases depending on trump cards
-		return 1;
+		// changes depending on trump cards
+		return defaultBet;
+	}
+
+	private get perfectSum() {
+		// changes depending on trump cards
+		return defaultPerfectSum;
 	}
 
 	constructor (
-		private index: number,
 		private players: Player[],
 		private competitorOne: Competitor,
 		private competitorTwo: Competitor,
-		private onConclude: () => void
+		private onEnd: (winner: Player) => void
 	) {
-		// initialize drawn cards
-		this.competitorOne.reset();
-		this.competitorTwo.reset();
-
-		const initialize = async () => {
-			for (let repetition = 0; repetition < initialCardCount; repetition++) {
-				this.draw(this.currentCompetitor.player);
-				await Game.sleep(0.5);
-			}
-		}
-
-		initialize();
+		this.initialize();
 	}
 
 	stay(player: Player) {
@@ -88,6 +81,27 @@ export class Round {
 		}));
 	}
 
+	private async initialize() {
+		this.deck = new Deck();
+		this.turns = 0;
+		this.continuosStayCounter = 0;
+
+		if (isNaN(this.iteration)) {
+			this.iteration = 0;
+		} else {
+			this.iteration++;
+		}
+
+		// initialize drawn cards
+		this.competitorOne.reset();
+		this.competitorTwo.reset();
+
+		for (let repetition = 0; repetition < initialCardCount; repetition++) {
+			this.draw(this.currentCompetitor.player);
+			await Game.sleep(0.5);
+		}
+	}
+
 	// returns next competitor action is needed
 	// while initializing or if complete no action is needed and null is returned
 	private endTurn() {
@@ -103,7 +117,7 @@ export class Round {
 		return null;
 	}
 
-	private conclude() {
+	private async conclude() {
 		let winner: Player;
 
 		// tie if both overshot or have the same sum
@@ -141,7 +155,15 @@ export class Round {
 			}
 		}));
 
-		this.onConclude();
+		await Game.sleep(resultShowDurationSeconds);
+
+		if (this.competitorOne.dead) {
+			this.onEnd(this.competitorTwo.player);
+		} else if (this.competitorTwo.dead) {
+			this.onEnd(this.competitorOne.player);
+		} else {
+			this.initialize();
+		}
 	}
 
 	private broadcast(message: (player: Player) => ServerMessage) {

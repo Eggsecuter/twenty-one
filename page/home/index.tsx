@@ -1,13 +1,14 @@
 import { Component } from "@acryps/page";
 import { Service } from "../service";
 import { gameTokenLength } from "../../shared/token";
+import { defaultRoundCount } from "../../shared/game-settings";
 
 export class HomeComponent extends Component {
 	private token = '';
 	private invalidToken = false;
 
 	private readonly roundCounts = [1, 3, 5, 7, 9];
-	private roundCount = 3;
+	private roundCount = defaultRoundCount;
 
 	async join() {
 		if (this.token.length == gameTokenLength) {
