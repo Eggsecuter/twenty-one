@@ -80,7 +80,7 @@ export class BoardComponent extends Component {
 
 					this.waitUntilRoundEnd = false;
 					this.activeCompetitorId = null;
-				}, resultShowDurationSeconds / 2);
+				}, resultShowDurationSeconds / 2 * 1000);
 			}
 
 			if ('endRound' in data) {
