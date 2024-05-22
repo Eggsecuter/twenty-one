@@ -71,7 +71,7 @@ export class BoardComponent extends Component {
 					const winner = this.getCompetitor(data.conclude.winner);
 
 					if (winner) {
-						this.result = `${winner.player.name} wins`;
+						this.result = winner.player.name;
 					} else {
 						this.result = 'It is a tie';
 					}
