@@ -21,6 +21,10 @@ export class Competitor {
 		this.cards = [];
 	}
 
+	restoreHealth() {
+		this.health = competitorStartHealth;
+	}
+
 	draw(card: number) {
 		this.cards.push(card);
 	}

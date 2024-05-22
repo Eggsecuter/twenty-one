@@ -115,6 +115,9 @@ export class Game {
 			return;
 		}
 
+		this.competitorOne.restoreHealth();
+		this.competitorTwo.restoreHealth();
+
 		this.round = new Round(this.players, this.competitorOne, this.competitorTwo, winner => {
 			if (this.currentRound < this.roundCount) {
 				this.broadcast({

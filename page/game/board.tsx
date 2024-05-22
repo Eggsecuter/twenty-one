@@ -22,6 +22,8 @@ export class BoardComponent extends Component {
 	private result: string;
 	private roundWinner: Player;
 
+	private currentRound = 1;
+
 	constructor (
 		competitorFront: Player,
 		competitorBack: Player,
@@ -50,6 +52,14 @@ export class BoardComponent extends Component {
 						this.back.reset();
 
 						this.result = '';
+					}
+
+					if (this.roundWinner) {
+						this.currentRound++;
+
+						this.front.restoreHealth();
+						this.back.restoreHealth();
+
 						this.roundWinner = null;
 					}
 
@@ -107,7 +117,7 @@ export class BoardComponent extends Component {
 		return this.waitUntilRoundEnd ? <ui-board>
 			Please wait until the current round has ended...
 		</ui-board> : <ui-board>
-			<ui-round-indicator>Round {this.parent.currentRound}/{this.parent.roundCount}</ui-round-indicator>
+			<ui-round-indicator>Round {this.currentRound} / {this.parent.roundCount}</ui-round-indicator>
 			{this.turnIndicator}
 
 			{this.back}
@@ -116,7 +126,7 @@ export class BoardComponent extends Component {
 
 			{this.activeCompetitorId == this.parent.playerId ? new ControlsComponent() : ''}
 
-			{this.roundWinner && new RoundEndComponent(this.roundWinner, this.parent.currentRound)}
+			{this.roundWinner && new RoundEndComponent(this.roundWinner, this.currentRound)}
 		</ui-board>;
 	}
 

@@ -13,7 +13,6 @@ export class GameComponent extends Component {
 	socket: WebSocket;
 
 	roundCount: number;
-	currentRound = 1;
 
 	private screen = new LobbyComponent();
 

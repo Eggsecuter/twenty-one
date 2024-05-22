@@ -1,5 +1,5 @@
 import { Component } from "@acryps/page";
-import { competitorStartHealth, defaultPerfectSum } from "../../shared/game-settings";
+import { competitorStartHealth, defaultBet, defaultPerfectSum } from "../../shared/game-settings";
 import { BoardComponent } from "./board";
 import { Player } from "./player";
 import { PlayerStatsMessage } from "../../shared/messages";
@@ -27,6 +27,10 @@ export class CompetitorComponent extends Component {
 	private health = competitorStartHealth;
 	private cards: number[] = [];
 
+	get bet() {
+		return defaultBet;
+	}
+
 	constructor (
 		public player: Player
 	) {
@@ -35,6 +39,10 @@ export class CompetitorComponent extends Component {
 
 	reset() {
 		this.cards = [];
+	}
+
+	restoreHealth() {
+		this.health = competitorStartHealth;
 	}
 
 	conclude(stats: PlayerStatsMessage) {
@@ -53,7 +61,7 @@ export class CompetitorComponent extends Component {
 				<ui-health>{Array(competitorStartHealth).fill('').map((_, index) => this.health > index ? '♥' : '♡')}</ui-health>
 			</ui-stats>
 
-			<ui-bet>1</ui-bet>
+			<ui-bet>{this.bet}</ui-bet>
 
 			<ui-placements>
 				<ui-cards>
