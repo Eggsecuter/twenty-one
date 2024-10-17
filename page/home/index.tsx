@@ -1,13 +1,13 @@
 import { Component } from "@acryps/page";
 import { Service } from "../service";
 import { gameTokenLength } from "../../shared/token";
-import { defaultRoundCount } from "../../shared/game-settings";
+import { defaultRoundCount, roundCounts } from "../../shared/game-settings";
+import { ButtonSelectComponent } from "../shared/button-select";
 
 export class HomeComponent extends Component {
 	private token = '';
 	private invalidToken = false;
 
-	private readonly roundCounts = [1, 3, 5, 7, 9];
 	private roundCount = defaultRoundCount;
 
 	async join() {
@@ -46,9 +46,8 @@ export class HomeComponent extends Component {
 					<ui-property>
 						<ui-label>Rounds</ui-label>
 						<ui-description>A round ends when one of the players has no hearts left.</ui-description>
-						<select $ui-value={this.roundCount}>
-							{this.roundCounts.map(roundCount => <option ui-value={roundCount}>{roundCount}</option>)}
-						</select>
+
+						{new ButtonSelectComponent(roundCounts, this.roundCount, selected => this.roundCount = selected)}
 					</ui-property>
 
 					<ui-action ui-create ui-click-text='Preparing Game...' ui-click={() => this.create()}>
@@ -56,6 +55,6 @@ export class HomeComponent extends Component {
 					</ui-action>
 				</ui-create>
 			</ui-panel>
-		</ui-home>
+		</ui-home>;
 	}
 }

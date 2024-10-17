@@ -1,3 +1,5 @@
+export const roundCounts = [1, 3, 5];
+
 export const defaultRoundCount = 3;
 export const defaultBet = 1;
 export const defaultPerfectSum = 21;

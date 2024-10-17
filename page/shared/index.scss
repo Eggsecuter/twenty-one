@@ -1,0 +1,13 @@
+ui-button-select {
+	display: flex;
+	column-gap: 0.25rem;
+	margin-top: 0.25rem;
+
+	ui-action {
+		flex: 1;
+
+		&[ui-active] {
+			background: var(--color-primary-dimmed);
+		}
+	}
+}
