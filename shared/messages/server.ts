@@ -1,0 +1,64 @@
+import { ChatMessage } from "../chat-message";
+import { Player } from "../player";
+import { SocketMessage } from "./service";
+import { messageTypes } from "./types";
+
+function sanitizePlayer(player: Player) {
+	if (player) {
+		// don't send the socket
+		player = {...player};
+		player.socket = null;
+	}
+
+	return player;
+}
+
+abstract class PlayerMessage extends SocketMessage {
+	player: Player;
+
+	constructor (
+		player: Player
+	) {
+		super();
+
+		this.player = sanitizePlayer(player);
+	}
+}
+
+export class ServerInitialJoinMessage extends PlayerMessage {
+	peers: Player[]
+
+	constructor(
+		player: Player,
+		peers: Player[],
+		public chatMessages: ChatMessage[]
+	) {
+		super(player);
+
+		this.peers = peers.map(peer => new Player(null, peer.character, peer.name));
+	}
+}
+
+export class ServerPlayerJoinMessage extends PlayerMessage {}
+
+export class ServerPlayerLeaveMessage extends PlayerMessage {}
+
+export class ServerChatMessage extends SocketMessage {
+	chatMessage: ChatMessage;
+
+	constructor (
+		message: string,
+		player?: Player // system message if null
+	) {
+		super();
+
+		this.chatMessage = new ChatMessage(message, sanitizePlayer(player));
+	}
+}
+
+messageTypes.push(...[
+	ServerInitialJoinMessage,
+	ServerPlayerJoinMessage,
+	ServerPlayerLeaveMessage,
+	ServerChatMessage
+]);

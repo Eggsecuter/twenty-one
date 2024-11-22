@@ -1,159 +1,64 @@
-import { Player } from "./player";
-import { ServerMessage } from "../../shared/messages";
+import { ChatMessage } from "../../shared/chat-message";
+import { ClientChatMessage } from "../../shared/messages/client";
+import { ServerChatMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
+import { SocketMessage } from "../../shared/messages/service";
+import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
-import { Round } from "./round";
-import { Competitor } from "./competitor";
 
 export class Game {
 	readonly token: string;
 
-	players: Player[];
+	players: Player[] = [];
 	isRunning: boolean;
 
-	competitorOne: Competitor;
-	competitorTwo: Competitor;
+	chatMessages: ChatMessage[] = [];
 
-	round: Round;
-	currentRound: number;
-
-	constructor(
-		public readonly roundCount: number,
+	constructor (
 		private onclose: () => void
 	) {
 		this.token = generateToken();
-		this.players = [];
-		this.isRunning = false;
-
-		console.log(`game "${this.token}" created`);
-	}
-
-	static sleep(seconds: number) {
-		return new Promise<void>(done => setTimeout(() => done(), seconds * 1000));
 	}
 
 	join(player: Player) {
-		this.players.push(player);
-		
-		this.broadcast({
-			join: player
-		});
+		player.socket.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, player));
 
-		console.log(`player "${player.name}" joined game "${this.token}"`);
+		// broadcast server player join except sender themselves
+		this.broadcast(new ServerPlayerJoinMessage(player));
+		this.players.push(player);
+
+		this.sendSystemChatMessage(`${player.name} ${this.players.length == 1 ? 'started hosting' : 'joined'}`);
 	}
 
 	leave(player: Player) {
-		this.players.splice(this.players.indexOf(player), 1);
+		this.players.splice(this.players.findIndex(other => other.id == player.id), 1);
 
-		// close running game if any competitor leaves
-		if (player.id == this.competitorOne?.player.id || player.id == this.competitorTwo?.player.id) {
-			for (const player of this.players) {
-				player.kick();
-			}
+		this.broadcast(new ServerPlayerLeaveMessage(player));
 
-			this.close();
-			return;
-		}
-
-		this.broadcast({
-			leave: player
-		});
-
-		const playerLeaveMessage = `player "${player.name}" left game "${this.token}"`;
-
-		if (this.players.length) {
-			console.log(`${playerLeaveMessage}, "${this.players[0].name}" is now host`);
+		if (!this.players.length) {
+			this.onclose();
 		} else {
-			console.log(playerLeaveMessage);
-			this.stop();
-			this.close();
+			this.sendSystemChatMessage(`${player.name} left`);
 		}
 	}
 
-	start(player: Player) {
-		if (!this.isHost(player)) {
-			console.warn(`non host user ${player.name} tried to start the game ${this.token}`);
-			return;
-		}
+	private sendSystemChatMessage(message: string) {
+		const serverChatMessage = new ServerChatMessage(message);
 
-		if (this.players.length < 2) {
-			console.warn(`host ${player.name} tried to start the game alone`);
-			return;
-		}
+		this.chatMessages.push(serverChatMessage.chatMessage);
 
-		this.competitorOne = new Competitor(this.players[0]);
-		this.competitorTwo = new Competitor(this.players[1]);
-
-		this.broadcast({
-			start: {
-				competitorOne: {
-					id: this.competitorOne.player.id
-				},
-				competitorTwo: {
-					id: this.competitorTwo.player.id
-				}
-			}
-		});
-
-		this.isRunning = true;
-		console.log(`started game ${this.token}`);
-
-		this.startRound();
+		this.broadcast(serverChatMessage);
 	}
 
-	startRound(player?: Player) {
-		if (player && !this.isHost(player)) {
-			return;
-		}
+	private receiveChatMessage(message: string, player: Player) {
+		const serverChatMessage = new ServerChatMessage(message, player);
+		this.chatMessages.push(serverChatMessage.chatMessage);
 
-		if (this.currentRound) {
-			this.currentRound++;
-		} else {
-			this.currentRound = 1;
-		}
-
-		if (this.currentRound > this.roundCount) {
-			return;
-		}
-
-		this.competitorOne.restoreHealth();
-		this.competitorTwo.restoreHealth();
-
-		this.round = new Round(this.players, this.competitorOne, this.competitorTwo, winner => {
-			if (this.currentRound < this.roundCount) {
-				this.broadcast({
-					endRound: winner
-				});
-			} else {
-				// todo conclude whole game
-			}
-		});
+		this.broadcast(serverChatMessage);
 	}
 
-	private stop() {
-		if (this.isRunning) {
-			this.broadcast({
-				stop: true
-			});
-
-			this.isRunning = false;
-
-			console.log(`stopped game "${this.token}"`);
-		}
-	}
-
-	private close() {
-		console.log(`closed game "${this.token}"`)
-		this.onclose();
-	}
-
-	private isHost(player: Player) {
-		// first player is always the host
-		return this.players.indexOf(player) == 0;
-	}
-
-	private broadcast(message: ServerMessage) {
+	private broadcast(message: SocketMessage) {
 		for (const player of this.players) {
-			player.send(message);
+			player.socket.send(message);
 		}
 	}
 }

@@ -1,100 +1,129 @@
-@import './animations.scss';
-@import './shared/index.scss';
-
-@import './home/index.scss';
-@import './game/index.scss';
-
 :root {
-	--color-primary: #6B2E27;
-	--color-primary-dimmed: #2D1211;
-	--color-primary-detail: #BE3627;
+	--color-primary: #DBC5A7;
+	--color-primary-dimmed: #928579;
 
-	--color-text: #DBC5A7;
-	--color-text-dimmed: #928579;
+	--color-background: #323649;
+	--color-background-dimmed: #20222d;
 
-	--color-background: #3A3D5D;
-	--color-background-dimmed: #161A21;
+	--color-error: #ff3737;
 
-	--page-border: 1px solid var(--color-text);
-	--page-border-dimmed: 1px solid var(--color-text-dimmed);
+	background: var(--color-background);
+}
+
+* {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+input {
+	display: block;
+	width: calc(100% - 3rem - 2px);
+	padding-block: 1rem;
+	padding-inline: 1.5rem;
+
+	color: var(--color-primary);
+	background: var(--color-background-dimmed);
+
+	border: 1px solid var(--color-primary);
+	border-radius: 2rem;
+	outline: none;
+}
+
+img {
+	display: block;
+	width: 100%;
+}
+
+@keyframes shake {
+	0% {
+		transform: translate(0rem, 0rem)
+	}
+
+	25% {
+		transform: translate(0.25rem, 0rem)
+	}
+
+	50% {
+		transform: translate(-0.25rem, 0rem)
+	}
+
+	75% {
+		transform: translate(0.25rem, 0rem)
+	}
+}
+
+@mixin primaryAction {
+	display: block;
+	padding: 1rem;
+
+	border-radius: 2rem;
+
+	color: var(--color-background);
+	background: var(--color-primary);
+
+	border: 1px solid var(--color-primary);
+
+	text-transform: uppercase;
+	text-align: center;
+
+	cursor: pointer;
+
+	&:hover {
+		color: var(--color-primary);
+		background: transparent;
+	}
 }
 
 body {
 	margin: 0;
-	padding: 0;
 
-	font-family: Arial, Helvetica, sans-serif;
+	> ui-page {
+		display: flex;
+		height: 100vh;
+		flex-direction: column;
 
-	color: var(--color-text);
-	background: var(--color-background);
-}
+		> ui-navigation {
+			display: flex;
+			padding-block: 1rem;
+			padding-inline: 2rem;
 
-ui-page {
-	display: flex;
-	flex-direction: column;
-	height: 100vh;
-}
+			position: sticky;
+			top: 0;
 
-ui-navigation {
-	display: block;
-	padding: 1rem;
+			justify-content: space-between;
+			align-items: center;
 
-	background: var(--color-background-dimmed);
-	border-bottom: var(--page-border);
+			background: var(--color-background-dimmed);
+			color: var(--color-primary);
 
-	> ui-brand {
-		display: block;
-		cursor: pointer;
+			> ui-page-links {
+				display: flex;
+				gap: 1rem;
+
+				> ui-page-link {
+					display: block;
+					padding-block: 1rem;
+					padding-inline: 1.5rem;
+
+					border-radius: 2rem;
+
+					cursor: pointer;
+
+					&[ui-active],
+					&:hover {
+						background: var(--color-background);
+					}
+				}
+			}
+		}
+
+		> *:not(ui-navigation) {
+			display: block;
+			flex: 1;
+		}
+
+		@import './home/index.scss';
+		@import './guide/index.scss';
+
+		@import './play/index.scss';
 	}
-}
-
-@mixin action {
-	display: block;
-	text-align: center;
-
-	&:not([ui-disabled]) {
-		cursor: pointer;
-	}
-}
-
-ui-action {
-	@include action;
-
-	padding: 1rem 1.5rem;
-	background-color: var(--color-primary);
-
-	&:hover:not([ui-disabled]) {
-		filter: brightness(1.2);
-	}
-}
-
-ui-secondary-action {
-	@include action;
-
-	padding: 0.5rem 1.5rem;
-	color: var(--color-primary);
-	border: 1px solid var(--color-primary);
-
-	&:hover:not([ui-disabled]) {
-		color: var(--color-text);
-		background-color: var(--color-primary);
-	}
-}
-
-input {
-	all: initial;
-	padding: 1em;
-
-	color: var(--color-text);
-	background: var(--color-background);
-
-	font-family: inherit;
-}
-
-select {
-	width: 100%;
-	padding: 1em;
-
-	color: var(--color-text);
-	background: var(--color-background);
 }

@@ -1,0 +1,25 @@
+> ui-game {
+	> ui-chat {
+		display: flex;
+		flex-direction: column;
+		height: calc(100% - 4rem);
+		padding: 2rem;
+
+		> ui-chat-messages {
+			display: flex;
+			flex: 1;
+
+			flex-direction: column;
+			justify-content: end;
+
+			overflow-y: auto;
+
+			> ui-chat-message {
+				display: flex;
+				padding: 1rem;
+
+				gap: 1ch;
+			}
+		}
+	}
+}

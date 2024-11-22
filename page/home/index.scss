@@ -1,54 +1,117 @@
-ui-home {
+> ui-home {
 	display: flex;
-	margin-inline: auto;
-	padding: 1rem;
+	justify-content: center;
 	align-items: center;
 
-	max-width: 25rem;
-	flex-grow: 1;
-
-	> ui-panel {
+	> ui-introduction {
 		display: flex;
+		max-height: 80%;
+		max-width: 50rem;
+		padding: 2rem;
+
+		flex: 1;
 		flex-direction: column;
-		gap: 1rem;
-		padding: 1rem;
+		gap: 2rem;
 
+		border-radius: 2rem;
 		background: var(--color-background-dimmed);
-		border: var(--page-border);
 
-		> ui-join {
+		overflow-y: auto;
+
+		> ui-player-configuration {
 			display: flex;
-	
+			flex-direction: column;
+			gap: 2rem;
+			flex: 1;
+
 			> input {
-				flex-grow: 1;
-				text-transform: uppercase;
+				font-size: 1.1rem;
+			}
+
+			> ui-character {
+				display: flex;
+				align-items: center;
+				gap: 2rem;
+				margin-inline: auto;
+
+				> ui-action {
+					display: block;
+					padding: 1rem;
+
+					color: var(--color-primary-dimmed);
+
+					font-size: 2rem;
+					font-weight: bold;
+
+					cursor: pointer;
+					user-select: none;
+
+					&:hover {
+						color: var(--color-primary);
+					}
+				}
+
+				> ui-avatar {
+					display: block;
+					height: 15rem;
+					aspect-ratio: 1;
+
+					border-radius: 50%;
+
+					overflow: hidden;
+				}
 			}
 		}
-	
-		> ui-create {
-			display: block;
-			padding: 1rem;
 
+		> ui-game {
+			display: flex;
+			padding: 2rem;
+
+			gap: 2rem;
+			flex-direction: column;
+			flex: 1;
+
+			border-radius: 2rem;
 			background: var(--color-background);
 
-			> ui-property {
-				display: block;
-				margin-bottom: 1rem;
-
-				> ui-description {
-					display: block;
-					margin-top: 0.1rem;
-
-					font-size: 0.8rem;
-					color: var(--color-text-dimmed);
+			&[ui-disabled] {
+				> * {
+					pointer-events: none;
 				}
 
-				> select {
-					display: block;
-					margin-top: 0.5rem;
+				user-select: none;
 
-					background: var(--color-background-dimmed)
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+
+			> ui-join {
+				display: flex;
+
+				> input {
+					text-transform: uppercase;
+					letter-spacing: 0.5rem;
+
+					border-top-right-radius: 0;
+					border-bottom-right-radius: 0;
+
+					&[ui-invalid] {
+						border-color: var(--color-error);
+
+						animation: 0.3s shake;
+					}
 				}
+
+				> ui-action {
+					border-top-left-radius: 0;
+					border-bottom-left-radius: 0;
+
+					border-left-width: 0;
+				}
+			}
+
+			ui-action {
+				@include primaryAction;
 			}
 		}
 	}
