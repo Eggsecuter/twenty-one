@@ -1,6 +1,6 @@
 import { Component, PathRouter, Router } from '@acryps/page';
 import { registerDirectives } from '@acryps/page-default-directives';
-import { PageComponent as ApplicationComponent } from './page';
+import { PageComponent } from './page';
 import { HomeComponent } from './home';
 import { PlayComponent } from './play';
 import { GuideComponent } from './guide';
@@ -30,11 +30,13 @@ export class Application {
 	}
 
 	static async main() {
-		this.router = new PathRouter(ApplicationComponent
+		this.router = new PathRouter(PageComponent
 			.default(HomeComponent)
 			.route('/guide', GuideComponent)
 			.route('/play/:token', PlayComponent)
 		);
+
+		this.router.onundefinedroute = () => this.router.navigate('/');
 
 		registerDirectives(Component, this.router);
 

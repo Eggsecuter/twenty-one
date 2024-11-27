@@ -8,8 +8,8 @@
 		"@parcel/transformer-sass": "^2.9.3"
 	},
 	"dependencies": {
-		"@acryps/page": "^1.2.0",
-		"@acryps/page-default-directives": "^1.1.4",
+		"@acryps/page": "^1.7.3",
+		"@acryps/page-default-directives": "^1.2.0",
 		"@acryps/page-observable": "^1.4.1",
 		"@acryps/parcel-transformer-page": "^1.0.1",
 		"qrcode": "^1.5.3"
