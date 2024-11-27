@@ -49,4 +49,8 @@ export class SocketService {
 
 		return this;
 	}
+
+	close() {
+		this.socket.close();
+	}
 }

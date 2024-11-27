@@ -53,6 +53,7 @@ export class PlayComponent extends Component {
 	// allow tab closing
 	onrouteleave() {
 		window.onbeforeunload = () => {};
+		this.player.socket.close();
 	}
 
 	render() {
