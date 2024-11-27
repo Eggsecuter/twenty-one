@@ -4,7 +4,7 @@ import { PlayComponent } from './play';
 export class PageComponent extends Component {
 	render(child) {
 		return <ui-page>
-			{this.activeRoute.component != PlayComponent && <ui-navigation>
+			{this.router.getActiveRoute().component != PlayComponent && <ui-navigation>
 				<ui-brand ui-href=''>RE7 Card Game</ui-brand>
 
 				<ui-page-links>
