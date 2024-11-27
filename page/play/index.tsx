@@ -45,6 +45,14 @@ export class PlayComponent extends Component {
 		this.player.socket
 			.subscribe(ServerPlayerJoinMessage, message => this.peers.push(message.player))
 			.subscribe(ServerPlayerLeaveMessage, message => this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1));
+
+		// prevent tab closing
+		window.onbeforeunload = event => event.preventDefault();
+	}
+
+	// allow tab closing
+	onrouteleave() {
+		window.onbeforeunload = () => {};
 	}
 
 	render() {
