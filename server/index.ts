@@ -10,9 +10,9 @@ webSockets(app);
 
 new GameManager(app);
 
-app.use('/', express.static(join(process.cwd(), '..', 'page', 'built')));
-app.use('/built/', express.static(join(process.cwd(), '..', 'page', 'built')));
-app.use('/assets/', express.static(join(process.cwd(), '..', 'page', 'assets')));
+app.use('/built', express.static(join(process.cwd(), '..', 'page', 'built')));
+app.use('/assets', express.static(join(process.cwd(), '..', 'page', 'assets')));
+app.use('*', express.static(join(process.cwd(), '..', 'page', 'built', 'index.html')));
 
 const port = +process.env.PORT! || 3000;
 
