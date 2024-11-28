@@ -1,11 +1,19 @@
-import { messageTypes } from "./types";
+import { SocketMessage } from "./message";
+import { ServerChatMessage, ServerInitialJoinMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "./server";
+import { PlayerConfigurationMessage, ClientChatMessage, ClientStartMessage, ClientDrawMessage, ClientStayMessage, ClientStartRoundMessage } from "./client";
 
-export abstract class SocketMessage {
-	private $id: number;
-
-	// allows compatible message types
-	constructor(...args: any[]) {}
-}
+const messageTypes: Array<typeof SocketMessage> = [
+	ServerInitialJoinMessage,
+	ServerPlayerJoinMessage,
+	ServerPlayerLeaveMessage,
+	ServerChatMessage,
+	PlayerConfigurationMessage,
+	ClientChatMessage,
+	ClientStartMessage,
+	ClientDrawMessage,
+	ClientStayMessage,
+	ClientStartRoundMessage
+];
 
 export class SocketService {
 	private subscribers: Array<{id: number, handler: (message: any) => void}> = [];
@@ -13,9 +21,6 @@ export class SocketService {
 	constructor(
 		private socket: WebSocket
 	) {
-		// ensure unified ids
-		messageTypes.sort((a, b) => a.name.localeCompare(b.name));
-
 		this.socket.onmessage = event => {
 			const message = JSON.parse(event.data, (_, value) => {
 				// parse dates

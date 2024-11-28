@@ -1,7 +1,6 @@
 import { ChatMessage } from "../chat-message";
 import { Player } from "../player";
-import { SocketMessage } from "./service";
-import { messageTypes } from "./types";
+import { SocketMessage } from "./message";
 
 function sanitizePlayer(player: Player) {
 	if (player) {
@@ -55,10 +54,3 @@ export class ServerChatMessage extends SocketMessage {
 		this.chatMessage = new ChatMessage(message, sanitizePlayer(player));
 	}
 }
-
-messageTypes.push(...[
-	ServerInitialJoinMessage,
-	ServerPlayerJoinMessage,
-	ServerPlayerLeaveMessage,
-	ServerChatMessage
-]);
