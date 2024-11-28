@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
-import { characterSources } from "../shared/characters";
 import { LocalStorage } from "../shared/local-storage";
 import { PlayerConfiguration } from "../shared/player-configuration";
+import { characterSources } from "../shared/characters-sources";
 
 export class PlayerConfigurationComponent extends Component {
 	private configuration: PlayerConfiguration;
@@ -24,7 +24,7 @@ export class PlayerConfigurationComponent extends Component {
 		const changeCharacter = (index: (count: number) => number) => {
 			const count = characterSources.length;
 			this.configuration.character = index(count);
-	
+
 			imageElement.src = characterSources[this.configuration.character];
 		}
 

@@ -1,5 +1,5 @@
 import { generateName } from "../../shared/name";
-import { characterSources } from "./characters";
+import { characterSources } from "./characters-sources";
 
 export class PlayerConfiguration {
 	character: number;

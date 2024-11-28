@@ -1,10 +1,15 @@
 {
 	"compilerOptions": {
-		"outDir": "built",
+		"module": "es6",
 		"moduleResolution": "node",
-		"target": "esnext",
+		"target": "es5",
+		"downlevelIteration": true,
 		"jsx": "react",
-		"jsxFactory": "Component.createElement"
+		"jsxFactory": "Component.createElement",
+		"lib": [
+			"esnext",
+		 	"dom"
+		]
 	},
 	"include": [
 		"../shared",

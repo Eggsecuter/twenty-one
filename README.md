@@ -19,7 +19,6 @@ npm run watch
 
 ### TODO
 #### Base
-- ES build!!!!!
 - Lobby console logs
 - Connection lost page
 - Ask for user configuration if joined directly through link

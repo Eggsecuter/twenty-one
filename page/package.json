@@ -1,17 +1,19 @@
 {
 	"name": "page",
 	"scripts": {
-		"watch": "parcel watch index.html --no-hmr --no-cache --dist-dir built",
-		"build": "parcel build index.html --no-source-maps --no-scope-hoist --no-cache --dist-dir built"
-	},
-	"devDependencies": {
-		"@parcel/transformer-sass": "^2.9.3"
+		"watch": "node build watch",
+		"build": "node build bundle",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@acryps/page": "^1.7.3",
 		"@acryps/page-default-directives": "^1.2.0",
 		"@acryps/page-observable": "^1.4.1",
-		"@acryps/parcel-transformer-page": "^1.0.1",
 		"qrcode": "^1.5.3"
+	},
+	"devDependencies": {
+		"@acryps/esbuild-page": "^0.0.1",
+		"esbuild": "^0.24.0",
+		"esbuild-sass-plugin": "^3.3.1"
 	}
 }
