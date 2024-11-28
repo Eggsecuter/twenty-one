@@ -1,7 +1,7 @@
 import { ChatMessage } from "../../shared/chat-message";
 import { ClientChatMessage } from "../../shared/messages/client";
+import { SocketMessage } from "../../shared/messages/message";
 import { ServerChatMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
-import { SocketMessage } from "../../shared/messages/service";
 import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
 
@@ -26,7 +26,9 @@ export class Game {
 		this.broadcast(new ServerPlayerJoinMessage(player));
 		this.players.push(player);
 
-		this.sendSystemChatMessage(`${player.name} ${this.players.length == 1 ? 'started hosting' : 'joined'}`);
+		const joinMessage = `${player.name} ${this.players.length == 1 ? 'started hosting' : 'joined'}`;
+		this.audit(joinMessage);
+		this.sendSystemChatMessage(joinMessage);
 	}
 
 	leave(player: Player) {
@@ -34,11 +36,19 @@ export class Game {
 
 		this.broadcast(new ServerPlayerLeaveMessage(player));
 
+		const leaveMessage = `${player.name} left`;
+		this.audit(leaveMessage);
+
 		if (!this.players.length) {
+			this.audit('closing lobby');
 			this.onclose();
 		} else {
-			this.sendSystemChatMessage(`${player.name} left`);
+			this.sendSystemChatMessage(leaveMessage);
 		}
+	}
+
+	private audit(message: string) {
+		console.log(`[${this.token}] ${message}`);
 	}
 
 	private sendSystemChatMessage(message: string) {
