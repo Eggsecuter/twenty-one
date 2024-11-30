@@ -9,7 +9,7 @@ import { PlayerConfiguration } from './shared/player-configuration';
 export class Application {
 	static router: Router;
 
-	static playerConfiguration = new PlayerConfiguration();
+	static playerConfiguration: PlayerConfiguration;
 
 	static async get(path: string) {
 		const response = await fetch(path);

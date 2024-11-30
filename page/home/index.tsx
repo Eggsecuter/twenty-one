@@ -1,8 +1,7 @@
 import { Component } from "@acryps/page";
-import { PlayerConfigurationComponent } from "./player-configuration";
+import { ConfigurePlayerComponent } from "../shared/configure-player";
 import { GameComponent } from "./game";
 import { Application } from "..";
-import { LocalStorage } from "../shared/local-storage";
 
 export class HomeComponent extends Component {
 	render() {
@@ -10,10 +9,8 @@ export class HomeComponent extends Component {
 
 		return <ui-home>
 			<ui-introduction>
-				{new PlayerConfigurationComponent(configuration => {
+				{new ConfigurePlayerComponent(configuration => {
 					Application.playerConfiguration = configuration;
-					LocalStorage.setPlayerConfiguration(Application.playerConfiguration);
-
 					gameComponent.update();
 				})}
 

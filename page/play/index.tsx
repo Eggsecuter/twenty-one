@@ -9,6 +9,8 @@ import { StateComponent } from "./states";
 import { ConnectionLostComponent } from "./states/connection-lost";
 import { LobbyComponent } from "./states/lobby";
 import { NotFoundComponent } from "./states/not-found";
+import { LocalStorage } from "../shared/local-storage";
+import { DirectJoinComponent } from "./states/direct-join";
 
 export class PlayComponent extends Component {
 	declare parameters: {
@@ -23,9 +25,13 @@ export class PlayComponent extends Component {
 	private currentState: StateComponent;
 
 	async onload() {
-		// todo if application has no player configuration -> load from local storage and first show player configuration
+		// joining directly through link
+		if (!Application.playerConfiguration) {
+			this.currentState = new DirectJoinComponent();
+		} else if (await this.join()) {
+			// save after join was successful
+			LocalStorage.setPlayerConfiguration(Application.playerConfiguration);
 
-		if (await this.join()) {
 			this.player.socket
 				.subscribe(ServerPlayerJoinMessage, message => this.peers.push(message.player))
 				.subscribe(ServerPlayerLeaveMessage, message => this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1));

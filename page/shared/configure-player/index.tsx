@@ -1,9 +1,9 @@
 import { Component } from "@acryps/page";
-import { LocalStorage } from "../shared/local-storage";
-import { PlayerConfiguration } from "../shared/player-configuration";
-import { characterSources } from "../shared/characters-sources";
+import { LocalStorage } from "../local-storage";
+import { PlayerConfiguration } from "../player-configuration";
+import { characterSources } from "../characters-sources";
 
-export class PlayerConfigurationComponent extends Component {
+export class ConfigurePlayerComponent extends Component {
 	private configuration: PlayerConfiguration;
 
 	constructor (
@@ -28,7 +28,7 @@ export class PlayerConfigurationComponent extends Component {
 			imageElement.src = characterSources[this.configuration.character];
 		}
 
-		return <ui-player-configuration>
+		return <ui-configure-player>
 			<input $ui-value={this.configuration.name} ui-change={() => this.updateConfiguration()} maxlength='25' placeholder='Enter your name' />
 
 			<ui-character>
@@ -40,7 +40,7 @@ export class PlayerConfigurationComponent extends Component {
 
 				<ui-action ui-click={() => changeCharacter(count => (this.configuration.character + 1) % count)}>&gt;</ui-action>
 			</ui-character>
-		</ui-player-configuration>;
+		</ui-configure-player>;
 	}
 
 	private updateConfiguration() {

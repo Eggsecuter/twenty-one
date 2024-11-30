@@ -29,6 +29,31 @@
 	}
 
 	// states
+	> ui-not-found {
+		display: block;
+		padding: 2rem;
+
+		border-radius: 2rem;
+		background: var(--color-background-dimmed);
+
+		box-shadow: var(--box-shadow);
+
+		> ui-text {
+			display: block;
+			margin-bottom: 1rem;
+			padding-block: 1rem;
+
+			color: var(--color-primary);
+
+			text-align: center;
+			font-size: 1.5rem;
+		}
+
+		> ui-action {
+			@include action;
+		}
+	}
+
 	> ui-connection-lost {
 		display: block;
 		padding: 2rem;
@@ -59,7 +84,7 @@
 		}
 	}
 
-	> ui-not-found {
+	> ui-direct-join {
 		display: block;
 		padding: 2rem;
 
@@ -68,19 +93,12 @@
 
 		box-shadow: var(--box-shadow);
 
-		> ui-text {
-			display: block;
-			margin-bottom: 1rem;
-			padding-block: 1rem;
-
-			color: var(--color-primary);
-
-			text-align: center;
-			font-size: 1.5rem;
-		}
+		@import '../shared/configure-player/index.scss';
 
 		> ui-action {
 			@include action;
+
+			margin-top: 2rem;
 		}
 	}
 }

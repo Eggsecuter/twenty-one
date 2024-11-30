@@ -1,0 +1,44 @@
+> ui-configure-player {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	flex: 1;
+
+	> input {
+		font-size: 1.1rem;
+	}
+
+	> ui-character {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+		margin-inline: auto;
+
+		> ui-action {
+			display: block;
+			padding: 1rem;
+
+			color: var(--color-primary-dimmed);
+
+			font-size: 2rem;
+			font-weight: bold;
+
+			cursor: pointer;
+			user-select: none;
+
+			&:hover {
+				color: var(--color-primary);
+			}
+		}
+
+		> ui-avatar {
+			display: block;
+			height: 15rem;
+			aspect-ratio: 1;
+
+			border-radius: 50%;
+
+			overflow: hidden;
+		}
+	}
+}
