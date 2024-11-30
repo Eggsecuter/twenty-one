@@ -13,6 +13,10 @@ export class Game {
 
 	chatMessages: ChatMessage[] = [];
 
+	get host() {
+		return this.players[0];
+	}
+
 	constructor (
 		private onclose: () => void
 	) {
@@ -32,9 +36,12 @@ export class Game {
 	}
 
 	leave(player: Player) {
+		const hostLeaving = this.host.id == player.id;
+
 		this.players.splice(this.players.findIndex(other => other.id == player.id), 1);
 
-		this.broadcast(new ServerPlayerLeaveMessage(player));
+		// send (new) host id
+		this.broadcast(new ServerPlayerLeaveMessage(player, this.host?.id));
 
 		const leaveMessage = `${player.name} left`;
 		this.audit(leaveMessage);
@@ -44,6 +51,13 @@ export class Game {
 			this.onclose();
 		} else {
 			this.sendSystemChatMessage(leaveMessage);
+
+			if (hostLeaving) {
+				const hostChangeMessage = `${this.host?.name} is now hosting`;
+
+				this.audit(hostChangeMessage);
+				this.sendSystemChatMessage(hostChangeMessage);
+			}
 		}
 	}
 

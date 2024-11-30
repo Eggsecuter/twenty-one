@@ -19,10 +19,8 @@ npm run watch
 
 ### TODO
 #### Base
-- Identify host on server -> for who can change settings start match ...
 - Host Kick
 - You've been kicked page
-- Host change on host leave
 - Lobby page with game settings
 - Start game (game itself just button to finish for now)
 - Game result page (either for a fixed interval or let host proceed back to lobby)

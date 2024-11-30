@@ -40,7 +40,14 @@ export class ServerInitialJoinMessage extends PlayerMessage {
 
 export class ServerPlayerJoinMessage extends PlayerMessage {}
 
-export class ServerPlayerLeaveMessage extends PlayerMessage {}
+export class ServerPlayerLeaveMessage extends PlayerMessage {
+	constructor (
+		player: Player,
+		public hostId: string
+	) {
+		super(player);
+	}
+}
 
 export class ServerChatMessage extends SocketMessage {
 	chatMessage: ChatMessage;

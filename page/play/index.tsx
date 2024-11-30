@@ -19,6 +19,7 @@ export class PlayComponent extends Component {
 
 	player: Player;
 	peers: Player[] = [];
+	isHost: boolean;
 
 	chatComponent: ChatComponent;
 
@@ -34,11 +35,20 @@ export class PlayComponent extends Component {
 
 			this.player.socket
 				.subscribe(ServerPlayerJoinMessage, message => this.peers.push(message.player))
-				.subscribe(ServerPlayerLeaveMessage, message => this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1));
-	
+				.subscribe(ServerPlayerLeaveMessage, message => {
+					this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1);
+
+					const isHost = this.isHost;
+					this.isHost = message.hostId == this.player.id;
+
+					if (this.isHost != isHost) {
+						this.currentState.onhostchange();
+					}
+				});
+
 			// prevent tab closing
 			window.onbeforeunload = event => event.preventDefault();
-	
+
 			this.currentState = new LobbyComponent();
 		} else {
 			this.currentState = new NotFoundComponent();
@@ -71,7 +81,10 @@ export class PlayComponent extends Component {
 				socketService.subscribe(ServerInitialJoinMessage, message => {
 					this.player = message.player;
 					this.player.socket = socketService;
+
+					// first is always host
 					this.peers = message.peers;
+					this.isHost = !this.peers.length;
 
 					this.chatComponent = new ChatComponent(message.chatMessages);
 
