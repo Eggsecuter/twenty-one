@@ -1,11 +1,11 @@
 import { Component } from "@acryps/page";
-import { PlayComponent } from "..";
 import { ChatMessage } from "../../../shared/chat-message";
 import { ClientChatMessage } from "../../../shared/messages/client";
 import { ChatMessagesComponent } from "./messages";
+import { StateComponent } from "../states";
 
 export class ChatComponent extends Component {
-	declare parent: PlayComponent;
+	declare parent: StateComponent;
 
 	constructor (
 		private chatMessages: ChatMessage[]
@@ -20,7 +20,7 @@ export class ChatComponent extends Component {
 			input.onkeyup = event => {
 				if (event.key == 'Enter') {
 					if (input.value.trim()) {
-						this.parent.player.socket.send(new ClientChatMessage(input.value));
+						this.parent.parent.player.socket.send(new ClientChatMessage(input.value));
 						input.value = '';
 					}
 				}

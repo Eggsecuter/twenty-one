@@ -19,7 +19,6 @@ npm run watch
 
 ### TODO
 #### Base
-- Connection lost page
 - Ask for user configuration if joined directly through link
 - Identify host on server -> for who can change settings start match ...
 - Host Kick

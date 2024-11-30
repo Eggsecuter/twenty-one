@@ -1,5 +1,10 @@
 > ui-game {
-	> ui-chat {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	// components
+	ui-chat {
 		display: flex;
 		flex-direction: column;
 		height: calc(100% - 4rem);
@@ -20,6 +25,62 @@
 
 				gap: 1ch;
 			}
+		}
+	}
+
+	// states
+	> ui-connection-lost {
+		display: block;
+		padding: 2rem;
+
+		border-radius: 2rem;
+		background: var(--color-background-dimmed);
+
+		box-shadow: var(--box-shadow);
+
+		> ui-text {
+			display: block;
+			margin-bottom: 1rem;
+			padding-block: 1rem;
+			
+			color: var(--color-primary);
+
+			text-align: center;
+			font-size: 1.5rem;
+		}
+
+		> ui-action-group {
+			display: flex;
+			gap: 1rem;
+
+			> ui-action {
+				@include action;
+			}
+		}
+	}
+
+	> ui-not-found {
+		display: block;
+		padding: 2rem;
+
+		border-radius: 2rem;
+		background: var(--color-background-dimmed);
+
+		box-shadow: var(--box-shadow);
+
+		> ui-text {
+			display: block;
+			margin-bottom: 1rem;
+			padding-block: 1rem;
+
+			color: var(--color-primary);
+
+			text-align: center;
+			font-size: 1.5rem;
+		}
+
+		> ui-action {
+			@include action;
 		}
 	}
 }

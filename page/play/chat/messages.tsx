@@ -13,7 +13,7 @@ export class ChatMessagesComponent extends Component {
 	}
 
 	onload() {
-		this.parent.parent.player.socket.subscribe(ServerChatMessage, message => {
+		this.parent.parent.parent.player.socket.subscribe(ServerChatMessage, message => {
 			this.chatMessages.push(message.chatMessage);
 			this.update();
 		});
@@ -25,7 +25,7 @@ export class ChatMessagesComponent extends Component {
 				<ui-time>[{chatMessage.timestamp.getHours()}:{chatMessage.timestamp.getMinutes()}]</ui-time>
 
 				{chatMessage.player && <ui-player-name>
-					{chatMessage.player.id == this.parent.parent.player.id ? 'You' : chatMessage.player.name}:
+					{chatMessage.player.id == this.parent.parent.parent.player.id ? 'You' : chatMessage.player.name}:
 				</ui-player-name>}
 
 				<ui-message>{chatMessage.message}</ui-message>

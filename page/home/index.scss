@@ -16,6 +16,8 @@
 		border-radius: 2rem;
 		background: var(--color-background-dimmed);
 
+		box-shadow: var(--box-shadow);
+
 		overflow-y: auto;
 
 		> ui-player-configuration {
@@ -111,7 +113,7 @@
 			}
 
 			ui-action {
-				@include primaryAction;
+				@include action;
 			}
 		}
 	}

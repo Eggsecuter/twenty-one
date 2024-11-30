@@ -5,6 +5,10 @@ import { Player } from "../../shared/player";
 import { Application } from "..";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
 import { ChatComponent } from "./chat";
+import { StateComponent } from "./states";
+import { ConnectionLostComponent } from "./states/connection-lost";
+import { LobbyComponent } from "./states/lobby";
+import { NotFoundComponent } from "./states/not-found";
 
 export class PlayComponent extends Component {
 	declare parameters: {
@@ -14,40 +18,25 @@ export class PlayComponent extends Component {
 	player: Player;
 	peers: Player[] = [];
 
-	private chatComponent: ChatComponent;
+	chatComponent: ChatComponent;
+
+	private currentState: StateComponent;
 
 	async onload() {
 		// todo if application has no player configuration -> load from local storage and first show player configuration
 
-		const socket = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}/join/${this.parameters.token}`);
-		// todo navigate to connection lost page
-		socket.onclose = () => this.navigate('/');
-
-		// send player configuration separately
-		const socketService = new SocketService(socket);
-
-		await new Promise<void>(done => socket.onopen = () => done());
-
-		socketService.send(new PlayerConfigurationMessage(Application.playerConfiguration.character, Application.playerConfiguration.name));
-
-		// wait for join confirmation to subscribe to any other events
-		await new Promise<void>(done => socketService.subscribe(ServerInitialJoinMessage, message => {
-			this.player = message.player;
-			this.player.socket = socketService;
-
-			this.peers = message.peers;
-
-			this.chatComponent = new ChatComponent(message.chatMessages);
-
-			done();
-		}));
-
-		this.player.socket
-			.subscribe(ServerPlayerJoinMessage, message => this.peers.push(message.player))
-			.subscribe(ServerPlayerLeaveMessage, message => this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1));
-
-		// prevent tab closing
-		window.onbeforeunload = event => event.preventDefault();
+		if (await this.join()) {
+			this.player.socket
+				.subscribe(ServerPlayerJoinMessage, message => this.peers.push(message.player))
+				.subscribe(ServerPlayerLeaveMessage, message => this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1));
+	
+			// prevent tab closing
+			window.onbeforeunload = event => event.preventDefault();
+	
+			this.currentState = new LobbyComponent();
+		} else {
+			this.currentState = new NotFoundComponent();
+		}
 	}
 
 	// allow tab closing
@@ -58,7 +47,38 @@ export class PlayComponent extends Component {
 
 	render() {
 		return <ui-game>
-			{this.chatComponent}
+			{this.currentState}
 		</ui-game>;
+	}
+
+	private async join() {
+		const socket = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}/join/${this.parameters.token}`);
+		const socketService = new SocketService(socket);
+
+		return await new Promise<boolean>(async done => {
+			socket.onclose = () => done(false);
+
+			socket.onopen = async () => {
+				socketService.send(new PlayerConfigurationMessage(Application.playerConfiguration.character, Application.playerConfiguration.name));
+
+				// wait for join confirmation to subscribe to any other events
+				socketService.subscribe(ServerInitialJoinMessage, message => {
+					this.player = message.player;
+					this.player.socket = socketService;
+					this.peers = message.peers;
+
+					this.chatComponent = new ChatComponent(message.chatMessages);
+
+					socket.onclose = () => this.switchState(new ConnectionLostComponent());
+
+					done(true);
+				});
+			}
+		});
+	}
+
+	private switchState(component: StateComponent) {
+		this.currentState = component;
+		this.update();
 	}
 }
