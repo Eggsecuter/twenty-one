@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { SocketService } from "../../shared/messages/service";
-import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage } from "../../shared/messages/server";
+import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerGameSettingsMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Application } from "..";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -11,6 +11,7 @@ import { LobbyComponent } from "./states/lobby";
 import { NotFoundComponent } from "./states/not-found";
 import { LocalStorage } from "../shared/local-storage";
 import { DirectJoinComponent } from "./states/direct-join";
+import { GameSettings } from "../../shared/game-settings";
 
 export class PlayComponent extends Component {
 	declare parameters: {
@@ -22,6 +23,7 @@ export class PlayComponent extends Component {
 	isHost: boolean;
 
 	chatComponent: ChatComponent;
+	gameSettings: GameSettings;
 
 	private currentState: StateComponent;
 
@@ -58,7 +60,7 @@ export class PlayComponent extends Component {
 	// allow tab closing
 	onrouteleave() {
 		window.onbeforeunload = () => {};
-		this.player.socket.close();
+		this.player?.socket?.close();
 	}
 
 	render() {
@@ -87,6 +89,7 @@ export class PlayComponent extends Component {
 					this.isHost = !this.peers.length;
 
 					this.chatComponent = new ChatComponent(message.chatMessages);
+					this.gameSettings = message.gameSettings;
 
 					socket.onclose = () => this.switchState(new ConnectionLostComponent());
 

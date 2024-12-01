@@ -1,5 +1,6 @@
 > ui-game {
 	display: flex;
+	height: 100%;
 	align-items: center;
 	justify-content: center;
 
@@ -7,12 +8,14 @@
 	ui-chat {
 		display: flex;
 		flex-direction: column;
-		height: calc(100% - 4rem);
-		padding: 2rem;
+		gap: 1rem;
+
+		align-self: end;
 
 		> ui-chat-messages {
 			display: flex;
 			flex: 1;
+			gap: 1rem;
 
 			flex-direction: column;
 			justify-content: end;
@@ -21,9 +24,10 @@
 
 			> ui-chat-message {
 				display: flex;
-				padding: 1rem;
 
 				gap: 1ch;
+
+				color: var(--color-primary);
 			}
 		}
 	}
@@ -99,6 +103,104 @@
 			@include action;
 
 			margin-top: 2rem;
+		}
+	}
+
+	> ui-lobby {
+		display: grid;
+		height: 80%;
+		width: 80%;
+		max-width: 50rem;
+
+		padding: 2rem;
+		gap: 1rem;
+
+		border-radius: 2rem;
+		background: var(--color-background-dimmed);
+
+		box-shadow: var(--box-shadow);
+
+		grid-template-areas:
+			'versus versus'
+			'spectators settings'
+			'spectators chat';
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: auto 1fr 1fr;
+
+		> ui-versus {
+			grid-area: versus;
+
+			height: 4rem;
+			background: var(--color-background);
+		}
+
+		> ui-spectators {
+			grid-area: spectators;
+
+			background: var(--color-background);
+		}
+
+		> ui-settings {
+			grid-area: settings;
+
+			&[ui-disabled] {
+				opacity: 0.5;
+
+				pointer-events: none;
+				cursor: not-allowed;
+			}
+
+			> ui-title {
+				display: block;
+				color: var(--color-primary);
+				font-size: 1.2rem;
+			}
+
+			> ui-setting {
+				display: block;
+				margin-top: 1rem;
+
+				> ui-label {
+					display: block;
+					margin-bottom: 0.5rem;
+
+					color: var(--color-primary);
+				}
+
+				> ui-radio-select {
+					display: flex;
+					gap: 0.5rem;
+
+					> ui-option {
+						display: block;
+						flex: 1;
+						padding: 0.5rem;
+
+						border-radius: 2rem;
+						border: 1px solid transparent;
+
+						color: var(--color-primary);
+						background: var(--color-background);
+
+						text-align: center;
+
+						cursor: pointer;
+
+						&:hover {
+							border: 1px solid var(--color-primary);
+						}
+
+						&[ui-active] {
+							background: var(--color-primary);
+							color: var(--color-background);
+						}
+					}
+				}
+			}
+		}
+
+		> ui-chat {
+			grid-area: chat;
 		}
 	}
 }

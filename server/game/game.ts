@@ -1,7 +1,8 @@
 import { ChatMessage } from "../../shared/chat-message";
-import { ClientChatMessage } from "../../shared/messages/client";
+import { GameSettings } from "../../shared/game-settings";
+import { ClientChatMessage, ClientGameSettingsMessage } from "../../shared/messages/client";
 import { SocketMessage } from "../../shared/messages/message";
-import { ServerChatMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
+import { ServerChatMessage, ServerGameSettingsMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
 
@@ -10,6 +11,8 @@ export class Game {
 
 	players: Player[] = [];
 	isRunning: boolean;
+
+	settings: GameSettings;
 
 	chatMessages: ChatMessage[] = [];
 
@@ -21,10 +24,18 @@ export class Game {
 		private onclose: () => void
 	) {
 		this.token = generateToken();
+		this.settings = new GameSettings();
 	}
 
 	join(player: Player) {
-		player.socket.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, player));
+		player.socket
+			.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, player))
+			.subscribe(ClientGameSettingsMessage, message => {
+				if (this.host.id == player.id) {
+					this.settings = message.gameSettings;
+					this.broadcast(new ServerGameSettingsMessage(this.settings));
+				}
+			});
 
 		// broadcast server player join except sender themselves
 		this.broadcast(new ServerPlayerJoinMessage(player));

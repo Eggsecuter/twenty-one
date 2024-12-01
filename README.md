@@ -21,10 +21,10 @@ npm run watch
 #### Base
 - Host Kick
 - You've been kicked page
-- Lobby page with game settings
 - Start game (game itself just button to finish for now)
 - Game result page (either for a fixed interval or let host proceed back to lobby)
 - Reenter lobby screen (maybe some wrapping up is required?)
+- Join running game
 
 #### Game
 - Reimplement base game loop

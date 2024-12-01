@@ -50,7 +50,7 @@ export class GameManager {
 			const player = new Player(socketService, message.character, message.name);
 
 			// send joined player initial data
-			player.socket.send(new ServerInitialJoinMessage(player, game.players, game.chatMessages));
+			player.socket.send(new ServerInitialJoinMessage(player, game.players, game.chatMessages, game.settings));
 
 			// broadcasts to each peer and add the player to the list afterwards
 			game.join(player);

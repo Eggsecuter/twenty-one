@@ -1,3 +1,4 @@
+import { GameSettings } from "../game-settings";
 import { SocketMessage } from "./message";
 
 export class PlayerConfigurationMessage extends SocketMessage {
@@ -12,6 +13,14 @@ export class PlayerConfigurationMessage extends SocketMessage {
 export class ClientChatMessage extends SocketMessage {
 	constructor (
 		public message: string
+	) {
+		super();
+	}
+}
+
+export class ClientGameSettingsMessage extends SocketMessage {
+	constructor (
+		public gameSettings: GameSettings
 	) {
 		super();
 	}

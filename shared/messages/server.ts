@@ -1,4 +1,5 @@
 import { ChatMessage } from "../chat-message";
+import { GameSettings } from "../game-settings";
 import { Player } from "../player";
 import { SocketMessage } from "./message";
 
@@ -30,7 +31,8 @@ export class ServerInitialJoinMessage extends PlayerMessage {
 	constructor(
 		player: Player,
 		peers: Player[],
-		public chatMessages: ChatMessage[]
+		public chatMessages: ChatMessage[],
+		public gameSettings: GameSettings
 	) {
 		super(player);
 
@@ -59,5 +61,13 @@ export class ServerChatMessage extends SocketMessage {
 		super();
 
 		this.chatMessage = new ChatMessage(message, sanitizePlayer(player));
+	}
+}
+
+export class ServerGameSettingsMessage extends SocketMessage {
+	constructor (
+		public gameSettings: GameSettings
+	) {
+		super();
 	}
 }
