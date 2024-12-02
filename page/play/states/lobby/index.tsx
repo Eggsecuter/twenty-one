@@ -4,13 +4,16 @@ import { ClientGameSettingsMessage, ClientGameStartMessage } from "../../../../s
 import { SettingsComponent } from "./settings";
 import { ServerGameSettingsMessage } from "../../../../shared/messages/server";
 import { VersusComponent } from "./versus";
+import { SpectatorsComponent } from "./spectators";
 
 export class LobbyComponent extends StateComponent {
 	private versusComponent: VersusComponent;
+	private spectators: SpectatorsComponent;
 	private settingsComponent: SettingsComponent;
 
 	onplayerschange() {
 		this.versusComponent.update();
+		this.spectators.update();
 		this.settingsComponent.update();
 	}
 
@@ -36,7 +39,8 @@ export class LobbyComponent extends StateComponent {
 				}
 			})}
 
-			<ui-spectators></ui-spectators>
+			{this.spectators = new SpectatorsComponent()}
+
 			{this.parent.chatComponent}
 		</ui-lobby>;
 	}

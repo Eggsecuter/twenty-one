@@ -1,3 +1,27 @@
+@mixin player {
+	display: flex;
+	gap: 1rem;
+
+	align-items: center;
+
+	> ui-avatar {
+		display: block;
+		height: 5rem;
+		width: 5rem;
+
+		border-radius: 50%;
+
+		overflow: hidden;
+	}
+
+	> ui-name {
+		display: block;
+		flex: 1;
+
+		color: var(--color-primary);
+	}
+}
+
 > ui-game {
 	display: flex;
 	height: 100%;
@@ -137,42 +161,23 @@
 			background: var(--color-background);
 
 			> ui-competitor {
-				display: flex;
-				width: calc(50% - 0.5rem);
-				gap: 1rem;
+				@include player;
 
-				align-items: center;
+				width: calc(50% - 0.5rem);
 
 				&:last-child {
 					flex-direction: row-reverse;
 					text-align: end;
 				}
-
+			
 				&[ui-missing] {
 					> ui-avatar {
 						border: 1px dashed var(--color-primary);
 					}
-
+			
 					> ui-name {
 						font-style: italic;
 					}
-				}
-
-				> ui-avatar {
-					display: block;
-					height: 5rem;
-					width: 5rem;
-
-					border-radius: 50%;
-
-					overflow: hidden;
-				}
-
-				> ui-name {
-					display: block;
-					flex: 1;
-
-					color: var(--color-primary);
 				}
 			}
 		}
@@ -180,8 +185,44 @@
 		> ui-spectators {
 			grid-area: spectators;
 
-			display: block;
-			background: var(--color-background);
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+
+			overflow: hidden;
+
+			> ui-title {
+				display: block;
+
+				color: var(--color-primary);
+				font-size: 1.2rem;
+			}
+
+			> ui-hint {
+				display: block;
+				margin-top: 0.5rem;
+
+				color: var(--color-primary-dimmed);
+				font-size: 0.8rem;
+			}
+
+			> ui-spectator-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+				margin-top: 1rem;
+
+				overflow-y: auto;
+
+				> ui-spectator {
+					@include player;
+
+					> ui-avatar {
+						height: 3rem;
+						width: 3rem;
+					}
+				}
+			}
 		}
 
 		> ui-settings {
@@ -271,7 +312,12 @@
 		> ui-chat {
 			grid-area: chat;
 
-			height: 100%;
+			height: calc(100% - 2rem);
+			padding: 1rem;
+			
+			border: 2px solid var(--color-background);
+			border-radius: 2rem;
+
 			overflow: hidden;
 		}
 	}
