@@ -36,9 +36,14 @@ export class PlayComponent extends Component {
 			LocalStorage.setPlayerConfiguration(Application.playerConfiguration);
 
 			this.player.socket
-				.subscribe(ServerPlayerJoinMessage, message => this.peers.push(message.player))
+				.subscribe(ServerPlayerJoinMessage, message => {
+					this.peers.push(message.player);
+					this.currentState.onpeerschange();
+				})
 				.subscribe(ServerPlayerLeaveMessage, message => {
 					this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1);
+
+					this.currentState.onpeerschange();
 
 					const isHost = this.isHost;
 					this.isHost = message.hostId == this.player.id;

@@ -1,6 +1,6 @@
 import { SocketMessage } from "./message";
-import { ServerChatMessage, ServerGameSettingsMessage, ServerInitialJoinMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "./server";
-import { PlayerConfigurationMessage, ClientChatMessage, ClientStartMessage, ClientDrawMessage, ClientStayMessage, ClientStartRoundMessage, ClientGameSettingsMessage } from "./client";
+import { ServerChatMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerInitialJoinMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "./server";
+import { PlayerConfigurationMessage, ClientChatMessage, ClientGameStartMessage, ClientDrawMessage, ClientStayMessage, ClientStartRoundMessage, ClientGameSettingsMessage } from "./client";
 
 const messageTypes: Array<typeof SocketMessage> = [
 	ServerInitialJoinMessage,
@@ -8,10 +8,11 @@ const messageTypes: Array<typeof SocketMessage> = [
 	ServerPlayerLeaveMessage,
 	ServerChatMessage,
 	ServerGameSettingsMessage,
+	ServerGameStartMessage,
 	PlayerConfigurationMessage,
 	ClientChatMessage,
 	ClientGameSettingsMessage,
-	ClientStartMessage,
+	ClientGameStartMessage,
 	ClientDrawMessage,
 	ClientStayMessage,
 	ClientStartRoundMessage

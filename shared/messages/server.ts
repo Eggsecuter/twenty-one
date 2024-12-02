@@ -71,3 +71,5 @@ export class ServerGameSettingsMessage extends SocketMessage {
 		super();
 	}
 }
+
+export class ServerGameStartMessage extends SocketMessage {}

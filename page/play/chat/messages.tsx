@@ -4,6 +4,7 @@ import { ChatMessage } from "../../../shared/chat-message";
 import { ServerChatMessage } from "../../../shared/messages/server";
 
 export class ChatMessagesComponent extends Component {
+	declare rootNode: HTMLElement;
 	declare parent: ChatComponent;
 
 	constructor (
@@ -15,7 +16,19 @@ export class ChatMessagesComponent extends Component {
 	onload() {
 		this.parent.parent.parent.player.socket.subscribe(ServerChatMessage, message => {
 			this.chatMessages.push(message.chatMessage);
+
+			const scrolledToBottom = this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight;
+			const scrollY = this.rootNode.scrollTop;
+
 			this.update();
+
+			requestAnimationFrame(() => {
+				// if scrolled to bottom automatically scroll down with new messages
+				this.rootNode.scrollTo({
+					top: scrolledToBottom ? this.rootNode.scrollHeight : scrollY,
+					behavior: 'instant'
+				});
+			});
 		});
 	}
 
@@ -30,6 +43,6 @@ export class ChatMessagesComponent extends Component {
 
 				<ui-message>{chatMessage.message}</ui-message>
 			</ui-chat-message>)}
-		</ui-chat-messages>
+		</ui-chat-messages>;
 	}
 }
