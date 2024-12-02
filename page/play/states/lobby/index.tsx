@@ -3,15 +3,14 @@ import { StateComponent } from "..";
 import { ClientGameSettingsMessage, ClientGameStartMessage } from "../../../../shared/messages/client";
 import { SettingsComponent } from "./settings";
 import { ServerGameSettingsMessage } from "../../../../shared/messages/server";
+import { VersusComponent } from "./versus";
 
 export class LobbyComponent extends StateComponent {
+	private versusComponent: VersusComponent;
 	private settingsComponent: SettingsComponent;
 
-	onpeerschange() {
-		this.settingsComponent.update();
-	}
-
-	onhostchange() {
+	onplayerschange() {
+		this.versusComponent.update();
 		this.settingsComponent.update();
 	}
 
@@ -25,7 +24,7 @@ export class LobbyComponent extends StateComponent {
 
 	render() {
 		return <ui-lobby>
-			<ui-versus></ui-versus>
+			{this.versusComponent = new VersusComponent()}
 
 			{this.settingsComponent = new SettingsComponent(settings => {
 				if (this.parent.isHost) {

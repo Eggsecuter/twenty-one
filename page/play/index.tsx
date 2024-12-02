@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { SocketService } from "../../shared/messages/service";
-import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerGameSettingsMessage } from "../../shared/messages/server";
+import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Application } from "..";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -18,14 +18,17 @@ export class PlayComponent extends Component {
 		token: string
 	};
 
+	players: Player[] = [];
 	player: Player;
-	peers: Player[] = [];
-	isHost: boolean;
 
 	chatComponent: ChatComponent;
 	gameSettings: GameSettings;
 
 	private currentState: StateComponent;
+
+	get isHost() {
+		return this.players.indexOf(this.player) == 0;
+	}
 
 	async onload() {
 		// joining directly through link
@@ -37,20 +40,12 @@ export class PlayComponent extends Component {
 
 			this.player.socket
 				.subscribe(ServerPlayerJoinMessage, message => {
-					this.peers.push(message.player);
-					this.currentState.onpeerschange();
+					this.players.push(message.player);
+					this.currentState.onplayerschange();
 				})
 				.subscribe(ServerPlayerLeaveMessage, message => {
-					this.peers.splice(this.peers.findIndex(peer => peer.id == message.player.id), 1);
-
-					this.currentState.onpeerschange();
-
-					const isHost = this.isHost;
-					this.isHost = message.hostId == this.player.id;
-
-					if (this.isHost != isHost) {
-						this.currentState.onhostchange();
-					}
+					this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
+					this.currentState.onplayerschange();
 				});
 
 			// prevent tab closing
@@ -89,9 +84,7 @@ export class PlayComponent extends Component {
 					this.player = message.player;
 					this.player.socket = socketService;
 
-					// first is always host
-					this.peers = message.peers;
-					this.isHost = !this.peers.length;
+					this.players = [...message.peers, this.player];
 
 					this.chatComponent = new ChatComponent(message.chatMessages);
 					this.gameSettings = message.gameSettings;

@@ -3,7 +3,7 @@ import { GameSettings } from "../game-settings";
 import { Player } from "../player";
 import { SocketMessage } from "./message";
 
-function sanitizePlayer(player: Player) {
+function toPeerPlayer(player: Player) {
 	if (player) {
 		// don't send the socket
 		player = {...player};
@@ -21,7 +21,7 @@ abstract class PlayerMessage extends SocketMessage {
 	) {
 		super();
 
-		this.player = sanitizePlayer(player);
+		this.player = toPeerPlayer(player);
 	}
 }
 
@@ -36,7 +36,7 @@ export class ServerInitialJoinMessage extends PlayerMessage {
 	) {
 		super(player);
 
-		this.peers = peers.map(peer => new Player(null, peer.character, peer.name));
+		this.peers = peers.map(peer => toPeerPlayer(peer));
 	}
 }
 
@@ -60,7 +60,7 @@ export class ServerChatMessage extends SocketMessage {
 	) {
 		super();
 
-		this.chatMessage = new ChatMessage(message, sanitizePlayer(player));
+		this.chatMessage = new ChatMessage(message, toPeerPlayer(player));
 	}
 }
 

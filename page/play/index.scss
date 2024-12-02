@@ -129,17 +129,58 @@
 		> ui-versus {
 			grid-area: versus;
 
-			display: block;
-			height: 4rem;
+			display: flex;
+			gap: 1rem;
+			padding: 2rem;
 
+			border-radius: 2rem;
 			background: var(--color-background);
+
+			> ui-competitor {
+				display: flex;
+				width: calc(50% - 0.5rem);
+				gap: 1rem;
+
+				align-items: center;
+
+				&:last-child {
+					flex-direction: row-reverse;
+					text-align: end;
+				}
+
+				&[ui-missing] {
+					> ui-avatar {
+						border: 1px dashed var(--color-primary);
+					}
+
+					> ui-name {
+						font-style: italic;
+					}
+				}
+
+				> ui-avatar {
+					display: block;
+					height: 5rem;
+					width: 5rem;
+
+					border-radius: 50%;
+
+					overflow: hidden;
+				}
+
+				> ui-name {
+					display: block;
+					flex: 1;
+
+					color: var(--color-primary);
+				}
+			}
 		}
 
 		> ui-spectators {
 			grid-area: spectators;
 
 			display: block;
-
 			background: var(--color-background);
 		}
 

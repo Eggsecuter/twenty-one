@@ -38,9 +38,9 @@ export class SettingsComponent extends Component {
 				</ui-setting>
 			</ui-configurable>
 
-			<ui-action ui-disabled={this.parent.parent.isHost && this.parent.parent.peers.length < 1} ui-click={() => {
+			<ui-action ui-disabled={this.parent.parent.isHost && this.parent.parent.players.length < 2} ui-click={() => {
 				// at least two players to start
-				if (this.parent.parent.peers.length >= 1) {
+				if (this.parent.parent.players.length >= 2) {
 					this.onstartgame();
 				}
 			}}>Start Game</ui-action>
