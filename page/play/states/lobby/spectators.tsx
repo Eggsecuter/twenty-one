@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { LobbyComponent } from ".";
-import { characterSources } from "../../../shared/characters-sources";
+import { PlayerComponent } from "../../player";
 
 export class SpectatorsComponent extends Component {
 	declare parent: LobbyComponent;
@@ -14,17 +14,7 @@ export class SpectatorsComponent extends Component {
 			{!spectators.length && <ui-hint>No spectators</ui-hint>}
 
 			<ui-spectator-list>
-				{spectators.map(spectator => <ui-spectator>
-					<ui-avatar>
-						<img src={characterSources[spectator.character]} />
-					</ui-avatar>
-
-					<ui-name>
-						{this.parent.parent.players.indexOf(spectator) == 0 && '[Host] '}
-						{spectator.name}
-						{spectator.id == this.parent.parent.player.id && ' (You)'}
-					</ui-name>
-				</ui-spectator>)}
+				{spectators.map(spectator => new PlayerComponent(this.parent.parent.players, spectator, this.parent.parent.isHost))}
 			</ui-spectator-list>
 		</ui-spectators>;
 	}

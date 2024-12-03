@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { Player } from "../../../../shared/player";
-import { characterSources } from "../../../shared/characters-sources";
 import { LobbyComponent } from ".";
+import { PlayerComponent } from "../../player";
 
 export class VersusComponent extends Component {
 	declare parent: LobbyComponent;
@@ -15,23 +15,13 @@ export class VersusComponent extends Component {
 
 	renderCompetitor(player: Player) {
 		if (!player) {
-			return <ui-competitor ui-missing>
+			return <ui-player ui-missing>
 				<ui-avatar></ui-avatar>
 
 				<ui-name>Competitor missing</ui-name>
-			</ui-competitor>;
+			</ui-player>;
 		}
 
-		return <ui-competitor>
-			<ui-avatar>
-				<img src={characterSources[player.character]} />
-			</ui-avatar>
-
-			<ui-name>
-				{this.parent.parent.players.indexOf(player) == 0 && '[Host] '}
-				{player.name}
-				{player.id == this.parent.parent.player.id && ' (You)'}
-			</ui-name>
-		</ui-competitor>;
+		return new PlayerComponent(this.parent.parent.players, player, this.parent.parent.isHost);
 	}
 }

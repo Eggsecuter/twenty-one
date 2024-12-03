@@ -4,6 +4,16 @@
 
 	align-items: center;
 
+	position: relative;
+
+	&[ui-clickable]:hover {
+		cursor: pointer;
+
+		> ui-name {
+			color: var(--color-primary-dimmed);
+		}
+	}
+
 	> ui-avatar {
 		display: block;
 		height: 5rem;
@@ -19,6 +29,29 @@
 		flex: 1;
 
 		color: var(--color-primary);
+	}
+
+	> ui-menu {
+		display: flex;
+		gap: 0.5rem;
+		
+		position: absolute;
+		inset: 0;
+		align-items: center;
+		justify-content: end;
+
+		backdrop-filter: blur(1px);
+
+		> ui-action {
+			@include action;
+
+			padding: 0.5rem;
+
+			&[ui-secondary],
+			&:not([ui-secondary]):hover {
+				background: var(--color-background-dimmed);
+			}
+		}
 	}
 }
 
@@ -160,7 +193,7 @@
 			border-radius: 2rem;
 			background: var(--color-background);
 
-			> ui-competitor {
+			> ui-player {
 				@include player;
 
 				width: calc(50% - 0.5rem);
@@ -214,7 +247,7 @@
 
 				overflow-y: auto;
 
-				> ui-spectator {
+				> ui-player {
 					@include player;
 
 					> ui-avatar {
