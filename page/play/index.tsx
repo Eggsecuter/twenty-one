@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { SocketService } from "../../shared/messages/service";
-import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage } from "../../shared/messages/server";
+import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerKickMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Application } from "..";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -20,6 +20,7 @@ export class PlayComponent extends Component {
 
 	players: Player[] = [];
 	player: Player;
+	socket: SocketService;
 
 	chatComponent: ChatComponent;
 	gameSettings: GameSettings;
@@ -38,7 +39,7 @@ export class PlayComponent extends Component {
 			// save after join was successful
 			LocalStorage.setPlayerConfiguration(Application.playerConfiguration);
 
-			this.player.socket
+			this.socket
 				.subscribe(ServerPlayerJoinMessage, message => {
 					this.players.push(message.player);
 					this.currentState.onplayerschange();
@@ -46,6 +47,16 @@ export class PlayComponent extends Component {
 				.subscribe(ServerPlayerLeaveMessage, message => {
 					this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
 					this.currentState.onplayerschange();
+				})
+				.subscribe(ServerKickMessage, message => {
+					if (message.player.id == this.player.id) {
+						// todo handle kick
+						console.debug(`You've been kicked by the host.`);
+						this.navigate('');
+					} else {
+						this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
+						this.currentState.onplayerschange();
+					}
 				});
 
 			// prevent tab closing
@@ -57,10 +68,10 @@ export class PlayComponent extends Component {
 		}
 	}
 
-	// allow tab closing
 	onrouteleave() {
+		// allow tab closing
 		window.onbeforeunload = () => {};
-		this.player?.socket?.close();
+		this.socket?.close();
 	}
 
 	render() {
@@ -82,7 +93,7 @@ export class PlayComponent extends Component {
 				// wait for join confirmation to subscribe to any other events
 				socketService.subscribe(ServerInitialJoinMessage, message => {
 					this.player = message.player;
-					this.player.socket = socketService;
+					this.socket = socketService;
 
 					this.players = [...message.peers, this.player];
 

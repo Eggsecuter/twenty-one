@@ -72,7 +72,6 @@
 		> ui-chat-messages {
 			display: flex;
 			flex: 1;
-			gap: 1rem;
 
 			flex-direction: column;
 
@@ -80,10 +79,28 @@
 
 			> ui-chat-message {
 				display: flex;
-
-				gap: 1ch;
+				padding: 0.5rem;
+				gap: 0.25rem;
 
 				color: var(--color-primary);
+				font-size: 0.8rem;
+
+				&:nth-child(even) {
+					background: var(--color-background);
+				}
+
+				&[ui-system] {
+					color: var(--color-primary-dimmed);
+				}
+
+				> ui-message {
+					display: block;
+					flex: 1;
+				}
+
+				> ui-time {
+					font-size: 0.5rem;
+				}
 			}
 		}
 	}

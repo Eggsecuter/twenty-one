@@ -1,8 +1,10 @@
 import { Game } from "./game";
 import { SocketService } from "../../shared/messages/service";
-import { Player } from "../../shared/player";
 import { ServerInitialJoinMessage } from "../../shared/messages/server";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
+import { getDeviceId } from "..";
+import { PlayerConnection } from "./player-connection";
+import { Player } from "../../shared/player";
 
 export class GameManager {
 	private games: Game[] = [];
@@ -17,14 +19,28 @@ export class GameManager {
 		app.get('/game/:token', async (request, response) => {
 			const game = this.find(request.params.token.toLowerCase());
 
-			response.json(!!game);
+			if (!game) {
+				response.json({ error: `Lobby does not exist.` });
+			} else if (game.kickedDeviceIds.includes(getDeviceId(request))) {
+				response.json({ error: `You've been kicked from this lobby.` });
+			} else {
+				response.json({});
+			}
 		});
 
 		app.ws('/join/:token', (socket, request) => {
 			const game = this.find(request.params.token.toLowerCase());
-	
+
 			if (game) {
-				this.join(game, socket);
+				const deviceId = getDeviceId(request);
+
+				// only the case if user tries to crack it by directly opening a websocket
+				if (game.kickedDeviceIds.includes(deviceId)) {
+					socket.close();
+					return;
+				}
+
+				this.join(game, socket, deviceId);
 			} else {
 				socket.close();
 			}
@@ -42,20 +58,25 @@ export class GameManager {
 		return game.token;
 	}
 
-	private join(game: Game, socket: WebSocket) {
+	private join(game: Game, socket: WebSocket, deviceId: string) {
 		const socketService = new SocketService(socket);
 
 		// player information must be sent separately
 		socketService.subscribe(PlayerConfigurationMessage, message => {
-			const player = new Player(socketService, message.character, message.name);
+			const playerConnection = new PlayerConnection(new Player(message.character, message.name), socketService, deviceId);
 
 			// send joined player initial data
-			player.socket.send(new ServerInitialJoinMessage(player, game.players, game.chatMessages, game.settings));
+			playerConnection.socket.send(new ServerInitialJoinMessage(
+				playerConnection.player,
+				game.playerConnections.map(peer => peer.player),
+				game.chatMessages,
+				game.settings
+			));
 
 			// broadcasts to each peer and add the player to the list afterwards
-			game.join(player);
+			game.join(playerConnection);
 
-			socket.onclose = () => game.leave(player);
+			socket.onclose = () => game.leave(playerConnection);
 		});
 	}
 }

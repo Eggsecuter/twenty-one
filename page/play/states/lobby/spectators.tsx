@@ -14,7 +14,7 @@ export class SpectatorsComponent extends Component {
 			{!spectators.length && <ui-hint>No spectators</ui-hint>}
 
 			<ui-spectator-list>
-				{spectators.map(spectator => new PlayerComponent(this.parent.parent.players, spectator, this.parent.parent.isHost))}
+				{spectators.map(spectator => new PlayerComponent(this.parent.parent, spectator))}
 			</ui-spectator-list>
 		</ui-spectators>;
 	}

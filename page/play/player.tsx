@@ -1,6 +1,8 @@
 import { Component } from "@acryps/page";
 import { characterSources } from "../shared/characters-sources";
 import { Player } from "../../shared/player";
+import { PlayComponent } from ".";
+import { ClientKickMessage } from "../../shared/messages/client";
 
 export class PlayerComponent extends Component {
 	declare rootNode: HTMLElement;
@@ -10,16 +12,15 @@ export class PlayerComponent extends Component {
 	private avatarImage: HTMLImageElement;
 
 	constructor (
-		private players: Player[],
-		private player: Player,
-		private hasHostPrivileges: boolean
+		private playComponent: PlayComponent,
+		private player: Player
 	) {
 		super();
 	}
 
 	render() {
-		const isHost = this.players.indexOf(this.player) == 0;
-		const canOpenMenu = !this.menuOpen && this.hasHostPrivileges && !isHost;
+		const currentIsHost = this.playComponent.players.indexOf(this.player) == 0;
+		const canOpenMenu = !this.menuOpen && !currentIsHost && this.playComponent.isHost;
 
 		return <ui-player ui-clickable={canOpenMenu} ui-click={() => {
 			if (canOpenMenu) {
@@ -34,15 +35,13 @@ export class PlayerComponent extends Component {
 			</ui-avatar>
 
 			<ui-name>
-				{isHost && '[Host] '}
+				{currentIsHost && '[Host] '}
 				{this.player.name}
-				{this.player.id == this.player.id && ' (You)'}
 			</ui-name>
 
 			{this.menuOpen && <ui-menu>
 				<ui-action ui-secondary ui-click={() => {
-					alert(`Kick ${this.player.name}`);
-
+					this.playComponent.socket.send(new ClientKickMessage(this.player));
 					this.closeMenu();
 				}}>Kick</ui-action>
 

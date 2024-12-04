@@ -1,15 +1,17 @@
 import { SocketMessage } from "./message";
-import { ServerChatMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerInitialJoinMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "./server";
-import { PlayerConfigurationMessage, ClientChatMessage, ClientGameStartMessage, ClientDrawMessage, ClientStayMessage, ClientStartRoundMessage, ClientGameSettingsMessage } from "./client";
+import { ServerChatMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerInitialJoinMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "./server";
+import { PlayerConfigurationMessage, ClientChatMessage, ClientGameStartMessage, ClientDrawMessage, ClientStayMessage, ClientStartRoundMessage, ClientGameSettingsMessage, ClientKickMessage } from "./client";
 
 const messageTypes: Array<typeof SocketMessage> = [
 	ServerInitialJoinMessage,
 	ServerPlayerJoinMessage,
 	ServerPlayerLeaveMessage,
+	ServerKickMessage,
 	ServerChatMessage,
 	ServerGameSettingsMessage,
 	ServerGameStartMessage,
 	PlayerConfigurationMessage,
+	ClientKickMessage,
 	ClientChatMessage,
 	ClientGameSettingsMessage,
 	ClientGameStartMessage,
@@ -56,6 +58,13 @@ export class SocketService {
 		});
 
 		return this;
+	}
+
+	// ignore socket events
+	disable() {
+		this.socket.onclose = () => {};
+		this.socket.onmessage = () => {};
+		this.socket.onerror = () => {};
 	}
 
 	close() {

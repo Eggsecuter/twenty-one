@@ -18,7 +18,7 @@ export class LobbyComponent extends StateComponent {
 	}
 
 	onload() {
-		this.parent.player.socket.subscribe(ServerGameSettingsMessage, message => {
+		this.parent.socket.subscribe(ServerGameSettingsMessage, message => {
 			this.parent.gameSettings = message.gameSettings;
 			
 			this.settingsComponent.reload();
@@ -31,11 +31,11 @@ export class LobbyComponent extends StateComponent {
 
 			{this.settingsComponent = new SettingsComponent(settings => {
 				if (this.parent.isHost) {
-					this.parent.player.socket.send(new ClientGameSettingsMessage(settings));
+					this.parent.socket.send(new ClientGameSettingsMessage(settings));
 				}
 			}, () => {
 				if (this.parent.isHost) {
-					this.parent.player.socket.send(new ClientGameStartMessage());
+					this.parent.socket.send(new ClientGameStartMessage());
 				}
 			})}
 

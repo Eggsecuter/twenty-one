@@ -20,7 +20,7 @@ export class ChatComponent extends Component {
 			input.onkeyup = event => {
 				if (event.key == 'Enter') {
 					if (input.value.trim()) {
-						this.parent.parent.player.socket.send(new ClientChatMessage(input.value));
+						this.parent.parent.socket.send(new ClientChatMessage(input.value));
 						input.value = '';
 					}
 				}

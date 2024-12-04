@@ -4,7 +4,7 @@ import { gameTokenLength } from "../../shared/token";
 
 export class GameComponent extends Component {
 	private token = '';
-	private invalidToken = false;
+	private joinError = '';
 
 	async join() {
 		if (!Application.playerConfiguration) {
@@ -12,18 +12,21 @@ export class GameComponent extends Component {
 		}
 
 		if (this.token.length == gameTokenLength) {
-			const hasGame = await Application.get(`/game/${this.token}`);
+			const response = await Application.get(`/game/${this.token}`);
 
-			if (hasGame) {
+			if (response.error) {
+				this.joinError = response.error;
+			} else {
 				this.navigate(`/play/${this.token}`);
 			}
+		} else {
+			this.joinError = 'Token too short';
 		}
 
-		this.invalidToken = true;
 		this.update();
 
 		// only show once
-		this.invalidToken = false;
+		this.joinError = '';
 	}
 
 	async create() {
@@ -48,8 +51,10 @@ export class GameComponent extends Component {
 
 		return <ui-game ui-disabled={!Application.playerConfiguration}>
 			<ui-join>
-				{tokenInput = <input $ui-value={this.token} ui-invalid={this.invalidToken} maxlength='6' disabled={!Application.playerConfiguration} placeholder='Token' />}
+				{tokenInput = <input $ui-value={this.token} ui-invalid={!!this.joinError} maxlength='6' disabled={!Application.playerConfiguration} placeholder='Token' />}
 				<ui-action ui-click={() => this.join()}>Join</ui-action>
+
+				{this.joinError && <ui-join-error>{this.joinError}</ui-join-error>}
 			</ui-join>
 
 			<ui-create>

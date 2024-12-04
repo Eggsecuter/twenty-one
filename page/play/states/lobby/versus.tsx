@@ -22,6 +22,6 @@ export class VersusComponent extends Component {
 			</ui-player>;
 		}
 
-		return new PlayerComponent(this.parent.parent.players, player, this.parent.parent.isHost);
+		return new PlayerComponent(this.parent.parent, player);
 	}
 }
