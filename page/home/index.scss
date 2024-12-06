@@ -23,9 +23,7 @@
 
 		overflow-y: auto;
 
-		> ui-configure-player {
-			@include configure-player.default;
-		}
+		@include configure-player.default;
 
 		> ui-game {
 			display: flex;

@@ -1,4 +1,4 @@
-@mixin default {
+@mixin default { > ui-configure-player {
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
@@ -43,4 +43,4 @@
 	}
 
 	@content;
-}
+}}
