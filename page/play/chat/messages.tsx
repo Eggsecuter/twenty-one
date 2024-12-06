@@ -7,6 +7,8 @@ export class ChatMessagesComponent extends Component {
 	declare rootNode: HTMLElement;
 	declare parent: ChatComponent;
 
+	private scrollOffsetTolerance = 10;
+
 	constructor (
 		private chatMessages: ChatMessage[]
 	) {
@@ -17,7 +19,7 @@ export class ChatMessagesComponent extends Component {
 		this.parent.parent.parent.socket.subscribe(ServerChatMessage, message => {
 			this.chatMessages.push(message.chatMessage);
 
-			const scrolledToBottom = this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight;
+			const scrolledToBottom = message.chatMessage.player?.id == this.parent.parent.parent.player.id || this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight + this.scrollOffsetTolerance;
 			const scrollY = this.rootNode.scrollTop;
 
 			this.update();
@@ -28,6 +30,14 @@ export class ChatMessagesComponent extends Component {
 					top: scrolledToBottom ? this.rootNode.scrollHeight : scrollY,
 					behavior: 'instant'
 				});
+			});
+		});
+
+		// scroll to bottom initially
+		requestAnimationFrame(() => {
+			this.rootNode.scrollTo({
+				top: this.rootNode.scrollHeight,
+				behavior: 'instant'
 			});
 		});
 	}
