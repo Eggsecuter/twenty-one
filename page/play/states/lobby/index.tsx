@@ -30,11 +30,11 @@ export class LobbyComponent extends StateComponent {
 			{this.versusComponent = new VersusComponent()}
 
 			{this.settingsComponent = new SettingsComponent(settings => {
-				if (this.parent.isHost) {
+				if (this.parent.isHost()) {
 					this.parent.socket.send(new ClientGameSettingsMessage(settings));
 				}
 			}, () => {
-				if (this.parent.isHost) {
+				if (this.parent.isHost()) {
 					this.parent.socket.send(new ClientGameStartMessage());
 				}
 			})}

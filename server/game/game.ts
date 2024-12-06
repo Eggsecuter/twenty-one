@@ -7,6 +7,8 @@ import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
 import { PlayerConnection } from "./player-connection";
 
+const maxPlayerConnections = 20;
+
 export class Game {
 	readonly token: string;
 
@@ -16,6 +18,10 @@ export class Game {
 	isRunning: boolean;
 	settings: GameSettings;
 	chatMessages: ChatMessage[] = [];
+
+	get isFull() {
+		return this.playerConnections.length >= maxPlayerConnections;
+	}
 
 	get host() {
 		return this.playerConnections[0];
@@ -29,6 +35,10 @@ export class Game {
 	}
 
 	join(playerConnection: PlayerConnection) {
+		if (this.isFull) {
+			return;
+		}
+
 		playerConnection.socket
 			.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
 			.subscribe(ClientGameSettingsMessage, message => this.host.player.id == playerConnection.player.id && this.updateSettings(message.gameSettings))

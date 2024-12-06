@@ -17,38 +17,39 @@ export class GameManager {
 		});
 
 		app.get('/game/:token', async (request, response) => {
-			const game = this.find(request.params.token.toLowerCase());
-
-			if (!game) {
-				response.json({ error: `Lobby does not exist.` });
-			} else if (game.kickedDeviceIds.includes(getDeviceId(request))) {
-				response.json({ error: `You've been kicked from this lobby.` });
-			} else {
-				response.json({});
-			}
+			this.checkJoinPossibility(
+				request.params.token,
+				getDeviceId(request),
+				() => response.json({}),
+				error => response.json({ error })
+			);
 		});
 
 		app.ws('/join/:token', (socket, request) => {
-			const game = this.find(request.params.token.toLowerCase());
-
-			if (game) {
-				const deviceId = getDeviceId(request);
-
-				// only the case if user tries to crack it by directly opening a websocket
-				if (game.kickedDeviceIds.includes(deviceId)) {
-					socket.close();
-					return;
-				}
-
-				this.join(game, socket, deviceId);
-			} else {
-				socket.close();
-			}
+			const deviceId = getDeviceId(request);
+			
+			// rejects only if user tries to crack it by directly opening a websocket
+			this.checkJoinPossibility(
+				request.params.token,
+				deviceId,
+				game => this.join(game, socket, deviceId),
+				() => socket.close()
+			);
 		});
 	}
 
-	private find(token: string) {
-		return this.games.find(game => game.token == token);
+	private checkJoinPossibility(token: string, deviceId: string, resolve: (game: Game) => void, reject: (error: string) => void): void {
+		const game = this.games.find(game => game.token == token.toLowerCase());
+
+		if (!game) {
+			reject(`Lobby does not exist.`);
+		} else if (game.kickedDeviceIds.includes(deviceId)) {
+			reject(`You've been kicked from this lobby.`);
+		} else if (game.isFull) {
+			reject(`Lobby is full.`);
+		} else {
+			resolve(game);
+		}
 	}
 
 	private create() {

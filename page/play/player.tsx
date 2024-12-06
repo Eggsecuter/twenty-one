@@ -19,8 +19,8 @@ export class PlayerComponent extends Component {
 	}
 
 	render() {
-		const currentIsHost = this.playComponent.players.indexOf(this.player) == 0;
-		const canOpenMenu = !this.menuOpen && !currentIsHost && this.playComponent.isHost;
+		const currentIsHost = this.playComponent.isHost(this.player);
+		const canOpenMenu = !this.menuOpen && !currentIsHost && this.playComponent.isHost();
 
 		return <ui-player ui-clickable={canOpenMenu} ui-click={() => {
 			if (canOpenMenu) {

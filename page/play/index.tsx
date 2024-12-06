@@ -8,10 +8,11 @@ import { ChatComponent } from "./chat";
 import { StateComponent } from "./states";
 import { ConnectionLostComponent } from "./states/connection-lost";
 import { LobbyComponent } from "./states/lobby";
-import { NotFoundComponent } from "./states/not-found";
+import { JoinErrorComponent } from "./states/join-error";
 import { LocalStorage } from "../shared/local-storage";
 import { DirectJoinComponent } from "./states/direct-join";
 import { GameSettings } from "../../shared/game-settings";
+import { KickedComponent } from "./states/kicked";
 
 export class PlayComponent extends Component {
 	declare parameters: {
@@ -27,51 +28,40 @@ export class PlayComponent extends Component {
 
 	private currentState: StateComponent;
 
-	get isHost() {
-		return this.players.indexOf(this.player) == 0;
-	}
-
 	async onload() {
-		// joining directly through link
-		if (!Application.playerConfiguration) {
+		const response = await Application.get(`/game/${this.parameters.token}`);
+
+		if (response.error) {
+			this.currentState = new JoinErrorComponent(response.error);
+		} else if (!Application.playerConfiguration) { // joining directly through link
 			this.currentState = new DirectJoinComponent();
 		} else if (await this.join()) {
-			// save after join was successful
-			LocalStorage.setPlayerConfiguration(Application.playerConfiguration);
-
-			this.socket
-				.subscribe(ServerPlayerJoinMessage, message => {
-					this.players.push(message.player);
-					this.currentState.onplayerschange();
-				})
-				.subscribe(ServerPlayerLeaveMessage, message => {
-					this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
-					this.currentState.onplayerschange();
-				})
-				.subscribe(ServerKickMessage, message => {
-					if (message.player.id == this.player.id) {
-						// todo handle kick
-						console.debug(`You've been kicked by the host.`);
-						this.navigate('');
-					} else {
-						this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
-						this.currentState.onplayerschange();
-					}
-				});
-
-			// prevent tab closing
-			window.onbeforeunload = event => event.preventDefault();
-
-			this.currentState = new LobbyComponent();
+			this.loadLobby();
 		} else {
-			this.currentState = new NotFoundComponent();
+			this.currentState = new JoinErrorComponent('An unexpected error occurred while joining.');
 		}
 	}
 
 	onrouteleave() {
-		// allow tab closing
-		window.onbeforeunload = () => {};
 		this.socket?.close();
+	}
+
+	isHost(player = this.player) {
+		return this.players.indexOf(player) == 0;
+	}
+
+	reloadAfterError() {
+		this.remove();
+
+		// allows to reconnect directly without reentering the information
+		const playerConfiguration = Application.playerConfiguration;
+
+		// this is merely for visual feedback for the user due to the page reloading "too fast"
+		setTimeout(() => {
+			location.reload();
+			
+			Application.playerConfiguration = playerConfiguration;
+		}, 100);
 	}
 
 	render() {
@@ -106,6 +96,31 @@ export class PlayComponent extends Component {
 				});
 			}
 		});
+	}
+
+	private loadLobby() {
+		// save after join was successful
+		LocalStorage.setPlayerConfiguration(Application.playerConfiguration);
+
+		this.socket
+			.subscribe(ServerPlayerJoinMessage, message => {
+				this.players.push(message.player);
+				this.currentState.onplayerschange();
+			})
+			.subscribe(ServerPlayerLeaveMessage, message => {
+				this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
+				this.currentState.onplayerschange();
+			})
+			.subscribe(ServerKickMessage, message => {
+				if (message.player.id == this.player.id) {
+					this.switchState(new KickedComponent());
+				} else {
+					this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
+					this.currentState.onplayerschange();
+				}
+			});
+
+		this.currentState = new LobbyComponent();
 	}
 
 	private switchState(component: StateComponent) {

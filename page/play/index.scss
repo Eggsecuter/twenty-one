@@ -90,7 +90,7 @@
 				}
 
 				&[ui-system] {
-					color: var(--color-primary-dimmed);
+					color: var(--color-system);
 				}
 
 				> ui-message {
@@ -106,59 +106,12 @@
 	}
 
 	// states
-	> ui-not-found {
-		display: block;
-		padding: 2rem;
-
-		border-radius: 2rem;
-		background: var(--color-background-dimmed);
-
-		box-shadow: var(--box-shadow);
-
-		> ui-text {
-			display: block;
-			margin-bottom: 1rem;
-			padding-block: 1rem;
-
-			color: var(--color-primary);
-
-			text-align: center;
-			font-size: 1.5rem;
-		}
-
-		> ui-action {
-			@include action;
-		}
+	> ui-join-error {
+		@include dialog;
 	}
 
 	> ui-connection-lost {
-		display: block;
-		padding: 2rem;
-
-		border-radius: 2rem;
-		background: var(--color-background-dimmed);
-
-		box-shadow: var(--box-shadow);
-
-		> ui-text {
-			display: block;
-			margin-bottom: 1rem;
-			padding-block: 1rem;
-			
-			color: var(--color-primary);
-
-			text-align: center;
-			font-size: 1.5rem;
-		}
-
-		> ui-action-group {
-			display: flex;
-			gap: 1rem;
-
-			> ui-action {
-				@include action;
-			}
-		}
+		@include dialog;
 	}
 
 	> ui-direct-join {

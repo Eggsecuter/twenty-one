@@ -6,6 +6,7 @@
 	--color-background-dimmed: #20222d;
 
 	--color-error: #ff3737;
+	--color-system: #6b6b6b;
 
 	--box-shadow-y: 0 0.05rem 1rem #242424;
 	--box-shadow: 0.05rem 0.05rem 1rem #242424;
@@ -89,6 +90,45 @@ img {
 	
 		&:hover {
 			color: var(--color-primary-dimmed);
+		}
+	}
+}
+
+@mixin dialog {
+	display: block;
+	width: 80%;
+	max-width: 30rem;
+	padding: 2rem;
+
+	border-radius: 2rem;
+	background: var(--color-background-dimmed);
+
+	box-shadow: var(--box-shadow);
+
+	> ui-title {
+		display: block;
+		margin-bottom: 1rem;
+
+		color: var(--color-primary);
+		font-size: 1.5rem;
+	}
+
+	> ui-description {
+		display: block;
+		min-height: 5rem;
+		margin-bottom: 2rem;
+
+		color: var(--color-primary-dimmed);
+	}
+
+	> ui-action-group {
+		display: flex;
+		gap: 1rem;
+
+		> ui-action {
+			@include action;
+
+			flex: 1;
 		}
 	}
 }

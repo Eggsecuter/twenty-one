@@ -19,7 +19,7 @@ export class SettingsComponent extends Component {
 	}
 
 	render() {
-		return <ui-settings ui-disabled={!this.parent.parent.isHost}>
+		return <ui-settings ui-disabled={!this.parent.parent.isHost()}>
 			<ui-title>Settings</ui-title>
 
 			<ui-configurable>
@@ -38,7 +38,7 @@ export class SettingsComponent extends Component {
 				</ui-setting>
 			</ui-configurable>
 
-			<ui-action ui-disabled={this.parent.parent.isHost && this.parent.parent.players.length < 2} ui-click={() => {
+			<ui-action ui-disabled={this.parent.parent.isHost() && this.parent.parent.players.length < 2} ui-click={() => {
 				// at least two players to start
 				if (this.parent.parent.players.length >= 2) {
 					this.onstartgame();

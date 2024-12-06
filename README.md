@@ -18,13 +18,16 @@ npm run watch
 ```
 
 ### TODO
+#### Fix
+- Component based scss (allows scss for each component)
+
 #### Base
-- Host Kick
-- You've been kicked page
+- Leave lobby button
 - Start game (game itself just button to finish for now)
 - Game result page (either for a fixed interval or let host proceed back to lobby)
 - Reenter lobby screen (maybe some wrapping up is required?)
 - Join running game
+- Back to lobby on competitor leave
 
 #### Game
 - Reimplement base game loop
