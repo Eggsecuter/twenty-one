@@ -1,0 +1,60 @@
+@use '../../shared/components.scss' as components;
+
+@mixin default { > ui-player {
+	display: flex;
+	gap: 1rem;
+
+	align-items: center;
+
+	position: relative;
+
+	&[ui-clickable]:hover {
+		cursor: pointer;
+
+		> ui-name {
+			color: var(--color-primary-dimmed);
+		}
+	}
+
+	> ui-avatar {
+		display: block;
+		height: 5rem;
+		width: 5rem;
+
+		border-radius: 50%;
+
+		overflow: hidden;
+	}
+
+	> ui-name {
+		display: block;
+		flex: 1;
+
+		color: var(--color-primary);
+	}
+
+	> ui-menu {
+		display: flex;
+		gap: 0.5rem;
+		
+		position: absolute;
+		inset: 0;
+		align-items: center;
+		justify-content: end;
+
+		backdrop-filter: blur(1px);
+
+		> ui-action {
+			@include components.action;
+
+			padding: 0.5rem;
+
+			&[ui-secondary],
+			&:not([ui-secondary]):hover {
+				background: var(--color-background-dimmed);
+			}
+		}
+	}
+
+	@content;
+}}

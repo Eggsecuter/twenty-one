@@ -1,0 +1,192 @@
+@use '../../../shared/components.scss' as components;
+@use '../../player/index.scss' as player;
+@use '../../chat/index.scss' as chat;
+
+@mixin default { > ui-lobby {
+	display: grid;
+	height: 80%;
+	width: 80%;
+	max-width: 50rem;
+
+	padding: 2rem;
+	gap: 1rem;
+
+	border-radius: 2rem;
+	background: var(--color-background-dimmed);
+
+	box-shadow: var(--box-shadow);
+
+	grid-template-areas:
+		'versus versus'
+		'settings spectators'
+		'settings chat';
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto 1fr 1fr;
+
+	> ui-versus {
+		grid-area: versus;
+
+		display: flex;
+		gap: 1rem;
+		padding: 2rem;
+
+		border-radius: 2rem;
+		background: var(--color-background);
+
+		@include player.default {
+			width: calc(50% - 0.5rem);
+
+			&:last-child {
+				flex-direction: row-reverse;
+				text-align: end;
+			}
+		
+			&[ui-missing] {
+				> ui-avatar {
+					border: 1px dashed var(--color-primary);
+				}
+		
+				> ui-name {
+					font-style: italic;
+				}
+			}
+		}
+	}
+
+	> ui-spectators {
+		grid-area: spectators;
+
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+
+		overflow: hidden;
+
+		> ui-title {
+			display: block;
+
+			color: var(--color-primary);
+			font-size: 1.2rem;
+		}
+
+		> ui-hint {
+			display: block;
+			margin-top: 0.5rem;
+
+			color: var(--color-primary-dimmed);
+			font-size: 0.8rem;
+		}
+
+		> ui-spectator-list {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			margin-top: 1rem;
+
+			overflow-y: auto;
+
+			@include player.default {
+				> ui-avatar {
+					height: 3rem;
+					width: 3rem;
+				}
+			}
+		}
+	}
+
+	> ui-settings {
+		grid-area: settings;
+
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+
+		&[ui-disabled] {
+			opacity: 0.5;
+
+			pointer-events: none;
+			cursor: not-allowed;
+		}
+
+		> ui-title {
+			display: block;
+			color: var(--color-primary);
+			font-size: 1.2rem;
+		}
+
+		> ui-configurable {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+
+			flex: 1;
+
+			overflow-y: auto;
+
+			> ui-setting {
+				display: block;
+
+				> ui-label {
+					display: block;
+					margin-bottom: 0.5rem;
+
+					color: var(--color-primary);
+				}
+
+				> ui-hint {
+					display: block;
+					margin-bottom: 0.5rem;
+
+					color: var(--color-primary-dimmed);
+					font-size: 0.8rem;
+				}
+
+				> ui-radio-select {
+					display: flex;
+					gap: 0.5rem;
+
+					> ui-option {
+						display: block;
+						flex: 1;
+						padding: 0.5rem;
+
+						border-radius: 2rem;
+						border: 1px solid transparent;
+
+						color: var(--color-primary);
+						background: var(--color-background);
+
+						text-align: center;
+
+						cursor: pointer;
+
+						&:hover {
+							border: 1px solid var(--color-primary);
+						}
+
+						&[ui-active] {
+							background: var(--color-primary);
+							color: var(--color-background);
+						}
+					}
+				}
+			}
+		}
+
+		> ui-action {
+			@include components.action;
+		}
+	}
+
+	@include chat.default {
+		grid-area: chat;
+
+		height: calc(100% - 2rem);
+		padding: 1rem;
+		
+		border: 2px solid var(--color-background);
+		border-radius: 2rem;
+
+		overflow: hidden;
+	}
+}}

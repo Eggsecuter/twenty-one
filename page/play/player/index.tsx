@@ -1,8 +1,8 @@
 import { Component } from "@acryps/page";
-import { characterSources } from "../shared/characters-sources";
-import { Player } from "../../shared/player";
-import { PlayComponent } from ".";
-import { ClientKickMessage } from "../../shared/messages/client";
+import { characterSources } from "../../shared/characters-sources";
+import { Player } from "../../../shared/player";
+import { PlayComponent } from "..";
+import { ClientKickMessage } from "../../../shared/messages/client";
 
 export class PlayerComponent extends Component {
 	declare rootNode: HTMLElement;

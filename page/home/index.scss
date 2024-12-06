@@ -1,4 +1,7 @@
-> ui-home {
+@use '../shared/components.scss' as components;
+@use '../shared/configure-player/index.scss' as configure-player;
+
+@mixin default { > ui-home {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -20,7 +23,9 @@
 
 		overflow-y: auto;
 
-		@import '../shared/configure-player/index.scss';
+		> ui-configure-player {
+			@include configure-player.default;
+		}
 
 		> ui-game {
 			display: flex;
@@ -34,14 +39,14 @@
 			background: var(--color-background);
 
 			&[ui-disabled] {
-				> * {
-					pointer-events: none;
-				}
-
 				user-select: none;
 
 				opacity: 0.5;
 				cursor: not-allowed;
+
+				> * {
+					pointer-events: none;
+				}
 			}
 
 			> ui-join {
@@ -80,8 +85,8 @@
 			}
 
 			ui-action {
-				@include action;
+				@include components.action;
 			}
 		}
 	}
-}
+}}
