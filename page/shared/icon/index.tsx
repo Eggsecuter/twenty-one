@@ -5,7 +5,7 @@ export class IconComponent extends Component {
 	private iconElement: SVGElement;
 
 	constructor (
-		private icon: 'settings' | 'leave'
+		private icon: 'settings' | 'leave' | 'players' | 'chat'
 	) {
 		super();
 	}
