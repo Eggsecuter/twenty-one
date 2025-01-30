@@ -1,6 +1,7 @@
 @use '../../../shared/components.scss' as components;
 @use '../../player/index.scss' as player;
 @use '../../chat/index.scss' as chat;
+@use '../../menu/index.scss' as menu;
 
 @mixin default { > ui-lobby {
 	display: grid;
@@ -23,6 +24,8 @@
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: auto 1fr 1fr;
 
+	@include menu.default;
+
 	> ui-versus {
 		grid-area: versus;
 
@@ -40,14 +43,14 @@
 				flex-direction: row-reverse;
 				text-align: end;
 			}
-		
+
 			&[ui-missing] {
 				> ui-avatar {
-					border: 1px dashed var(--color-primary);
+					border: 1px dashed var(--color-primary-dimmed);
 				}
-		
+
 				> ui-name {
-					font-style: italic;
+					color: var(--color-primary-dimmed);
 				}
 			}
 		}

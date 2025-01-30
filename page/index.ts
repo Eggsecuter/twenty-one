@@ -11,10 +11,10 @@ export class Application {
 
 	static playerConfiguration: PlayerConfiguration;
 
-	static async get(path: string) {
+	static async get(path: string, format: 'text' | 'json' = 'json') {
 		const response = await fetch(path);
 
-		return await response.json();
+		return await (format == 'json' ? response.json() : response.text());
 	}
 
 	static async post(path: string, body: any = {}) {

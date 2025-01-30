@@ -18,7 +18,7 @@ export class VersusComponent extends Component {
 			return <ui-player ui-missing>
 				<ui-avatar></ui-avatar>
 
-				<ui-name>Competitor missing</ui-name>
+				<ui-name>Missing competitor</ui-name>
 			</ui-player>;
 		}
 
