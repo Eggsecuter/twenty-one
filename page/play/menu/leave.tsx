@@ -9,8 +9,8 @@ export class DialogLeaveComponent extends Component {
 			<ui-text>Are you sure you want to leave?</ui-text>
 
 			<ui-action-group>
-				<ui-action ui-compact ui-click={() => this.parent.closeMenu()}>No</ui-action>
 				<ui-action ui-compact ui-secondary ui-href=''>Yes</ui-action>
+				<ui-action ui-compact ui-click={() => this.parent.closeMenu()}>No</ui-action>
 			</ui-action-group>
 		</ui-dialog-leave>;
 	}

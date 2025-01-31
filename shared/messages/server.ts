@@ -52,3 +52,5 @@ export class ServerGameSettingsMessage extends SocketMessage {
 }
 
 export class ServerGameStartMessage extends SocketMessage {}
+
+export class ServerGameAbortMessage extends SocketMessage {}

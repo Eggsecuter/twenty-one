@@ -2,12 +2,13 @@ import { ChatMessage } from "../../shared/chat-message";
 import { GameSettings } from "../../shared/game-settings";
 import { ClientChatMessage, ClientGameSettingsMessage, ClientGameStartMessage, ClientKickMessage } from "../../shared/messages/client";
 import { SocketMessage } from "../../shared/messages/message";
-import { ServerChatMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
+import { ServerChatMessage, ServerGameAbortMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
 import { PlayerConnection } from "./player-connection";
 
 const maxPlayerConnections = 20;
+const emptyLobbyClosingDelay = 60000;
 
 export class Game {
 	readonly token: string;
@@ -15,7 +16,7 @@ export class Game {
 	playerConnections: PlayerConnection[] = [];
 	kickedDeviceIds: string[] = [];
 
-	isRunning: boolean;
+	isRunning: boolean = false;
 	settings: GameSettings;
 	chatMessages: ChatMessage[] = [];
 
@@ -54,18 +55,24 @@ export class Game {
 		this.sendSystemChatMessage(joinMessage);
 	}
 
-	leave(playerConnection: PlayerConnection) {
-		const hostLeaving = this.host.player.id == playerConnection.player.id;
+	leave(leavingPlayerConnection: PlayerConnection) {
+		const hostLeaving = this.host.player.id == leavingPlayerConnection.player.id;
+		// when one of the competitors leave (first and second player in the lobby) on a running game it gets aborted and it goes back to the lobby
+		const abortGame = this.isRunning && (hostLeaving || this.playerConnections.indexOf(leavingPlayerConnection) == 1);
 
-		this.playerConnections.splice(this.playerConnections.findIndex(other => other.player.id == playerConnection.player.id), 1);
-		this.broadcast(new ServerPlayerLeaveMessage(playerConnection.player));
+		this.playerConnections.splice(this.playerConnections.findIndex(other => other.player.id == leavingPlayerConnection.player.id), 1);
+		this.broadcast(new ServerPlayerLeaveMessage(leavingPlayerConnection.player));
 
-		const leaveMessage = `${playerConnection.player.name} left`;
+		const leaveMessage = `${leavingPlayerConnection.player.name} left`;
 		this.audit(leaveMessage);
 
 		if (!this.playerConnections.length) {
-			this.audit('closing lobby');
-			this.onclose();
+			setTimeout(() => {
+				if (!this.playerConnections.length) {
+					this.audit('closing lobby');
+					this.onclose();
+				}
+			}, emptyLobbyClosingDelay);
 		} else {
 			this.sendSystemChatMessage(leaveMessage);
 
@@ -74,6 +81,13 @@ export class Game {
 
 				this.audit(hostChangeMessage);
 				this.sendSystemChatMessage(hostChangeMessage);
+			}
+
+			if (abortGame) {
+				this.isRunning = false;
+
+				this.audit('game aborted (a competitor left)');
+				this.broadcast(new ServerGameAbortMessage());
 			}
 		}
 	}
@@ -112,7 +126,9 @@ export class Game {
 
 		// todo prepare round
 		// todo maybe make this lobby and the game itself is included in lobby -> allows to separate logic more sensibly
+		this.isRunning = true;
 
+		this.audit('game started');
 		this.broadcast(new ServerGameStartMessage());
 	}
 

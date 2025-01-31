@@ -121,7 +121,9 @@ export class PlayComponent extends Component {
 				}
 			})
 			.subscribe(ServerGameStartMessage, () => {
-				this.switchState(new GameComponent());
+				this.switchState(new GameComponent(
+					() => this.switchState(new LobbyComponent())
+				));
 			});
 
 		this.currentState = new LobbyComponent();

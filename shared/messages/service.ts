@@ -1,5 +1,5 @@
 import { SocketMessage } from "./message";
-import { ServerChatMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerInitialJoinMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "./server";
+import { ServerChatMessage, ServerGameAbortMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerInitialJoinMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "./server";
 import { PlayerConfigurationMessage, ClientChatMessage, ClientGameStartMessage, ClientDrawMessage, ClientStayMessage, ClientStartRoundMessage, ClientGameSettingsMessage, ClientKickMessage } from "./client";
 
 const messageTypes: Array<typeof SocketMessage> = [
@@ -10,6 +10,7 @@ const messageTypes: Array<typeof SocketMessage> = [
 	ServerChatMessage,
 	ServerGameSettingsMessage,
 	ServerGameStartMessage,
+	ServerGameAbortMessage,
 	PlayerConfigurationMessage,
 	ClientKickMessage,
 	ClientChatMessage,
