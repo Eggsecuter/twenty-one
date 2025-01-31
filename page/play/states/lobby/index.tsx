@@ -5,6 +5,7 @@ import { SettingsComponent } from "./settings";
 import { ServerGameSettingsMessage } from "../../../../shared/messages/server";
 import { VersusComponent } from "./versus";
 import { SpectatorsComponent } from "./spectators";
+import { MenuComponent } from "../../menu";
 
 export class LobbyComponent extends StateComponent {
 	private versusComponent: VersusComponent;
@@ -27,6 +28,8 @@ export class LobbyComponent extends StateComponent {
 
 	render() {
 		return <ui-lobby>
+			{new MenuComponent(false)}
+
 			{this.versusComponent = new VersusComponent()}
 
 			{this.settingsComponent = new SettingsComponent(settings => {

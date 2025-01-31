@@ -6,6 +6,8 @@ import { ClientKickMessage } from "../../../shared/messages/client";
 import { registerDismissible } from "../../shared/dismissible";
 
 export class PlayerComponent extends Component {
+	declare rootNode: HTMLElement;
+
 	private menuOpen: boolean;
 	// cache to prevent obsoletely refetching image
 	private avatarImage: HTMLImageElement;
@@ -22,7 +24,7 @@ export class PlayerComponent extends Component {
 		const canOpenMenu = !this.menuOpen && !currentIsHost && this.playComponent.isHost();
 
 		requestAnimationFrame(() => {
-			registerDismissible(this.rootNode as HTMLElement, () => {
+			registerDismissible(() => this.rootNode, () => this.menuOpen, () => {
 				if (canOpenMenu) {
 					this.menuOpen = true;
 					this.update();

@@ -1,11 +1,13 @@
 import { Component } from "@acryps/page";
 import { Application } from "../..";
 
+export type Icon = 'settings' | 'leave' | 'players' | 'chat';
+
 export class IconComponent extends Component {
 	private iconElement: SVGElement;
 
 	constructor (
-		private icon: 'settings' | 'leave' | 'players' | 'chat'
+		private icon: Icon
 	) {
 		super();
 	}

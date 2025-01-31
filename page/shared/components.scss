@@ -19,6 +19,7 @@ img {
 
 @mixin action {
 	display: block;
+	min-width: 3rem;
 	padding: 1rem;
 
 	border-radius: 2rem;
@@ -37,13 +38,18 @@ img {
 		cursor: not-allowed;
 	}
 
+	&[ui-compact] {
+		min-width: 2rem;
+		padding: 0.5rem;
+	}
+
 	&:not([ui-secondary]) {
 		color: var(--color-background);
 		background: var(--color-primary);
 	
 		&:hover {
-			color: var(--color-primary);
-			background: none;
+			background: var(--color-primary-dimmed);
+			border-color: var(--color-primary-dimmed);
 		}
 	}
 
