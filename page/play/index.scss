@@ -2,8 +2,9 @@
 @use '../shared/configure-player/index.scss' as configure-player;
 @use './player/index.scss' as player;
 @use './states/lobby/index.scss' as lobby;
+@use './states/game/index.scss' as game;
 
-@mixin default { > ui-game {
+@mixin default { > ui-play {
 	display: flex;
 	height: 100%;
 	align-items: center;
@@ -36,4 +37,5 @@
 	}
 
 	@include lobby.default;
+	@include game.default;
 }}

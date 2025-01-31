@@ -1,8 +1,8 @@
 import { ChatMessage } from "../../shared/chat-message";
 import { GameSettings } from "../../shared/game-settings";
-import { ClientChatMessage, ClientGameSettingsMessage, ClientKickMessage } from "../../shared/messages/client";
+import { ClientChatMessage, ClientGameSettingsMessage, ClientGameStartMessage, ClientKickMessage } from "../../shared/messages/client";
 import { SocketMessage } from "../../shared/messages/message";
-import { ServerChatMessage, ServerGameSettingsMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
+import { ServerChatMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
 import { PlayerConnection } from "./player-connection";
@@ -41,8 +41,9 @@ export class Game {
 
 		playerConnection.socket
 			.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
-			.subscribe(ClientGameSettingsMessage, message => this.host.player.id == playerConnection.player.id && this.updateSettings(message.gameSettings))
-			.subscribe(ClientKickMessage, message => this.host.player.id == playerConnection.player.id && this.kick(message.player));
+			.subscribe(ClientGameSettingsMessage, message => this.isHost(playerConnection.player) && this.updateSettings(message.gameSettings))
+			.subscribe(ClientKickMessage, message => this.isHost(playerConnection.player) && this.kick(message.player))
+			.subscribe(ClientGameStartMessage, () => this.isHost(playerConnection.player) && this.start());
 
 		// broadcast server player join except sender themselves
 		this.broadcast(new ServerPlayerJoinMessage(playerConnection.player));
@@ -102,6 +103,21 @@ export class Game {
 	private updateSettings(gameSettings: GameSettings) {
 		this.settings = gameSettings;
 		this.broadcast(new ServerGameSettingsMessage(this.settings));
+	}
+
+	private start() {
+		if (this.playerConnections.length < 2) {
+			return;
+		}
+
+		// todo prepare round
+		// todo maybe make this lobby and the game itself is included in lobby -> allows to separate logic more sensibly
+
+		this.broadcast(new ServerGameStartMessage());
+	}
+
+	private isHost(player: Player) {
+		return this.host.player.id == player.id;
 	}
 
 	private sendSystemChatMessage(message: string) {

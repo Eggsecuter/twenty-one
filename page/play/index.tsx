@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { SocketService } from "../../shared/messages/service";
-import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerKickMessage } from "../../shared/messages/server";
+import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerKickMessage, ServerGameStartMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Application } from "..";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -13,6 +13,7 @@ import { LocalStorage } from "../shared/local-storage";
 import { DirectJoinComponent } from "./states/direct-join";
 import { GameSettings } from "../../shared/game-settings";
 import { KickedComponent } from "./states/kicked";
+import { GameComponent } from "./states/game";
 
 export class PlayComponent extends Component {
 	declare parameters: {
@@ -65,9 +66,9 @@ export class PlayComponent extends Component {
 	}
 
 	render() {
-		return <ui-game>
+		return <ui-play>
 			{this.currentState}
-		</ui-game>;
+		</ui-play>;
 	}
 
 	private async join() {
@@ -118,6 +119,9 @@ export class PlayComponent extends Component {
 					this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
 					this.currentState.onplayerschange();
 				}
+			})
+			.subscribe(ServerGameStartMessage, () => {
+				this.switchState(new GameComponent());
 			});
 
 		this.currentState = new LobbyComponent();

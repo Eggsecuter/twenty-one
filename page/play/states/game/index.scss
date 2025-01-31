@@ -1,0 +1,13 @@
+@use '../../../shared/components.scss' as components;
+@use '../../player/index.scss' as player;
+@use '../../chat/index.scss' as chat;
+@use '../../menu/index.scss' as menu;
+
+@mixin default { > ui-game {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	margin: 1rem;
+}}
