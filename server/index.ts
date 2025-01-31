@@ -3,7 +3,7 @@ import * as webSockets from 'express-ws';
 import cookieParser = require('cookie-parser');
 import { join } from 'path';
 import { randomUUID } from 'crypto';
-import { GameManager } from './game/manager';
+import { LobbyManager } from './lobby/manager';
 
 const deviceIdCookieName = '__udi';
 export const getDeviceId = (request) => request.cookies[deviceIdCookieName] as string;
@@ -29,7 +29,7 @@ app.use((request, response, next) => {
 	next();
 });
 
-new GameManager(app);
+new LobbyManager(app);
 
 app.use('/built', express.static(join(process.cwd(), '..', 'page', 'built')));
 app.use('/assets', express.static(join(process.cwd(), '..', 'page', 'assets')));

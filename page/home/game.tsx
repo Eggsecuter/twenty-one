@@ -12,7 +12,7 @@ export class GameComponent extends Component {
 		}
 
 		if (this.token.length == gameTokenLength) {
-			const response = await Application.get(`/game/${this.token}`);
+			const response = await Application.get(`/lobby/${this.token}`);
 
 			if (response.error) {
 				this.joinError = response.error;
@@ -34,7 +34,7 @@ export class GameComponent extends Component {
 			return;
 		}
 
-		const token = await Application.post('/game');
+		const token = await Application.post('/lobby');
 
 		this.navigate(`/play/${token}`);
 	}

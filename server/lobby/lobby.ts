@@ -10,7 +10,7 @@ import { PlayerConnection } from "./player-connection";
 const maxPlayerConnections = 20;
 const emptyLobbyClosingDelay = 60000;
 
-export class Game {
+export class Lobby {
 	readonly token: string;
 
 	playerConnections: PlayerConnection[] = [];
@@ -124,8 +124,6 @@ export class Game {
 			return;
 		}
 
-		// todo prepare round
-		// todo maybe make this lobby and the game itself is included in lobby -> allows to separate logic more sensibly
 		this.isRunning = true;
 
 		this.audit('game started');

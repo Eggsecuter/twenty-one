@@ -1,4 +1,4 @@
-import { Game } from "./game";
+import { Lobby } from "./lobby";
 import { SocketService } from "../../shared/messages/service";
 import { ServerInitialJoinMessage } from "../../shared/messages/server";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -6,17 +6,17 @@ import { getDeviceId } from "..";
 import { PlayerConnection } from "./player-connection";
 import { Player } from "../../shared/player";
 
-export class GameManager {
-	private games: Game[] = [];
+export class LobbyManager {
+	private lobbies: Lobby[] = [];
 
 	constructor (app) {
-		app.post('/game', async (_, response) => {
+		app.post('/lobby', async (_, response) => {
 			const token = this.create();
 
 			response.json(token);
 		});
 
-		app.get('/game/:token', async (request, response) => {
+		app.get('/lobby/:token', async (request, response) => {
 			this.checkJoinPossibility(
 				request.params.token,
 				getDeviceId(request),
@@ -32,34 +32,34 @@ export class GameManager {
 			this.checkJoinPossibility(
 				request.params.token,
 				deviceId,
-				game => this.join(game, socket, deviceId),
+				lobby => this.join(lobby, socket, deviceId),
 				() => socket.close()
 			);
 		});
 	}
 
-	private checkJoinPossibility(token: string, deviceId: string, resolve: (game: Game) => void, reject: (error: string) => void): void {
-		const game = this.games.find(game => game.token == token.toLowerCase());
+	private checkJoinPossibility(token: string, deviceId: string, resolve: (lobby: Lobby) => void, reject: (error: string) => void): void {
+		const lobby = this.lobbies.find(lobby => lobby.token == token.toLowerCase());
 
-		if (!game) {
+		if (!lobby) {
 			reject(`Lobby does not exist.`);
-		} else if (game.kickedDeviceIds.includes(deviceId)) {
+		} else if (lobby.kickedDeviceIds.includes(deviceId)) {
 			reject(`You've been kicked from this lobby.`);
-		} else if (game.isFull) {
+		} else if (lobby.isFull) {
 			reject(`Lobby is full.`);
 		} else {
-			resolve(game);
+			resolve(lobby);
 		}
 	}
 
 	private create() {
-		const game = new Game(() => this.games.splice(this.games.indexOf(game), 1));
-		this.games.push(game);
+		const lobby = new Lobby(() => this.lobbies.splice(this.lobbies.indexOf(lobby), 1));
+		this.lobbies.push(lobby);
 
-		return game.token;
+		return lobby.token;
 	}
 
-	private join(game: Game, socket: WebSocket, deviceId: string) {
+	private join(lobby: Lobby, socket: WebSocket, deviceId: string) {
 		const socketService = new SocketService(socket);
 
 		// player information must be sent separately
@@ -69,15 +69,15 @@ export class GameManager {
 			// send joined player initial data
 			playerConnection.socket.send(new ServerInitialJoinMessage(
 				playerConnection.player,
-				game.playerConnections.map(peer => peer.player),
-				game.chatMessages,
-				game.settings
+				lobby.playerConnections.map(peer => peer.player),
+				lobby.chatMessages,
+				lobby.settings
 			));
 
 			// broadcasts to each peer and add the player to the list afterwards
-			game.join(playerConnection);
+			lobby.join(playerConnection);
 
-			socket.onclose = () => game.leave(playerConnection);
+			socket.onclose = () => lobby.leave(playerConnection);
 		});
 	}
 }

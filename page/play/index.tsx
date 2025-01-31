@@ -30,7 +30,7 @@ export class PlayComponent extends Component {
 	private currentState: StateComponent;
 
 	async onload() {
-		const response = await Application.get(`/game/${this.parameters.token}`);
+		const response = await Application.get(`/lobby/${this.parameters.token}`);
 
 		if (response.error) {
 			this.currentState = new JoinErrorComponent(response.error);
