@@ -5,6 +5,7 @@ import { SocketMessage } from "../../shared/messages/message";
 import { ServerChatMessage, ServerGameAbortMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
+import { Game } from "./game";
 import { PlayerConnection } from "./player-connection";
 
 const maxPlayerConnections = 20;
@@ -16,9 +17,10 @@ export class Lobby {
 	playerConnections: PlayerConnection[] = [];
 	kickedDeviceIds: string[] = [];
 
-	isRunning: boolean = false;
 	settings: GameSettings;
 	chatMessages: ChatMessage[] = [];
+
+	game: Game;
 
 	get isFull() {
 		return this.playerConnections.length >= maxPlayerConnections;
@@ -36,10 +38,6 @@ export class Lobby {
 	}
 
 	join(playerConnection: PlayerConnection) {
-		if (this.isFull) {
-			return;
-		}
-
 		playerConnection.socket
 			.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
 			.subscribe(ClientGameSettingsMessage, message => this.isHost(playerConnection.player) && this.updateSettings(message.gameSettings))
@@ -58,7 +56,7 @@ export class Lobby {
 	leave(leavingPlayerConnection: PlayerConnection) {
 		const hostLeaving = this.host.player.id == leavingPlayerConnection.player.id;
 		// when one of the competitors leave (first and second player in the lobby) on a running game it gets aborted and it goes back to the lobby
-		const abortGame = this.isRunning && (hostLeaving || this.playerConnections.indexOf(leavingPlayerConnection) == 1);
+		const abortGame = this.game && (hostLeaving || this.playerConnections.indexOf(leavingPlayerConnection) == 1);
 
 		this.playerConnections.splice(this.playerConnections.findIndex(other => other.player.id == leavingPlayerConnection.player.id), 1);
 		this.broadcast(new ServerPlayerLeaveMessage(leavingPlayerConnection.player));
@@ -84,7 +82,7 @@ export class Lobby {
 			}
 
 			if (abortGame) {
-				this.isRunning = false;
+				this.game = null;
 
 				this.audit('game aborted (a competitor left)');
 				this.broadcast(new ServerGameAbortMessage());
@@ -124,7 +122,15 @@ export class Lobby {
 			return;
 		}
 
-		this.isRunning = true;
+		this.game = new Game(
+			this.playerConnections[0],
+			this.playerConnections[1],
+			this.settings,
+			message => this.broadcast(message),
+			result => {
+				// todo add result screen
+			}
+		)
 
 		this.audit('game started');
 		this.broadcast(new ServerGameStartMessage());

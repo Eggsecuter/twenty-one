@@ -1,4 +1,4 @@
-import { Lobby } from "./lobby";
+import { Lobby } from ".";
 import { SocketService } from "../../shared/messages/service";
 import { ServerInitialJoinMessage } from "../../shared/messages/server";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -27,7 +27,7 @@ export class LobbyManager {
 
 		app.ws('/join/:token', (socket, request) => {
 			const deviceId = getDeviceId(request);
-			
+
 			// rejects only if user tries to crack it by directly opening a websocket
 			this.checkJoinPossibility(
 				request.params.token,

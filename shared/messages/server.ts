@@ -54,3 +54,11 @@ export class ServerGameSettingsMessage extends SocketMessage {
 export class ServerGameStartMessage extends SocketMessage {}
 
 export class ServerGameAbortMessage extends SocketMessage {}
+
+export class ServerRoundStartMessage extends SocketMessage {
+	constructor (
+		public current: number
+	) {
+		super();
+	}
+}

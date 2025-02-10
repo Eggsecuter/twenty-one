@@ -37,6 +37,12 @@ export class ClientGameSettingsMessage extends SocketMessage {
 
 export class ClientGameStartMessage extends SocketMessage {}
 
-export class ClientDrawMessage extends SocketMessage {}
 export class ClientStayMessage extends SocketMessage {}
-export class ClientStartRoundMessage extends SocketMessage {}
+export class ClientDrawMessage extends SocketMessage {}
+export class ClientUseTrumpCardMessage extends SocketMessage {
+	constructor (
+		public index: number
+	) {
+		super();
+	}
+}
