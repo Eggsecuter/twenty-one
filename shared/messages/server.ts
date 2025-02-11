@@ -136,3 +136,5 @@ export class ServerGameResultMessage extends SocketMessage {
 		this.winnerWonRounds = result.winnerWonRounds;
 	}
 }
+
+export class ServerGameEndMessage extends SocketMessage {}

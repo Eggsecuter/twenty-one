@@ -46,3 +46,5 @@ export class ClientUseTrumpCardMessage extends SocketMessage {
 		super();
 	}
 }
+
+export class ClientGameEndMessage extends SocketMessage {}

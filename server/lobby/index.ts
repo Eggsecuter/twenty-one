@@ -1,8 +1,8 @@
 import { ChatMessage } from "../../shared/chat-message";
 import { GameSettings } from "../../shared/game-settings";
-import { ClientChatMessage, ClientGameSettingsMessage, ClientGameStartMessage, ClientKickMessage } from "../../shared/messages/client";
+import { ClientChatMessage, ClientGameEndMessage, ClientGameSettingsMessage, ClientGameStartMessage, ClientKickMessage } from "../../shared/messages/client";
 import { SocketMessage } from "../../shared/messages/message";
-import { ServerChatMessage, ServerGameAbortMessage, ServerGameResultMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
+import { ServerChatMessage, ServerGameAbortMessage, ServerGameEndMessage, ServerGameResultMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
 import { Game } from "./game";
@@ -44,7 +44,8 @@ export class Lobby {
 			.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
 			.subscribe(ClientGameSettingsMessage, message => this.isHost(playerConnection.player) && this.updateSettings(message.gameSettings))
 			.subscribe(ClientKickMessage, message => this.isHost(playerConnection.player) && this.kick(message.player))
-			.subscribe(ClientGameStartMessage, () => this.isHost(playerConnection.player) && this.start());
+			.subscribe(ClientGameStartMessage, () => this.isHost(playerConnection.player) && this.start())
+			.subscribe(ClientGameEndMessage, () => this.isHost(playerConnection.player) && this.end());
 
 		// broadcast server player join except sender themselves
 		this.broadcast(new ServerPlayerJoinMessage(playerConnection.player));
@@ -136,6 +137,13 @@ export class Lobby {
 
 		this.audit('game started');
 		this.broadcast(new ServerGameStartMessage());
+	}
+	
+	private end() {
+		this.game = null;
+		
+		this.audit('game ended');
+		this.broadcast(new ServerGameEndMessage());
 	}
 
 	private isHost(player: Player) {
