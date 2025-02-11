@@ -9,7 +9,7 @@ import { Game } from "./game";
 import { PlayerConnection } from "./player-connection";
 
 const maxPlayerConnections = 20;
-const emptyLobbyClosingDelay = 60000;
+const emptyLobbyClosingDelay = 1000 * 60;
 
 export type BroadcastMessage = SocketMessage | ((playerConnection: PlayerConnection) => SocketMessage);
 
@@ -23,6 +23,8 @@ export class Lobby {
 	chatMessages: ChatMessage[] = [];
 
 	game: Game;
+
+	private closingTimeout: any;
 
 	get isFull() {
 		return this.playerConnections.length >= maxPlayerConnections;
@@ -40,6 +42,10 @@ export class Lobby {
 	}
 
 	join(playerConnection: PlayerConnection) {
+		if (this.closingTimeout) {
+			clearTimeout(this.closingTimeout);
+		}
+
 		playerConnection.socket
 			.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
 			.subscribe(ClientGameSettingsMessage, message => this.isHost(playerConnection.player) && this.updateSettings(message.gameSettings))
@@ -68,7 +74,7 @@ export class Lobby {
 		this.audit(leaveMessage);
 
 		if (!this.playerConnections.length) {
-			setTimeout(() => {
+			this.closingTimeout = setTimeout(() => {
 				if (!this.playerConnections.length) {
 					this.audit('closing lobby');
 					this.onclose();
