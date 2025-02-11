@@ -1,30 +1,29 @@
 import { maxTrumpCards } from "../../shared/constants";
 import { OneUpTrumpCard, TrumpCard } from "../../shared/trump-card";
-import { PlayerState } from "./player-state";
+import { Competitor } from "../../shared/competitor";
 
 export class TrumpCardPicker {
-	// todo add rarity
 	private static readonly trumpCards: Array<{ new (): TrumpCard }> = [
 		OneUpTrumpCard
 	];
 
 	private static maxDrawChance = 0.5;
 
-	static drawCertain(state: PlayerState) {
-		return this.draw(state);
+	static drawCertain(competitor: Competitor) {
+		return this.draw(competitor);
 	}
 
-	static drawByChance(state: PlayerState) {
-		return this.draw(state, () => {
-			const chance = this.maxDrawChance - state.storedTrumpCards.length * this.maxDrawChance / maxTrumpCards;
+	static drawByChance(competitor: Competitor) {
+		return this.draw(competitor, () => {
+			const chance = this.maxDrawChance - competitor.storedTrumpCards.length * this.maxDrawChance / maxTrumpCards;
 			const roll = Math.random();
 			
 			return roll < chance;
 		});
 	}
 	
-	private static draw(state: PlayerState, condition: () => boolean = () => true) {
-		if (state.storedTrumpCards.length >= maxTrumpCards) {
+	private static draw(competitor: Competitor, condition: () => boolean = () => true) {
+		if (competitor.storedTrumpCards.length >= maxTrumpCards) {
 			return;
 		}
 
@@ -32,7 +31,7 @@ export class TrumpCardPicker {
 			const trumpCard = new this.trumpCards[Math.floor(Math.random() * this.trumpCards.length)]();
 
 			if (trumpCard) {
-				state.storedTrumpCards.push(trumpCard);
+				competitor.storedTrumpCards.push(trumpCard);
 				return trumpCard;
 			}
 		}

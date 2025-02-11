@@ -1,7 +1,7 @@
-import { defaultBet } from "../../shared/constants";
-import { TrumpCard } from "../../shared/trump-card";
+import { defaultBet } from "./constants";
+import { TrumpCard } from "./trump-card";
 
-export class PlayerState {
+export class Competitor {
 	storedTrumpCards: TrumpCard[] = [];
 
 	bet: number;

@@ -1,5 +1,5 @@
 import { SocketMessage } from "./message";
-import { ServerChatMessage, ServerGameAbortMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerInitialJoinMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerRoundStartMessage } from "./server";
+import { ServerBoardResultMessage, ServerChatMessage, ServerDrawMessage, ServerGameAbortMessage, ServerGameResultMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerInitialBoardMessage, ServerInitialJoinMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerRoundResultMessage, ServerRoundStartMessage, ServerStayMessage, ServerUseTrumpCardMessage } from "./server";
 import { PlayerConfigurationMessage, ClientChatMessage, ClientGameStartMessage, ClientGameSettingsMessage, ClientKickMessage, ClientStayMessage, ClientDrawMessage, ClientUseTrumpCardMessage } from "./client";
 
 const messageTypes: Array<typeof SocketMessage> = [
@@ -12,6 +12,13 @@ const messageTypes: Array<typeof SocketMessage> = [
 	ServerGameStartMessage,
 	ServerGameAbortMessage,
 	ServerRoundStartMessage,
+	ServerInitialBoardMessage,
+	ServerStayMessage,
+	ServerDrawMessage,
+	ServerUseTrumpCardMessage,
+	ServerBoardResultMessage,
+	ServerRoundResultMessage,
+	ServerGameResultMessage,
 	PlayerConfigurationMessage,
 	ClientKickMessage,
 	ClientChatMessage,

@@ -2,7 +2,7 @@ export abstract class TrumpCard {
 	constructor (
 		public readonly name: string,
 		public readonly description: string,
-		public readonly icon: string // todo add icons in assets
+		public readonly icon: string
 	) {}
 
 	abstract activate(): void;

@@ -2,7 +2,7 @@ import { ChatMessage } from "../../shared/chat-message";
 import { GameSettings } from "../../shared/game-settings";
 import { ClientChatMessage, ClientGameSettingsMessage, ClientGameStartMessage, ClientKickMessage } from "../../shared/messages/client";
 import { SocketMessage } from "../../shared/messages/message";
-import { ServerChatMessage, ServerGameAbortMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
+import { ServerChatMessage, ServerGameAbortMessage, ServerGameResultMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { generateToken } from "../../shared/token";
 import { Game } from "./game";
@@ -10,6 +10,8 @@ import { PlayerConnection } from "./player-connection";
 
 const maxPlayerConnections = 20;
 const emptyLobbyClosingDelay = 60000;
+
+export type BroadcastMessage = SocketMessage | ((playerConnection: PlayerConnection) => SocketMessage);
 
 export class Lobby {
 	readonly token: string;
@@ -128,7 +130,7 @@ export class Lobby {
 			this.settings,
 			message => this.broadcast(message),
 			result => {
-				// todo add result screen
+				this.broadcast(new ServerGameResultMessage(result));
 			}
 		)
 
@@ -159,9 +161,11 @@ export class Lobby {
 		console.log(`[${this.token}] ${message}`);
 	}
 
-	private broadcast(message: SocketMessage) {
+	private broadcast(message: BroadcastMessage) {
 		for (const playerConnection of this.playerConnections) {
-			playerConnection.socket.send(message);
+			const result = typeof message == 'function' ? message(playerConnection) : message;
+
+			playerConnection.socket.send(result);
 		}
 	}
 }

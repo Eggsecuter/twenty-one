@@ -1,35 +1,37 @@
+import { BroadcastMessage } from ".";
 import { defaultPerfectSum } from "../../shared/constants";
-import { SocketMessage } from "../../shared/messages/message";
+import { ServerBoardResultMessage, ServerDrawMessage, ServerInitialBoardMessage, ServerStayMessage, ServerUseTrumpCardMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Deck } from "./deck";
-import { PlayerState } from "./player-state";
+import { Competitor } from "../../shared/competitor";
 import { TrumpCardPicker } from "./trump-card-picker";
 
 export class Round {
-	private playerStates: PlayerState[];
-	private currentPlayerIndex: 0 | 1;
+	private competitors: Competitor[];
+	private currentCompetitorIndex: 0 | 1;
 	
 	private perfectSum: number;
 	private deck: Deck;
 	private stayCounter: number;
 
 	get current() {
-		return this.playerStates[this.currentPlayerIndex];
+		return this.competitors[this.currentCompetitorIndex];
 	}
 
 	get opponent() {
-		return this.playerStates[1 - this.currentPlayerIndex];
+		return this.competitors[1 - this.currentCompetitorIndex];
 	}
 
 	constructor(
 		startHealth: number,
 		firstCompetitor: Player,
 		secondCompetitor: Player,
-		private broadcast: (message: SocketMessage) => void
+		private broadcast: (message: BroadcastMessage) => void,
+		private onconclude: (winner: Competitor) => void
 	) {
-		this.playerStates = [
-			new PlayerState(firstCompetitor.id, startHealth),
-			new PlayerState(secondCompetitor.id, startHealth)
+		this.competitors = [
+			new Competitor(firstCompetitor.id, startHealth),
+			new Competitor(secondCompetitor.id, startHealth)
 		];
 
 		this.initializeBoard();
@@ -41,8 +43,7 @@ export class Round {
 		}
 
 		this.stayCounter++;
-		
-		// todo broadcast
+		this.broadcast(new ServerStayMessage());
 		
 		this.endTurn();
 	}
@@ -58,8 +59,7 @@ export class Round {
 		this.current.cards.push(card);
 
 		const trumpCard = TrumpCardPicker.drawByChance(this.current);
-
-		// todo broadcast
+		this.broadcast(new ServerDrawMessage(card, trumpCard));
 
 		this.endTurn();
 	}
@@ -70,8 +70,8 @@ export class Round {
 		}
 
 		// allow competitors to react to newly played trump cards
-		// afterwards: drawing sets it to 0, staying increments it to 0
-		this.stayCounter = -1;
+		// afterwards: drawing sets it to 0, staying increments it (by one) to 1
+		this.stayCounter = 0;
 
 		const trumpCard = this.current.storedTrumpCards[trumpCardIndex];
 
@@ -81,34 +81,53 @@ export class Round {
 			this.current.playedTrumpCards.push(trumpCard);
 			trumpCard.activate();
 
-			// todo broadcast
+			this.broadcast(new ServerUseTrumpCardMessage(trumpCard));
 		}
 	}
 
 	private initializeBoard() {
 		// who begins is random
-		this.currentPlayerIndex = Math.random() < 0.5 ? 0 : 1;
+		this.currentCompetitorIndex = Math.random() < 0.5 ? 0 : 1;
 
 		this.perfectSum = defaultPerfectSum;
 		this.stayCounter = 0;
 		this.deck = new Deck();
 
-		for (const playerState of this.playerStates) {
-			playerState.reset();
+		this.current.reset();
+		this.opponent.reset();
 
-			// draw initial hidden card for each competitor
-			playerState.cards.push(this.deck.draw());
+		// draw initial hidden card for each competitor
+		this.current.cards.push(this.deck.draw());
+		this.opponent.cards.push(this.deck.draw());
 
-			// at the start of each new board a trump card gets picked
-			const trumpCard = TrumpCardPicker.drawCertain(playerState);
-		}
+		// at the start of each new board a trump card gets picked
+		const currentDrawnTrumpCard = TrumpCardPicker.drawCertain(this.current);
+		const opponentDrawnTrumpCard = TrumpCardPicker.drawCertain(this.opponent);
 
-		// todo broadcast
+		// conditional broadcast as the hidden card only gets shown to the competitor themselves
+		this.broadcast(connection => {
+			let hiddenCard: number;
+			
+			if (connection.player.id == this.current.id) {
+				hiddenCard = this.current.cards[0];
+			}
+			
+			if (connection.player.id == this.opponent.id) {
+				hiddenCard = this.opponent.cards[0];
+			}
+			
+			return new ServerInitialBoardMessage(
+				this.current.id,
+				currentDrawnTrumpCard,
+				opponentDrawnTrumpCard,
+				hiddenCard
+			);
+		});
 	}
-	
+
 	private endTurn() {
 		if (this.stayCounter >= 2 || this.deck.empty) {
-			let winner: PlayerState;
+			let winner: Competitor;
 
 			// tie if both overshot or have the same sum
 			if (this.current.sum <= this.perfectSum || this.opponent.sum <= this.perfectSum) {
@@ -123,10 +142,26 @@ export class Round {
 				}
 			}
 
-			// todo send winner
+			winner?.takeDamage();
+
+			this.broadcast(new ServerBoardResultMessage(winner?.id, {
+				id: this.current.id,
+				cards: this.current.cards
+			}, {
+				id: this.opponent.id,
+				cards: this.opponent.cards
+			}))
+
+			if (this.current.dead) {
+				this.onconclude(this.opponent);
+			} else if (this.opponent.dead) {
+				this.onconclude(this.current);
+			} else {
+				this.initializeBoard();
+			}
 		} else {
 			// swap after each turn
-			this.currentPlayerIndex = this.currentPlayerIndex ? 0 : 1;
+			this.currentCompetitorIndex = this.currentCompetitorIndex ? 0 : 1;
 		}
 	}
 }
