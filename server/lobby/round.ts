@@ -79,7 +79,7 @@ export class Round {
 			this.current.storedTrumpCards.splice(trumpCardIndex, 1);
 
 			this.current.playedTrumpCards.push(trumpCard);
-			trumpCard.activate();
+			// todo trump card effect
 
 			this.broadcast(new ServerUseTrumpCardMessage(trumpCard));
 		}
