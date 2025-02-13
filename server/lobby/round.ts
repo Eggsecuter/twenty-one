@@ -30,15 +30,15 @@ export class Round {
 		private onconclude: (winner: Competitor) => void
 	) {
 		this.competitors = [
-			new Competitor(firstCompetitor.id, startHealth),
-			new Competitor(secondCompetitor.id, startHealth)
+			new Competitor(firstCompetitor, startHealth),
+			new Competitor(secondCompetitor, startHealth)
 		];
 
 		this.initializeBoard();
 	}
 
 	stay(player: Player) {
-		if (player.id != this.current.id) {
+		if (player.id != this.current.player.id) {
 			return;
 		}
 
@@ -49,7 +49,7 @@ export class Round {
 	}
 
 	draw(player: Player) {
-		if (player.id != this.current.id) {
+		if (player.id != this.current.player.id) {
 			return;
 		}
 
@@ -65,7 +65,7 @@ export class Round {
 	}
 
 	useTrumpCard(player: Player, trumpCardIndex: number) {
-		if (player.id != this.current.id) {
+		if (player.id != this.current.player.id) {
 			return;
 		}
 
@@ -106,22 +106,26 @@ export class Round {
 
 		// conditional broadcast as the hidden card only gets shown to the competitor themselves
 		this.broadcast(connection => {
-			let hiddenCard: number;
+			let currentHiddenCard: number;
+			let opponentHiddenCard: number;
 			
-			if (connection.player.id == this.current.id) {
-				hiddenCard = this.current.cards[0];
+			if (connection.player.id == this.current.player.id) {
+				currentHiddenCard = this.current.cards[0];
 			}
 			
-			if (connection.player.id == this.opponent.id) {
-				hiddenCard = this.opponent.cards[0];
+			if (connection.player.id == this.opponent.player.id) {
+				opponentHiddenCard = this.opponent.cards[0];
 			}
 			
-			return new ServerInitialBoardMessage(
-				this.current.id,
-				currentDrawnTrumpCard,
-				opponentDrawnTrumpCard,
-				hiddenCard
-			);
+			return new ServerInitialBoardMessage({
+				id: this.current.player.id,
+				trumpCard: currentDrawnTrumpCard,
+				hiddenCard: currentHiddenCard
+			}, {
+				id: this.opponent.player.id,
+				trumpCard: opponentDrawnTrumpCard,
+				hiddenCard: opponentHiddenCard
+			});
 		});
 	}
 
@@ -144,11 +148,11 @@ export class Round {
 
 			winner?.takeDamage();
 
-			this.broadcast(new ServerBoardResultMessage(winner?.id, {
-				id: this.current.id,
+			this.broadcast(new ServerBoardResultMessage(winner?.player, {
+				id: this.current.player.id,
 				cards: this.current.cards
 			}, {
-				id: this.opponent.id,
+				id: this.opponent.player.id,
 				cards: this.opponent.cards
 			}))
 

@@ -130,19 +130,20 @@ export class Lobby {
 		if (this.playerConnections.length < 2) {
 			return;
 		}
+		
+		this.broadcast(new ServerGameStartMessage());
 
 		this.game = new Game(
 			this.playerConnections[0],
 			this.playerConnections[1],
 			this.settings,
 			message => this.broadcast(message),
-			result => {
-				this.broadcast(new ServerGameResultMessage(result));
+			(winner, loser, winnerWonRounds) => {
+				this.broadcast(new ServerGameResultMessage(winner, loser, winnerWonRounds));
 			}
 		)
 
 		this.audit('game started');
-		this.broadcast(new ServerGameStartMessage());
 	}
 	
 	private end() {

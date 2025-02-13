@@ -1,10 +1,35 @@
 import { maxTrumpCards } from "../../shared/constants";
-import { OneUpTrumpCard, TrumpCard } from "../../shared/trump-card";
+import { DestroyPlusPlusTrumpCard, DestroyPlusTrumpCard, DestroyTrumpCard, ExchangeTrumpCard, FiveCardTrumpCard, FourCardTrumpCard, GoFor17TrumpCard, GoFor24TrumpCard, GoFor27TrumpCard, LoveYourEnemyTrumpCard, OneUpTrumpCard, PerfectDrawPlusTrumpCard, PerfectDrawTrumpCard, RemoveTrumpCard, ReturnTrumpCard, SevenCardTrumpCard, ShieldPlusTrumpCard, ShieldTrumpCard, SixCardTrumpCard, ThreeCardTrumpCard, TrumpCard, TrumpSwitchPlusTrumpCard, TrumpSwitchTrumpCard, TwoCardTrumpCard, TwoUpPlusTrumpCard, TwoUpTrumpCard, UltimateDrawTrumpCard } from "../../shared/trump-card";
 import { Competitor } from "../../shared/competitor";
 
 export class TrumpCardPicker {
 	private static readonly trumpCards: Array<{ new (): TrumpCard }> = [
-		OneUpTrumpCard
+		OneUpTrumpCard,
+		TwoUpTrumpCard,
+		TwoUpPlusTrumpCard,
+		TwoCardTrumpCard,
+		ThreeCardTrumpCard,
+		FourCardTrumpCard,
+		FiveCardTrumpCard,
+		SixCardTrumpCard,
+		SevenCardTrumpCard,
+		RemoveTrumpCard,
+		ReturnTrumpCard,
+		ExchangeTrumpCard,
+		TrumpSwitchTrumpCard,
+		TrumpSwitchPlusTrumpCard,
+		ShieldTrumpCard,
+		ShieldPlusTrumpCard,
+		DestroyTrumpCard,
+		DestroyPlusTrumpCard,
+		DestroyPlusPlusTrumpCard,
+		PerfectDrawTrumpCard,
+		PerfectDrawPlusTrumpCard,
+		UltimateDrawTrumpCard,
+		GoFor17TrumpCard,
+		GoFor24TrumpCard,
+		GoFor27TrumpCard,
+		LoveYourEnemyTrumpCard
 	];
 
 	private static maxDrawChance = 0.5;

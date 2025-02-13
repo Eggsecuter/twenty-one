@@ -1,13 +1,13 @@
 import { BroadcastMessage } from ".";
 import { GameSettings } from "../../shared/game-settings";
 import { ClientDrawMessage, ClientStayMessage, ClientUseTrumpCardMessage } from "../../shared/messages/client";
-import { GameResult, ServerRoundResultMessage, ServerRoundStartMessage } from "../../shared/messages/server";
+import { ServerRoundResultMessage, ServerRoundStartMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { PlayerConnection } from "./player-connection";
 import { Round } from "./round";
 
 export class Game {
-	private roundWinnerIds: string[] = [];
+	private roundWinners: Player[] = [];
 	private currentRound: Round;
 
 	constructor (
@@ -15,7 +15,7 @@ export class Game {
 		private secondCompetitor: PlayerConnection,
 		private settings: GameSettings,
 		private broadcast: (message: BroadcastMessage) => void,
-		private onconclude: (result: GameResult) => void
+		private onconclude: (winner: Player, loser: Player, winnerWonRounds: number) => void
 	) {
 		this.nextRound();
 
@@ -29,7 +29,7 @@ export class Game {
 
 	private nextRound() {
 		// current round has no winner yet
-		const currentRoundCount = this.roundWinnerIds.length + 1;
+		const currentRoundCount = this.roundWinners.length + 1;
 
 		// game is finished
 		if (currentRoundCount > this.settings.roundCount) {
@@ -46,8 +46,8 @@ export class Game {
 			this.secondCompetitor.player,
 			message => this.broadcast(message),
 			winner => {
-				this.roundWinnerIds.push(winner.id);
-				this.broadcast(new ServerRoundResultMessage(winner.id));
+				this.roundWinners.push(winner.player);
+				this.broadcast(new ServerRoundResultMessage(winner.player));
 				
 				this.nextRound();
 			}
@@ -55,21 +55,21 @@ export class Game {
 	}
 
 	private conclude() {
-		const firstCompetitorWonRounds = this.roundWinnerIds.reduce((total, id) => total + (id == this.firstCompetitor.player.id ? 1 : 0), 0);
+		const firstCompetitorWonRounds = this.roundWinners.reduce((total, winner) => total + (winner.id == this.firstCompetitor.player.id ? 1 : 0), 0);
 
 		// game winner if won more than half the round (a tie isn't possible as there are only odd round counts)
 		if (firstCompetitorWonRounds > Math.floor(this.settings.roundCount / 2)) {
-			this.onconclude({
-				winner: this.firstCompetitor.player,
-				loser: this.secondCompetitor.player,
-				winnerWonRounds: firstCompetitorWonRounds
-			});
+			this.onconclude(
+				this.firstCompetitor.player,
+				this.secondCompetitor.player,
+				firstCompetitorWonRounds
+			);
 		} else {
-			this.onconclude({
-				winner: this.secondCompetitor.player,
-				loser: this.firstCompetitor.player,
-				winnerWonRounds: this.settings.roundCount - firstCompetitorWonRounds
-			});
+			this.onconclude(
+				this.secondCompetitor.player,
+				this.firstCompetitor.player,
+				this.settings.roundCount - firstCompetitorWonRounds
+			);
 		}
 	}
 }

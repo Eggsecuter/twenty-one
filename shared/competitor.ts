@@ -1,4 +1,5 @@
 import { defaultBet } from "./constants";
+import { Player } from "./player";
 import { TrumpCard } from "./trump-card";
 
 export class Competitor {
@@ -17,9 +18,11 @@ export class Competitor {
 	}
 
 	constructor (
-		public readonly id: string,
+		public readonly player: Player,
 		private health: number
-	) {}
+	) {
+		this.reset();
+	}
 	
 	reset() {
 		this.bet = defaultBet;

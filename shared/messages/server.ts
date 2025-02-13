@@ -9,10 +9,10 @@ export type CompetitorReveal = {
 	cards: number[]
 }
 
-export type GameResult = {
-	winner: Player,
-	loser: Player,
-	winnerWonRounds: number
+export type InitialBoardCompetitor = {
+	id: string,
+	trumpCard?: TrumpCard,
+	hiddenCard?: number
 }
 
 abstract class PlayerMessage extends SocketMessage {
@@ -77,10 +77,8 @@ export class ServerRoundStartMessage extends SocketMessage {
 
 export class ServerInitialBoardMessage extends SocketMessage {
 	constructor (
-		public currentCompetitorId: string,
-		public currentTrumpCard: TrumpCard,
-		public opponentTrumpCard: TrumpCard,
-		public hiddenCard?: number // only show to the competitor themselves
+		public startingCompetitor: InitialBoardCompetitor,
+		public secondCompetitor: InitialBoardCompetitor
 	) {
 		super();
 	}
@@ -105,7 +103,7 @@ export class ServerUseTrumpCardMessage extends SocketMessage {
 
 export class ServerBoardResultMessage extends SocketMessage {
 	constructor (
-		public winnerId: string,
+		public winner: Player,
 		public firstCompetitor: CompetitorReveal,
 		public secondCompetitor: CompetitorReveal
 	) {
@@ -115,25 +113,19 @@ export class ServerBoardResultMessage extends SocketMessage {
 
 export class ServerRoundResultMessage extends SocketMessage {
 	constructor (
-		public winnerId: string
+		public winner: Player
 	) {
 		super();
 	}
 }
 
 export class ServerGameResultMessage extends SocketMessage {
-	winner: Player;
-	loser: Player;
-	winnerWonRounds: number;
-
 	constructor (
-		result: GameResult
+		public winner: Player,
+		public loser: Player,
+		public winnerWonRounds: number
 	) {
 		super();
-		
-		this.winner = result.winner;
-		this.loser = result.loser;
-		this.winnerWonRounds = result.winnerWonRounds;
 	}
 }
 
