@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { SocketService } from "../../shared/messages/service";
-import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerKickMessage, ServerGameStartMessage } from "../../shared/messages/server";
+import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerKickMessage, ServerGameStartMessage, ServerGameEndMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Application } from "..";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -124,6 +124,9 @@ export class PlayComponent extends Component {
 				this.switchState(new GameComponent(
 					() => this.switchState(new LobbyComponent())
 				));
+			})
+			.subscribe(ServerGameEndMessage, () => {
+				this.switchState(new LobbyComponent());
 			});
 
 		this.currentState = new LobbyComponent();

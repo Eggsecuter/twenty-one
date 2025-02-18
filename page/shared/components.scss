@@ -12,11 +12,6 @@ input {
 	outline: none;
 }
 
-img {
-	display: block;
-	width: 100%;
-}
-
 @mixin action {
 	display: block;
 	min-width: 3rem;
