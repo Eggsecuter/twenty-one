@@ -1,5 +1,5 @@
 export abstract class SocketMessage {
-	private $id: number;
+	private $typeIndex: number;
 
 	// allows compatible message types
 	constructor(...args: any[]) {}

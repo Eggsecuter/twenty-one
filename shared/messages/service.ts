@@ -32,7 +32,7 @@ const messageTypes: Array<typeof SocketMessage> = [
 ];
 
 export class SocketService {
-	private subscribers: Array<{id: number, handler: (message: any) => void}> = [];
+	private subscribers: Array<{id: string, messageTypeIndex: number, handler: (message: any) => void}> = [];
 
 	constructor(
 		private socket: WebSocket
@@ -49,7 +49,7 @@ export class SocketService {
 
 			// multiple subscribers for same event possible
 			for (const subscriber of this.subscribers) {
-				if (subscriber.id == message['$id']) {
+				if (subscriber.messageTypeIndex == message['$typeIndex']) {
 					subscriber.handler(message);
 				}
 			}
@@ -57,18 +57,30 @@ export class SocketService {
 	}
 
 	send(message: SocketMessage) {
-		message['$id'] = messageTypes.findIndex(type => message instanceof type);
-
+		message['$typeIndex'] = messageTypes.findIndex(type => message instanceof type);
 		this.socket.send(JSON.stringify(message));
 	}
 
 	subscribe<Message extends SocketMessage>(messageType: new (...args: any[]) => Message, handler: (message: Message) => void) {
+		const id = this.generateUUID();
+
 		this.subscribers.push({
-			id: messageTypes.findIndex(type => messageType == type),
+			id,
+			messageTypeIndex: messageTypes.findIndex(type => messageType == type),
 			handler
 		});
 
-		return this;
+		return id;
+	}
+
+	unsubscribe(...ids: string[]) {
+		for (const id of ids) {
+			const subscriberIndex = this.subscribers.findIndex(subscriber => subscriber.id == id);
+	
+			if (subscriberIndex) {
+				this.subscribers.splice(subscriberIndex, 1);
+			}
+		}
 	}
 
 	// ignore socket events
@@ -80,5 +92,14 @@ export class SocketService {
 
 	close() {
 		this.socket.close();
+	}
+
+	private generateUUID() {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
+		const random = (Math.random() * 16) | 0;
+		const value = char === 'x' ? random : (random & 0x3) | 0x8;
+
+		return value.toString(16);
+		});
 	}
 }

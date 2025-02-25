@@ -103,36 +103,41 @@ export class PlayComponent extends Component {
 		// save after join was successful
 		LocalStorage.setPlayerConfiguration(Application.playerConfiguration);
 
-		this.socket
-			.subscribe(ServerPlayerJoinMessage, message => {
-				this.players.push(message.player);
-				this.currentState.onplayerschange();
-			})
-			.subscribe(ServerPlayerLeaveMessage, message => {
+		this.socket.subscribe(ServerPlayerJoinMessage, message => {
+			this.players.push(message.player);
+			this.currentState.onplayerschange();
+		});
+
+		this.socket.subscribe(ServerPlayerLeaveMessage, message => {
+			this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
+			this.currentState.onplayerschange();
+		});
+
+		this.socket.subscribe(ServerKickMessage, message => {
+			if (message.player.id == this.player.id) {
+				this.switchState(new KickedComponent());
+			} else {
 				this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
 				this.currentState.onplayerschange();
-			})
-			.subscribe(ServerKickMessage, message => {
-				if (message.player.id == this.player.id) {
-					this.switchState(new KickedComponent());
-				} else {
-					this.players.splice(this.players.findIndex(player => player.id == message.player.id), 1);
-					this.currentState.onplayerschange();
-				}
-			})
-			.subscribe(ServerGameStartMessage, () => {
-				this.switchState(new GameComponent(
-					() => this.switchState(new LobbyComponent())
-				));
-			})
-			.subscribe(ServerGameEndMessage, () => {
-				this.switchState(new LobbyComponent());
-			});
+			}
+		});
+
+		this.socket.subscribe(ServerGameStartMessage, () => {
+			this.switchState(new GameComponent(
+				() => this.switchState(new LobbyComponent())
+			));
+		});
+
+		this.socket.subscribe(ServerGameEndMessage, () => {
+			this.switchState(new LobbyComponent());
+		});
 
 		this.currentState = new LobbyComponent();
 	}
 
 	private switchState(component: StateComponent) {
+		this.currentState.onunsubscribe(this.socket);
+
 		this.currentState = component;
 		this.update();
 	}

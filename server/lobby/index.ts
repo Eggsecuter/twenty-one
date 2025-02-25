@@ -46,12 +46,12 @@ export class Lobby {
 			clearTimeout(this.closingTimeout);
 		}
 
-		playerConnection.socket
-			.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
-			.subscribe(ClientGameSettingsMessage, message => this.isHost(playerConnection.player) && this.updateSettings(message.gameSettings))
-			.subscribe(ClientKickMessage, message => this.isHost(playerConnection.player) && this.kick(message.player))
-			.subscribe(ClientGameStartMessage, () => this.isHost(playerConnection.player) && this.start())
-			.subscribe(ClientGameEndMessage, () => this.isHost(playerConnection.player) && this.end());
+		// doesn't need to be unsubscribed as the socket gets closed beforehand
+		playerConnection.socket.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
+		playerConnection.socket.subscribe(ClientGameSettingsMessage, message => this.isHost(playerConnection.player) && this.updateSettings(message.gameSettings))
+		playerConnection.socket.subscribe(ClientKickMessage, message => this.isHost(playerConnection.player) && this.kick(message.player))
+		playerConnection.socket.subscribe(ClientGameStartMessage, () => this.isHost(playerConnection.player) && this.start())
+		playerConnection.socket.subscribe(ClientGameEndMessage, () => this.isHost(playerConnection.player) && this.end());
 
 		// broadcast server player join except sender themselves
 		this.broadcast(new ServerPlayerJoinMessage(playerConnection.player));
@@ -91,6 +91,7 @@ export class Lobby {
 			}
 
 			if (abortGame) {
+				this.game.close();
 				this.game = null;
 
 				this.audit('game aborted (a competitor left)');
@@ -147,6 +148,7 @@ export class Lobby {
 	}
 	
 	private end() {
+		this.game.close();
 		this.game = null;
 		
 		this.audit('game ended');

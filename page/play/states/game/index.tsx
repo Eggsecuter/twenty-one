@@ -26,53 +26,55 @@ export class GameComponent extends StateComponent {
 		this.frontCompetitor = new Competitor(this.parent.players[frontCompetitorIndex], this.parent.gameSettings.playerHealth);
 		this.backCompetitor = new Competitor(this.parent.players[1 - frontCompetitorIndex], this.parent.gameSettings.playerHealth);
 
-		this.parent.socket.subscribe(ServerGameAbortMessage, () => this.onabort());
+		this.subscribtions.push(
+			this.parent.socket.subscribe(ServerGameAbortMessage, () => this.onabort()),
 
-		this.parent.socket.subscribe(ServerRoundStartMessage, message => this.eventQueue.push(async () => {
-			this.currentRound = message.current;
-			this.update();
-			await this.waitForSeconds(2);
-		}));
+			this.parent.socket.subscribe(ServerRoundStartMessage, message => this.eventQueue.push(async () => {
+				this.currentRound = message.current;
+				this.update();
+				await this.waitForSeconds(2);
+			})),
 
-		this.parent.socket.subscribe(ServerInitialBoardMessage, message => this.eventQueue.push(async () => {
-			let startingCompetitor: Competitor;
-			let secondCompetitor: Competitor;
-			
-			if (message.startingCompetitor.id == this.frontCompetitor.player.id) {
-				startingCompetitor = this.frontCompetitor;
-				secondCompetitor = this.backCompetitor;
-			} else {
-				startingCompetitor = this.backCompetitor;
-				secondCompetitor = this.frontCompetitor;
-			}
-
-			startingCompetitor.cards.push(message.startingCompetitor.hiddenCard);
-			this.update();
-			await this.waitForSeconds(0.5);
-
-			if (message.startingCompetitor.trumpCard) {
-				startingCompetitor.storedTrumpCards.push(message.startingCompetitor.trumpCard);
+			this.parent.socket.subscribe(ServerInitialBoardMessage, message => this.eventQueue.push(async () => {
+				let startingCompetitor: Competitor;
+				let secondCompetitor: Competitor;
+				
+				if (message.startingCompetitor.id == this.frontCompetitor.player.id) {
+					startingCompetitor = this.frontCompetitor;
+					secondCompetitor = this.backCompetitor;
+				} else {
+					startingCompetitor = this.backCompetitor;
+					secondCompetitor = this.frontCompetitor;
+				}
+	
+				startingCompetitor.cards.push(message.startingCompetitor.hiddenCard);
 				this.update();
 				await this.waitForSeconds(0.5);
-			}
-			
-			secondCompetitor.cards.push(message.secondCompetitor.hiddenCard);
-			this.update();
-			await this.waitForSeconds(0.5);
-
-			if (message.secondCompetitor.trumpCard) {
-				secondCompetitor.storedTrumpCards.push(message.secondCompetitor.trumpCard);
+	
+				if (message.startingCompetitor.trumpCard) {
+					startingCompetitor.storedTrumpCards.push(message.startingCompetitor.trumpCard);
+					this.update();
+					await this.waitForSeconds(0.5);
+				}
+				
+				secondCompetitor.cards.push(message.secondCompetitor.hiddenCard);
 				this.update();
-				await this.waitForSeconds(1);
-			}
+				await this.waitForSeconds(0.5);
+	
+				if (message.secondCompetitor.trumpCard) {
+					secondCompetitor.storedTrumpCards.push(message.secondCompetitor.trumpCard);
+					this.update();
+					await this.waitForSeconds(1);
+				}
+	
+				this.currentCompetitorId = startingCompetitor.player.id;
+				this.update();
+			})),
 
-			this.currentCompetitorId = startingCompetitor.player.id;
-			this.update();
-		}));
-
-		this.parent.socket.subscribe(ServerBoardResultMessage, message => message);
-		this.parent.socket.subscribe(ServerRoundResultMessage, message => message);
-		this.parent.socket.subscribe(ServerGameResultMessage, message => message);
+			this.parent.socket.subscribe(ServerBoardResultMessage, message => message),
+			this.parent.socket.subscribe(ServerRoundResultMessage, message => message),
+			this.parent.socket.subscribe(ServerGameResultMessage, message => message)
+		);
 	}
 
 	render() {

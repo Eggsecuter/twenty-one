@@ -20,11 +20,17 @@ export class Game {
 		this.nextRound();
 
 		for (const competitor of [firstCompetitor, secondCompetitor]) {
-			competitor.socket
-				.subscribe(ClientStayMessage, () => this.currentRound.stay(competitor.player))
-				.subscribe(ClientDrawMessage, () => this.currentRound.draw(competitor.player))
-				.subscribe(ClientUseTrumpCardMessage, message => this.currentRound.useTrumpCard(competitor.player, message.index));
+			competitor.gameSubscriptions.push(
+				competitor.socket.subscribe(ClientStayMessage, () => this.currentRound.stay(competitor.player)),
+				competitor.socket.subscribe(ClientDrawMessage, () => this.currentRound.draw(competitor.player)),
+				competitor.socket.subscribe(ClientUseTrumpCardMessage, message => this.currentRound.useTrumpCard(competitor.player, message.index))
+			);
 		}
+	}
+
+	close() {
+		this.firstCompetitor.ongameclose();
+		this.secondCompetitor.ongameclose();
 	}
 
 	private nextRound() {

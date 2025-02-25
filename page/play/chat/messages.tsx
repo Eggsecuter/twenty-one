@@ -16,22 +16,24 @@ export class ChatMessagesComponent extends Component {
 	}
 
 	onload() {
-		this.parent.parent.parent.socket.subscribe(ServerChatMessage, message => {
-			this.chatMessages.push(message.chatMessage);
+		this.parent.parent.subscribtions.push(
+			this.parent.parent.parent.socket.subscribe(ServerChatMessage, message => {
+				this.chatMessages.push(message.chatMessage);
+				
+				const scrolledToBottom = message.chatMessage.player?.id == this.parent.parent.parent.player.id || this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight + this.scrollOffsetTolerance;
+				const scrollY = this.rootNode.scrollTop;
 
-			const scrolledToBottom = message.chatMessage.player?.id == this.parent.parent.parent.player.id || this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight + this.scrollOffsetTolerance;
-			const scrollY = this.rootNode.scrollTop;
+				this.update();
 
-			this.update();
-
-			requestAnimationFrame(() => {
-				// if scrolled to bottom automatically scroll down with new messages
-				this.rootNode.scrollTo({
-					top: scrolledToBottom ? this.rootNode.scrollHeight : scrollY,
-					behavior: 'instant'
+				requestAnimationFrame(() => {
+					// if scrolled to bottom automatically scroll down with new messages
+					this.rootNode.scrollTo({
+						top: scrolledToBottom ? this.rootNode.scrollHeight : scrollY,
+						behavior: 'instant'
+					});
 				});
-			});
-		});
+			})
+		);
 
 		// scroll to bottom initially
 		requestAnimationFrame(() => {
