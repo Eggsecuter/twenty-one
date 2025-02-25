@@ -24,6 +24,11 @@
 		border-radius: 50%;
 
 		overflow: hidden;
+
+		> img {
+			display: block;
+			height: 100%;
+		}
 	}
 
 	> ui-name {
