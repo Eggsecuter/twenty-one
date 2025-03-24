@@ -5,10 +5,10 @@ import { SocketService } from "../../../shared/messages/service";
 export abstract class StateComponent extends Component {
 	declare parent: PlayComponent;
 
-	subscribtions: string[] = [];
+	subscriptions: string[] = [];
 
 	onunsubscribe(socket: SocketService) {
-		socket.unsubscribe(...this.subscribtions);
+		socket.unsubscribe(...this.subscriptions);
 	}
 
 	onplayerschange() {}

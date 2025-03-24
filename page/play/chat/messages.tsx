@@ -16,7 +16,7 @@ export class ChatMessagesComponent extends Component {
 	}
 
 	onload() {
-		this.parent.parent.subscribtions.push(
+		this.parent.parent.subscriptions.push(
 			this.parent.parent.parent.socket.subscribe(ServerChatMessage, message => {
 				this.chatMessages.push(message.chatMessage);
 				

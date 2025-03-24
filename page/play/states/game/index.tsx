@@ -26,7 +26,7 @@ export class GameComponent extends StateComponent {
 		this.frontCompetitor = new Competitor(this.parent.players[frontCompetitorIndex], this.parent.gameSettings.playerHealth);
 		this.backCompetitor = new Competitor(this.parent.players[1 - frontCompetitorIndex], this.parent.gameSettings.playerHealth);
 
-		this.subscribtions.push(
+		this.subscriptions.push(
 			this.parent.socket.subscribe(ServerGameAbortMessage, () => this.onabort()),
 
 			this.parent.socket.subscribe(ServerRoundStartMessage, message => this.eventQueue.push(async () => {

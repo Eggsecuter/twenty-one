@@ -19,7 +19,7 @@ export class LobbyComponent extends StateComponent {
 	}
 
 	onload() {
-		this.subscribtions.push(
+		this.subscriptions.push(
 			this.parent.socket.subscribe(ServerGameSettingsMessage, message => {
 				this.parent.gameSettings = message.gameSettings;
 				
