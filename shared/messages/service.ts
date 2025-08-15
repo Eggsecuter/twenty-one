@@ -76,7 +76,7 @@ export class SocketService {
 	unsubscribe(...ids: string[]) {
 		for (const id of ids) {
 			const subscriberIndex = this.subscribers.findIndex(subscriber => subscriber.id == id);
-	
+
 			if (subscriberIndex) {
 				this.subscribers.splice(subscriberIndex, 1);
 			}

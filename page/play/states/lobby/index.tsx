@@ -22,7 +22,7 @@ export class LobbyComponent extends StateComponent {
 		this.subscriptions.push(
 			this.parent.socket.subscribe(ServerGameSettingsMessage, message => {
 				this.parent.gameSettings = message.gameSettings;
-				
+
 				this.settingsComponent.reload();
 			})
 		);

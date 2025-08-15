@@ -19,7 +19,7 @@ export class ChatMessagesComponent extends Component {
 		this.parent.parent.subscriptions.push(
 			this.parent.parent.parent.socket.subscribe(ServerChatMessage, message => {
 				this.chatMessages.push(message.chatMessage);
-				
+
 				const scrolledToBottom = message.chatMessage.player?.id == this.parent.parent.parent.player.id || this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight + this.scrollOffsetTolerance;
 				const scrollY = this.rootNode.scrollTop;
 
