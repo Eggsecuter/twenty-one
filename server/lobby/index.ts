@@ -131,7 +131,7 @@ export class Lobby {
 		if (this.playerConnections.length < 2) {
 			return;
 		}
-		
+
 		this.broadcast(new ServerGameStartMessage());
 
 		this.game = new Game(
@@ -146,11 +146,11 @@ export class Lobby {
 
 		this.audit('game started');
 	}
-	
+
 	private end() {
 		this.game.close();
 		this.game = null;
-		
+
 		this.audit('game ended');
 		this.broadcast(new ServerGameEndMessage());
 	}

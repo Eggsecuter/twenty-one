@@ -9,6 +9,7 @@ import { MenuComponent } from "../../menu";
 import { ClientDrawMessage, ClientStayMessage } from "../../../../shared/messages/client";
 import { SocketMessage } from "../../../../shared/messages/message";
 import { defaultPerfectSum } from "../../../../shared/constants";
+import { Observable } from "@acryps/page-observable";
 
 export class GameComponent extends StateComponent {
 	perfectSum = defaultPerfectSum;
@@ -19,6 +20,8 @@ export class GameComponent extends StateComponent {
 	private backCompetitor: Competitor;
 	private currentCompetitorId: string;
 	private actionAllowed = false;
+
+	private info = new Observable<string>();
 
 	private currentRound = 1;
 
@@ -89,12 +92,17 @@ export class GameComponent extends StateComponent {
 			})),
 
 			this.parent.socket.subscribe(ServerStayMessage, () => this.eventQueue.push(async () => {
+				this.setInfo(`${this.currentCompetitor.player.name} stays!`, 1);
+				await Application.waitForSeconds(1);
+
 				this.switchCompetitor();
 				this.actionAllowed = true;
 				this.update();
 			})),
 
 			this.parent.socket.subscribe(ServerDrawMessage, message => this.eventQueue.push(async () => {
+				this.setInfo(`${this.currentCompetitor.player.name} draws!`, 1);
+
 				this.currentCompetitor.cards.push(message.card);
 				this.update();
 				await Application.waitForSeconds(0.5);
@@ -105,6 +113,8 @@ export class GameComponent extends StateComponent {
 					await Application.waitForSeconds(0.5);
 				}
 
+				await Application.waitForSeconds(0.5);
+
 				this.switchCompetitor();
 				this.actionAllowed = true;
 				this.update();
@@ -113,6 +123,8 @@ export class GameComponent extends StateComponent {
 			this.parent.socket.subscribe(ServerUseTrumpCardMessage, message => message),
 
 			this.parent.socket.subscribe(ServerBoardResultMessage, message => this.eventQueue.push(async () => {
+				this.setInfo(`${message.winner.name} won the round!`, 2);
+
 				this.getCompetitor(message.firstCompetitor.id).cards = message.firstCompetitor.cards;
 				this.getCompetitor(message.secondCompetitor.id).cards = message.secondCompetitor.cards;
 				this.getOtherCompetitor(message.winner.id).takeDamage();
@@ -122,8 +134,13 @@ export class GameComponent extends StateComponent {
 				await Application.waitForSeconds(2);
 			})),
 
-			this.parent.socket.subscribe(ServerRoundResultMessage, message => message),
-			this.parent.socket.subscribe(ServerGameResultMessage, message => message)
+			this.parent.socket.subscribe(ServerRoundResultMessage, message => this.eventQueue.push(async () => {
+				this.setInfo(`${message.winner.name} survived the round!`, 2);
+			})),
+
+			this.parent.socket.subscribe(ServerGameResultMessage, message => this.eventQueue.push(async () => {
+
+			}))
 		);
 	}
 
@@ -140,6 +157,11 @@ export class GameComponent extends StateComponent {
 
 			<ui-main>
 				{new CompetitorComponent(this.backCompetitor)}
+
+				<ui-info>
+					{this.info.map(message => message ? <ui-message>{message}</ui-message> : '')}
+				</ui-info>
+
 				{new CompetitorComponent(this.frontCompetitor)}
 
 				<ui-actions ui-active={this.actionAllowed && this.currentCompetitorId == this.parent.player.id}>
@@ -166,5 +188,16 @@ export class GameComponent extends StateComponent {
 
 	private switchCompetitor() {
 		this.currentCompetitorId = this.waitingCompetitor.player.id;
+	}
+
+	private setInfo(message: string, durationSeconds: number) {
+		this.info.emit(message);
+
+		setTimeout(() => {
+			// ignore if it was overwritten by other asynchronous call
+			if (this.info.currentValue == message) {
+				this.info.emit(null);
+			}
+		}, durationSeconds * 1000);
 	}
 }

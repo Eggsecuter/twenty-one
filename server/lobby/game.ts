@@ -54,7 +54,7 @@ export class Game {
 			winner => {
 				this.roundWinners.push(winner.player);
 				this.broadcast(new ServerRoundResultMessage(winner.player));
-				
+
 				this.nextRound();
 			}
 		);
@@ -64,18 +64,10 @@ export class Game {
 		const firstCompetitorWonRounds = this.roundWinners.reduce((total, winner) => total + (winner.id == this.firstCompetitor.player.id ? 1 : 0), 0);
 
 		// game winner if won more than half the round (a tie isn't possible as there are only odd round counts)
-		if (firstCompetitorWonRounds > Math.floor(this.settings.roundCount / 2)) {
-			this.onconclude(
-				this.firstCompetitor.player,
-				this.secondCompetitor.player,
-				firstCompetitorWonRounds
-			);
-		} else {
-			this.onconclude(
-				this.secondCompetitor.player,
-				this.firstCompetitor.player,
-				this.settings.roundCount - firstCompetitorWonRounds
-			);
-		}
+		const winnerWonRounds = firstCompetitorWonRounds > Math.floor(this.settings.roundCount / 2)
+			? firstCompetitorWonRounds
+			: this.settings.roundCount - firstCompetitorWonRounds;
+
+		this.onconclude(this.firstCompetitor.player, this.secondCompetitor.player, winnerWonRounds);
 	}
 }
