@@ -20,7 +20,6 @@ export class Deck {
 
 	insert(card: number) {
 		if (this.availableCards.includes(card)) {
-			console.warn(`Card ${card} is already in deck`);
 			return;
 		}
 

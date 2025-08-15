@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { Application } from "../..";
 
-export type Icon = 'settings' | 'leave' | 'players' | 'chat';
+export type Icon = 'chat' | 'crown' | 'heart-empty' | 'heart-filled' | 'leave' | 'options' | 'players' | 'settings';
 
 export class IconComponent extends Component {
 	private iconElement: SVGElement;

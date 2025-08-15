@@ -1,6 +1,5 @@
 import { maxTrumpCards } from "../../shared/constants";
 import { DestroyPlusPlusTrumpCard, DestroyPlusTrumpCard, DestroyTrumpCard, ExchangeTrumpCard, FiveCardTrumpCard, FourCardTrumpCard, GoFor17TrumpCard, GoFor24TrumpCard, GoFor27TrumpCard, LoveYourEnemyTrumpCard, OneUpTrumpCard, PerfectDrawPlusTrumpCard, PerfectDrawTrumpCard, RemoveTrumpCard, ReturnTrumpCard, SevenCardTrumpCard, ShieldPlusTrumpCard, ShieldTrumpCard, SixCardTrumpCard, ThreeCardTrumpCard, TrumpCard, TrumpSwitchPlusTrumpCard, TrumpSwitchTrumpCard, TwoCardTrumpCard, TwoUpPlusTrumpCard, TwoUpTrumpCard, UltimateDrawTrumpCard } from "../../shared/trump-card";
-import { Competitor } from "../../shared/competitor";
 
 export class TrumpCardPicker {
 	private static readonly trumpCards: Array<{ new (): TrumpCard }> = [
@@ -34,31 +33,28 @@ export class TrumpCardPicker {
 
 	private static maxDrawChance = 0.5;
 
-	static drawCertain(competitor: Competitor) {
-		return this.draw(competitor);
+	static drawCertain(storedTrumpCardCount: number) {
+		return this.draw(storedTrumpCardCount);
 	}
 
-	static drawByChance(competitor: Competitor) {
-		return this.draw(competitor, () => {
-			const chance = this.maxDrawChance - competitor.storedTrumpCards.length * this.maxDrawChance / maxTrumpCards;
-			const roll = Math.random();
-			
-			return roll < chance;
-		});
+	static drawByChance(storedTrumpCardCount: number) {
+		const chance = this.maxDrawChance - storedTrumpCardCount * this.maxDrawChance / maxTrumpCards;
+		const roll = Math.random();
+
+		if (roll < chance) {
+			return this.draw(storedTrumpCardCount);
+		}
 	}
-	
-	private static draw(competitor: Competitor, condition: () => boolean = () => true) {
-		if (competitor.storedTrumpCards.length >= maxTrumpCards) {
+
+	private static draw(storedTrumpCardCount: number) {
+		if (storedTrumpCardCount >= maxTrumpCards) {
 			return;
 		}
 
-		if (condition()) {
-			const trumpCard = new this.trumpCards[Math.floor(Math.random() * this.trumpCards.length)]();
+		const trumpCard = new this.trumpCards[Math.floor(Math.random() * this.trumpCards.length)]();
 
-			if (trumpCard) {
-				competitor.storedTrumpCards.push(trumpCard);
-				return trumpCard;
-			}
+		if (trumpCard) {
+			return trumpCard;
 		}
 	}
 }

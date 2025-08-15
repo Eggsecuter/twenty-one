@@ -42,6 +42,10 @@ export class Application {
 
 		this.router.host(document.body);
 	}
+
+	static waitForSeconds(seconds: number) {
+		return new Promise<void>(done => setTimeout(() => done(), seconds * 1000));
+	}
 }
 
 Application.main();

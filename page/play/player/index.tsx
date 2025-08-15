@@ -4,6 +4,7 @@ import { Player } from "../../../shared/player";
 import { PlayComponent } from "..";
 import { ClientKickMessage } from "../../../shared/messages/client";
 import { registerDismissible } from "../../shared/dismissible";
+import { IconComponent } from "../../shared/icon";
 
 export class PlayerComponent extends Component {
 	declare rootNode: HTMLElement;
@@ -32,15 +33,13 @@ export class PlayerComponent extends Component {
 			}, () => this.closeMenu());
 		});
 
-		return <ui-player ui-clickable={canOpenMenu}>
+		return <ui-player ui-can-open-menu={canOpenMenu}>
 			<ui-avatar>
+				{currentIsHost && new IconComponent('crown')}
 				{this.avatarImage = this.avatarImage ?? <img src={characterSources[this.player.character]} />}
 			</ui-avatar>
 
-			<ui-name>
-				{currentIsHost && '[Host] '}
-				{this.player.name}
-			</ui-name>
+			<ui-name>{this.player.name}</ui-name>
 
 			{this.menuOpen && <ui-menu>
 				<ui-action ui-secondary ui-click={() => {

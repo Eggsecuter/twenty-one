@@ -10,7 +10,11 @@ export class Competitor {
 	playedTrumpCards: TrumpCard[];
 
 	get sum() {
-		return this.cards.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+		return this.cards.reduce((accumulator, currentValue) => accumulator + (currentValue ?? 0), 0);
+	}
+
+	get heartCount() {
+		return this.health;
 	}
 
 	get dead() {
@@ -23,7 +27,7 @@ export class Competitor {
 	) {
 		this.reset();
 	}
-	
+
 	reset() {
 		this.bet = defaultBet;
 		this.cards = [];

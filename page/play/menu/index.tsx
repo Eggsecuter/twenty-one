@@ -21,7 +21,7 @@ export class MenuComponent extends Component {
 		if (runningGame) {
 			// todo chat, players, settings
 		}
-		
+
 		this.tabs.set('leave', new DialogLeaveComponent());
 	}
 

@@ -1,19 +1,35 @@
 import { Component } from "@acryps/page";
 import { StateComponent } from "..";
-import { ServerBoardResultMessage, ServerGameAbortMessage, ServerGameResultMessage, ServerInitialBoardMessage, ServerRoundResultMessage, ServerRoundStartMessage } from "../../../../shared/messages/server";
-import { MenuComponent } from "../../menu";
+import { Application } from "../../..";
 import { Competitor } from "../../../../shared/competitor";
 import { EventQueue } from "../../../shared/event-queue";
+import { ServerGameAbortMessage, ServerRoundStartMessage, ServerInitialBoardMessage, ServerBoardResultMessage, ServerRoundResultMessage, ServerGameResultMessage, ServerStayMessage, ServerDrawMessage, ServerUseTrumpCardMessage } from "../../../../shared/messages/server";
+import { CompetitorComponent } from "./competitor";
+import { MenuComponent } from "../../menu";
+import { ClientDrawMessage, ClientStayMessage } from "../../../../shared/messages/client";
+import { SocketMessage } from "../../../../shared/messages/message";
+import { defaultPerfectSum } from "../../../../shared/constants";
 
 export class GameComponent extends StateComponent {
-	currentRound = 0;
-	
+	perfectSum = defaultPerfectSum;
+
+	private eventQueue = new EventQueue();
+
 	private frontCompetitor: Competitor;
 	private backCompetitor: Competitor;
 	private currentCompetitorId: string;
-	
-	private eventQueue = new EventQueue();
-	
+	private actionAllowed = false;
+
+	private currentRound = 1;
+
+	private get currentCompetitor() {
+		return this.currentCompetitorId == this.frontCompetitor.player.id ? this.frontCompetitor : this.backCompetitor;
+	}
+
+	private get waitingCompetitor() {
+		return this.currentCompetitorId == this.frontCompetitor.player.id ? this.backCompetitor : this.frontCompetitor;
+	}
+
 	constructor (
 		private onabort: () => void
 	) {
@@ -32,46 +48,80 @@ export class GameComponent extends StateComponent {
 			this.parent.socket.subscribe(ServerRoundStartMessage, message => this.eventQueue.push(async () => {
 				this.currentRound = message.current;
 				this.update();
-				await this.waitForSeconds(2);
 			})),
 
 			this.parent.socket.subscribe(ServerInitialBoardMessage, message => this.eventQueue.push(async () => {
-				let startingCompetitor: Competitor;
-				let secondCompetitor: Competitor;
-				
-				if (message.startingCompetitor.id == this.frontCompetitor.player.id) {
-					startingCompetitor = this.frontCompetitor;
-					secondCompetitor = this.backCompetitor;
-				} else {
-					startingCompetitor = this.backCompetitor;
-					secondCompetitor = this.frontCompetitor;
-				}
-	
-				startingCompetitor.cards.push(message.startingCompetitor.hiddenCard);
+				this.perfectSum = defaultPerfectSum;
+				this.frontCompetitor.reset();
+				this.backCompetitor.reset();
+				this.currentCompetitorId = message.startingCompetitor.id;
+
+				this.currentCompetitor.cards.push(message.startingCompetitor.hiddenCard);
 				this.update();
-				await this.waitForSeconds(0.5);
-	
+				await Application.waitForSeconds(0.5);
+
+				this.waitingCompetitor.cards.push(message.waitingCompetitor.hiddenCard);
+				this.update();
+				await Application.waitForSeconds(0.5);
+
+				this.currentCompetitor.cards.push(message.startingCompetitor.shownCard);
+				this.update();
+				await Application.waitForSeconds(0.5);
+
+				this.waitingCompetitor.cards.push(message.waitingCompetitor.shownCard);
+				this.update();
+				await Application.waitForSeconds(0.5);
+
 				if (message.startingCompetitor.trumpCard) {
-					startingCompetitor.storedTrumpCards.push(message.startingCompetitor.trumpCard);
+					this.currentCompetitor.storedTrumpCards.push(message.startingCompetitor.trumpCard);
 					this.update();
-					await this.waitForSeconds(0.5);
+					await Application.waitForSeconds(0.5);
 				}
-				
-				secondCompetitor.cards.push(message.secondCompetitor.hiddenCard);
-				this.update();
-				await this.waitForSeconds(0.5);
-	
-				if (message.secondCompetitor.trumpCard) {
-					secondCompetitor.storedTrumpCards.push(message.secondCompetitor.trumpCard);
+
+				if (message.waitingCompetitor.trumpCard) {
+					this.waitingCompetitor.storedTrumpCards.push(message.waitingCompetitor.trumpCard);
 					this.update();
-					await this.waitForSeconds(1);
+					await Application.waitForSeconds(0.5);
 				}
-	
-				this.currentCompetitorId = startingCompetitor.player.id;
+
+				this.actionAllowed = true;
 				this.update();
 			})),
 
-			this.parent.socket.subscribe(ServerBoardResultMessage, message => message),
+			this.parent.socket.subscribe(ServerStayMessage, () => this.eventQueue.push(async () => {
+				this.switchCompetitor();
+				this.actionAllowed = true;
+				this.update();
+			})),
+
+			this.parent.socket.subscribe(ServerDrawMessage, message => this.eventQueue.push(async () => {
+				this.currentCompetitor.cards.push(message.card);
+				this.update();
+				await Application.waitForSeconds(0.5);
+
+				if (message.trumpCard) {
+					this.currentCompetitor.storedTrumpCards.push(message.trumpCard);
+					this.update();
+					await Application.waitForSeconds(0.5);
+				}
+
+				this.switchCompetitor();
+				this.actionAllowed = true;
+				this.update();
+			})),
+
+			this.parent.socket.subscribe(ServerUseTrumpCardMessage, message => message),
+
+			this.parent.socket.subscribe(ServerBoardResultMessage, message => this.eventQueue.push(async () => {
+				this.getCompetitor(message.firstCompetitor.id).cards = message.firstCompetitor.cards;
+				this.getCompetitor(message.secondCompetitor.id).cards = message.secondCompetitor.cards;
+				this.getOtherCompetitor(message.winner.id).takeDamage();
+				this.actionAllowed = false;
+
+				this.update();
+				await Application.waitForSeconds(2);
+			})),
+
 			this.parent.socket.subscribe(ServerRoundResultMessage, message => message),
 			this.parent.socket.subscribe(ServerGameResultMessage, message => message)
 		);
@@ -79,26 +129,42 @@ export class GameComponent extends StateComponent {
 
 	render() {
 		return <ui-game>
-			{new MenuComponent(true)}
-			
-			<ui-round>{this.currentRound} / {this.parent.gameSettings.roundCount}</ui-round>
-			
-			{[this.backCompetitor, this.frontCompetitor].map(competitor => <ui-competitor ui-active={this.currentCompetitorId == competitor.player.id}>
-				<ui-name>{competitor.player.name}</ui-name>
-				
-				<ui-cards>{competitor.cards.map(card => 
-					<img src={`/assets/cards/${card ?? 'back'}.png`} />
-				)}</ui-cards>
-				
-				<ui-info>stored trump cards (inventory)</ui-info>
-				<ui-stored-trump-cards>{competitor.storedTrumpCards.map(trumpCard => 
-					<img src={`/assets/trump-cards/${trumpCard.icon}.webp`} />
-				)}</ui-stored-trump-cards>
-			</ui-competitor>)}
+			<ui-header>
+				<ui-round>
+					<ui-label>Round</ui-label>
+					<ui-value>{this.currentRound}/{this.parent.gameSettings.roundCount}</ui-value>
+				</ui-round>
+
+				{new MenuComponent(true)}
+			</ui-header>
+
+			<ui-main>
+				{new CompetitorComponent(this.backCompetitor)}
+				{new CompetitorComponent(this.frontCompetitor)}
+
+				<ui-actions ui-active={this.actionAllowed && this.currentCompetitorId == this.parent.player.id}>
+					<ui-action ui-click={() => this.sendAction(new ClientDrawMessage())}>Draw</ui-action>
+					<ui-action ui-click={() => this.sendAction(new ClientStayMessage())}>Stay</ui-action>
+				</ui-actions>
+			</ui-main>
 		</ui-game>;
 	}
 
-	private waitForSeconds(seconds: number) {
-		return new Promise<void>(done => setTimeout(() => done(), seconds * 1000));
+	private sendAction(message: SocketMessage) {
+		this.actionAllowed = false;
+		this.parent.socket.send(message);
+		this.update();
+	}
+
+	private getCompetitor(id: string) {
+		return this.frontCompetitor.player.id == id ? this.frontCompetitor : this.backCompetitor;
+	}
+
+	private getOtherCompetitor(id: string) {
+		return this.frontCompetitor.player.id != id ? this.frontCompetitor : this.backCompetitor;
+	}
+
+	private switchCompetitor() {
+		this.currentCompetitorId = this.waitingCompetitor.player.id;
 	}
 }

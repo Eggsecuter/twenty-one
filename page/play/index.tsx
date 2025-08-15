@@ -60,7 +60,7 @@ export class PlayComponent extends Component {
 		// this is merely for visual feedback for the user due to the page reloading "too fast"
 		setTimeout(() => {
 			location.reload();
-			
+
 			Application.playerConfiguration = playerConfiguration;
 		}, 100);
 	}

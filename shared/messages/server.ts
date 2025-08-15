@@ -12,7 +12,8 @@ export type CompetitorReveal = {
 export type InitialBoardCompetitor = {
 	id: string,
 	trumpCard?: TrumpCard,
-	hiddenCard?: number
+	hiddenCard?: number,
+	shownCard: number
 }
 
 abstract class PlayerMessage extends SocketMessage {
@@ -78,7 +79,7 @@ export class ServerRoundStartMessage extends SocketMessage {
 export class ServerInitialBoardMessage extends SocketMessage {
 	constructor (
 		public startingCompetitor: InitialBoardCompetitor,
-		public secondCompetitor: InitialBoardCompetitor
+		public waitingCompetitor: InitialBoardCompetitor
 	) {
 		super();
 	}
@@ -88,7 +89,7 @@ export class ServerStayMessage extends SocketMessage {}
 export class ServerDrawMessage extends SocketMessage {
 	constructor (
 		public card: number,
-		public trumpCard: TrumpCard
+		public trumpCard?: TrumpCard
 	) {
 		super();
 	}

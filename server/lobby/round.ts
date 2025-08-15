@@ -9,7 +9,7 @@ import { TrumpCardPicker } from "./trump-card-picker";
 export class Round {
 	private competitors: Competitor[];
 	private currentCompetitorIndex: 0 | 1;
-	
+
 	private perfectSum: number;
 	private deck: Deck;
 	private stayCounter: number;
@@ -44,7 +44,7 @@ export class Round {
 
 		this.stayCounter++;
 		this.broadcast(new ServerStayMessage());
-		
+
 		this.endTurn();
 	}
 
@@ -58,9 +58,10 @@ export class Round {
 		const card = this.deck.draw();
 		this.current.cards.push(card);
 
-		const trumpCard = TrumpCardPicker.drawByChance(this.current);
-		this.broadcast(new ServerDrawMessage(card, trumpCard));
+		const trumpCard = TrumpCardPicker.drawByChance(this.current.storedTrumpCards.length);
+		this.current.storedTrumpCards.push(trumpCard);
 
+		this.broadcast(new ServerDrawMessage(card, trumpCard));
 		this.endTurn();
 	}
 
@@ -96,37 +97,28 @@ export class Round {
 		this.current.reset();
 		this.opponent.reset();
 
-		// draw initial hidden card for each competitor
-		this.current.cards.push(this.deck.draw());
-		this.opponent.cards.push(this.deck.draw());
+		// draw initial cards for each competitor
+		this.current.cards.push(this.deck.draw(), this.deck.draw());
+		this.opponent.cards.push(this.deck.draw(), this.deck.draw());
 
 		// at the start of each new board a trump card gets picked
-		const currentDrawnTrumpCard = TrumpCardPicker.drawCertain(this.current);
-		const opponentDrawnTrumpCard = TrumpCardPicker.drawCertain(this.opponent);
+		const currentTrumpCard = TrumpCardPicker.drawCertain(this.current.storedTrumpCards.length);
+		this.current.storedTrumpCards.push(currentTrumpCard);
+		const opponentTrumpCard = TrumpCardPicker.drawCertain(this.opponent.storedTrumpCards.length);
+		this.opponent.storedTrumpCards.push(opponentTrumpCard);
 
 		// conditional broadcast as the hidden card only gets shown to the competitor themselves
-		this.broadcast(connection => {
-			let currentHiddenCard: number;
-			let opponentHiddenCard: number;
-			
-			if (connection.player.id == this.current.player.id) {
-				currentHiddenCard = this.current.cards[0];
-			}
-			
-			if (connection.player.id == this.opponent.player.id) {
-				opponentHiddenCard = this.opponent.cards[0];
-			}
-			
-			return new ServerInitialBoardMessage({
-				id: this.current.player.id,
-				trumpCard: currentDrawnTrumpCard,
-				hiddenCard: currentHiddenCard
-			}, {
-				id: this.opponent.player.id,
-				trumpCard: opponentDrawnTrumpCard,
-				hiddenCard: opponentHiddenCard
-			});
-		});
+		this.broadcast(connection => new ServerInitialBoardMessage({
+			id: this.current.player.id,
+			trumpCard: currentTrumpCard,
+			hiddenCard: connection.player.id == this.current.player.id ? this.current.cards[0] : null,
+			shownCard: this.current.cards[1]
+		}, {
+			id: this.opponent.player.id,
+			trumpCard: opponentTrumpCard,
+			hiddenCard: connection.player.id == this.opponent.player.id ? this.opponent.cards[0] : null,
+			shownCard: this.opponent.cards[1]
+		}));
 	}
 
 	private endTurn() {
