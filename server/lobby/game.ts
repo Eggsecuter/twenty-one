@@ -61,13 +61,19 @@ export class Game {
 	}
 
 	private conclude() {
-		const firstCompetitorWonRounds = this.roundWinners.reduce((total, winner) => total + (winner.id == this.firstCompetitor.player.id ? 1 : 0), 0);
+		let firstCompetitorWonRounds = 0;
+
+		for (const roundWinner of this.roundWinners) {
+			if (roundWinner.id == this.firstCompetitor.player.id) {
+				firstCompetitorWonRounds++;
+			}
+		}
 
 		// game winner if won more than half the round (a tie isn't possible as there are only odd round counts)
-		const wonRounds = firstCompetitorWonRounds > Math.floor(this.settings.roundCount / 2)
-			? firstCompetitorWonRounds
-			: this.settings.roundCount - firstCompetitorWonRounds;
-
-		this.onconclude(this.firstCompetitor.player, wonRounds);
+		if (firstCompetitorWonRounds > Math.floor(this.settings.roundCount / 2)) {
+			this.onconclude(this.firstCompetitor.player, firstCompetitorWonRounds);
+		} else {
+			this.onconclude(this.secondCompetitor.player, this.settings.roundCount - firstCompetitorWonRounds);
+		}
 	}
 }

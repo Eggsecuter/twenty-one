@@ -122,42 +122,51 @@ export class Round {
 	}
 
 	private endTurn() {
-		if (this.stayCounter >= 2 || this.deck.empty) {
-			let winner: Competitor;
-
-			// tie if both overshot or have the same sum
-			if (this.current.sum <= this.perfectSum || this.opponent.sum <= this.perfectSum) {
-				if (this.current.sum > this.perfectSum) {
-					winner = this.opponent;
-				} else if (this.opponent.sum > this.perfectSum) {
-					winner = this.current;
-				} else if (this.current.sum > this.opponent.sum) {
-					winner = this.current;
-				} else if (this.opponent.sum > this.current.sum) {
-					winner = this.opponent;
-				}
-			}
-
-			winner?.takeDamage();
-
-			this.broadcast(new ServerBoardResultMessage({
-				id: this.current.player.id,
-				cards: this.current.cards
-			}, {
-				id: this.opponent.player.id,
-				cards: this.opponent.cards
-			}, winner?.player));
-
-			if (this.current.dead) {
-				this.onconclude(this.opponent);
-			} else if (this.opponent.dead) {
-				this.onconclude(this.current);
-			} else {
-				this.initializeBoard();
-			}
-		} else {
-			// swap after each turn
+		if (this.stayCounter < 2 && !this.deck.empty) {
+			// swap beginning player after each turn
 			this.currentCompetitorIndex = this.currentCompetitorIndex ? 0 : 1;
+
+			return;
+		}
+
+		const winner = this.getWinner();
+
+		if (winner) {
+			const loser = winner == this.current ? this.opponent : this.current;
+			loser.takeDamage();
+		}
+
+		this.broadcast(new ServerBoardResultMessage(
+			{ id: this.current.player.id, cards: this.current.cards },
+			{ id: this.opponent.player.id, cards: this.opponent.cards },
+			winner?.player
+		));
+
+		// end round if either player is dead else play new hands
+		if (this.current.dead) {
+			this.onconclude(this.opponent);
+		} else if (this.opponent.dead) {
+			this.onconclude(this.current);
+		} else {
+			this.initializeBoard();
+		}
+	}
+
+	private getWinner() {
+		// tie -> both overshot
+		if (this.current.sum > this.perfectSum && this.opponent.sum > this.perfectSum) {
+			return;
+		}
+
+		// tie -> same sum
+		if (this.current.sum == this.opponent.sum) {
+			return;
+		}
+
+		if (this.current.sum <= this.perfectSum && (this.current.sum > this.opponent.sum || this.opponent.sum > this.perfectSum)) {
+			return this.current;
+		} else {
+			return this.opponent;
 		}
 	}
 }
