@@ -6,7 +6,7 @@ export class ChatMessagesComponent extends Component {
 	declare rootNode: HTMLElement;
 	declare parent: ChatComponent;
 
-	private scrollOffsetTolerance = 10;
+	private scrollOffsetTolerance = 30;
 
 	constructor (
 		private chatMessages: ChatMessage[]
