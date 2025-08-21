@@ -140,13 +140,13 @@ export class Round {
 
 			winner?.takeDamage();
 
-			this.broadcast(new ServerBoardResultMessage(winner?.player, {
+			this.broadcast(new ServerBoardResultMessage({
 				id: this.current.player.id,
 				cards: this.current.cards
 			}, {
 				id: this.opponent.player.id,
 				cards: this.opponent.cards
-			}))
+			}, winner?.player));
 
 			if (this.current.dead) {
 				this.onconclude(this.opponent);

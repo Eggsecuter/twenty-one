@@ -104,9 +104,9 @@ export class ServerUseTrumpCardMessage extends SocketMessage {
 
 export class ServerBoardResultMessage extends SocketMessage {
 	constructor (
-		public winner: Player,
 		public firstCompetitor: CompetitorReveal,
-		public secondCompetitor: CompetitorReveal
+		public secondCompetitor: CompetitorReveal,
+		public winner?: Player
 	) {
 		super();
 	}

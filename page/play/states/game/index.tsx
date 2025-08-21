@@ -123,11 +123,18 @@ export class GameComponent extends StateComponent {
 			this.parent.socket.subscribe(ServerUseTrumpCardMessage, message => message),
 
 			this.parent.socket.subscribe(ServerBoardResultMessage, message => this.eventQueue.push(async () => {
-				this.setInfo(`${message.winner.name} won the round!`, 2);
+				this.setInfo(`The winner is...`, 2);
+				await Application.waitForSeconds(2);
+
+				this.setInfo(message.winner ? message.winner.name : `It's a tie!`, 2);
 
 				this.getCompetitor(message.firstCompetitor.id).cards = message.firstCompetitor.cards;
 				this.getCompetitor(message.secondCompetitor.id).cards = message.secondCompetitor.cards;
-				this.getOtherCompetitor(message.winner.id).takeDamage();
+
+				if (message.winner) {
+					this.getOtherCompetitor(message.winner.id).takeDamage();
+				}
+
 				this.actionAllowed = false;
 
 				this.update();
