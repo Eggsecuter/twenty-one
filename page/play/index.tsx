@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { SocketService } from "../../shared/messages/service";
-import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerKickMessage, ServerGameStartMessage, ServerGameEndMessage } from "../../shared/messages/server";
+import { ServerPlayerJoinMessage, ServerPlayerLeaveMessage, ServerInitialJoinMessage, ServerKickMessage, ServerGameStartMessage, ServerGameEndMessage, ServerChatMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Application } from "..";
 import { PlayerConfigurationMessage } from "../../shared/messages/client";
@@ -71,11 +71,11 @@ export class PlayComponent extends Component {
 		</ui-play>;
 	}
 
-	private async join() {
+	private join() {
 		const socket = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}/join/${this.parameters.token}`);
 		const socketService = new SocketService(socket);
 
-		return await new Promise<boolean>(async done => {
+		return new Promise<boolean>(async done => {
 			socket.onclose = () => done(false);
 
 			socket.onopen = async () => {
@@ -89,6 +89,8 @@ export class PlayComponent extends Component {
 					this.players = [...message.peers, this.player];
 
 					this.chatComponent = new ChatComponent(message.chatMessages);
+					this.socket.subscribe(ServerChatMessage, message => this.chatComponent.addChatMessage(message.chatMessage));
+
 					this.gameSettings = message.gameSettings;
 
 					socket.onclose = () => this.switchState(new ConnectionLostComponent());
@@ -136,7 +138,7 @@ export class PlayComponent extends Component {
 	}
 
 	private switchState(component: StateComponent) {
-		this.currentState.onunsubscribe(this.socket);
+		this.currentState.closeSubscriptions(this.socket);
 
 		this.currentState = component;
 		this.update();

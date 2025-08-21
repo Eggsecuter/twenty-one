@@ -7,10 +7,16 @@ import { StateComponent } from "../states";
 export class ChatComponent extends Component {
 	declare parent: StateComponent;
 
-	constructor (
-		private chatMessages: ChatMessage[]
-	) {
+	private chatMessagesComponent: ChatMessagesComponent;
+
+	constructor(chatMessages: ChatMessage[]) {
 		super();
+
+		this.chatMessagesComponent = new ChatMessagesComponent(chatMessages);
+	}
+
+	addChatMessage(message: ChatMessage) {
+		this.chatMessagesComponent.addMessage(message);
 	}
 
 	render() {
@@ -28,7 +34,7 @@ export class ChatComponent extends Component {
 		});
 
 		return <ui-chat>
-			{new ChatMessagesComponent(this.chatMessages)}
+			{this.chatMessagesComponent}
 
 			{input = <input placeholder='Enter message' />}
 		</ui-chat>;

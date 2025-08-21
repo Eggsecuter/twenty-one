@@ -59,7 +59,7 @@ export class Lobby {
 
 		const joinMessage = `${playerConnection.player.name} ${this.playerConnections.length == 1 ? 'started hosting' : 'joined'}`;
 		this.audit(joinMessage);
-		this.sendSystemChatMessage(joinMessage);
+		this.sendAndAuditSystemChatMessage(joinMessage);
 	}
 
 	leave(leavingPlayerConnection: PlayerConnection) {
@@ -70,33 +70,27 @@ export class Lobby {
 		this.playerConnections.splice(this.playerConnections.findIndex(other => other.player.id == leavingPlayerConnection.player.id), 1);
 		this.broadcast(new ServerPlayerLeaveMessage(leavingPlayerConnection.player));
 
-		const leaveMessage = `${leavingPlayerConnection.player.name} left`;
-		this.audit(leaveMessage);
+		this.sendAndAuditSystemChatMessage(`${leavingPlayerConnection.player.name} left`);
 
-		if (!this.playerConnections.length) {
+		if (this.playerConnections.length) {
+			if (abortGame) {
+				this.game.close();
+				this.game = null;
+
+				this.broadcast(new ServerGameAbortMessage());
+				this.sendAndAuditSystemChatMessage(`Game has been aborted due to missing player`);
+			}
+
+			if (hostLeaving) {
+				this.sendAndAuditSystemChatMessage(`${this.host?.player.name} is now hosting`);
+			}
+		} else {
 			this.closingTimeout = setTimeout(() => {
 				if (!this.playerConnections.length) {
 					this.audit('closing lobby');
 					this.onclose();
 				}
 			}, emptyLobbyClosingDelay);
-		} else {
-			this.sendSystemChatMessage(leaveMessage);
-
-			if (hostLeaving) {
-				const hostChangeMessage = `${this.host?.player.name} is now hosting`;
-
-				this.audit(hostChangeMessage);
-				this.sendSystemChatMessage(hostChangeMessage);
-			}
-
-			if (abortGame) {
-				this.game.close();
-				this.game = null;
-
-				this.audit('game aborted (a competitor left)');
-				this.broadcast(new ServerGameAbortMessage());
-			}
 		}
 	}
 
@@ -116,10 +110,7 @@ export class Lobby {
 		this.playerConnections[kickedPlayerIndex].socket.disable();
 		this.playerConnections.splice(kickedPlayerIndex, 1);
 
-		// broadcast kick message
-		const hostChangeMessage = `${this.host.player.name} kicked ${playerConnection.player.name}`;
-		this.audit(hostChangeMessage);
-		this.sendSystemChatMessage(hostChangeMessage);
+		this.sendAndAuditSystemChatMessage(`${this.host.player.name} kicked ${playerConnection.player.name}`);
 	}
 
 	private updateSettings(gameSettings: GameSettings) {
@@ -159,12 +150,12 @@ export class Lobby {
 		return this.host.player.id == player.id;
 	}
 
-	private sendSystemChatMessage(message: string) {
+	private sendAndAuditSystemChatMessage(message: string) {
 		const serverChatMessage = new ServerChatMessage(message);
-
 		this.chatMessages.push(serverChatMessage.chatMessage);
-
 		this.broadcast(serverChatMessage);
+
+		this.audit(message);
 	}
 
 	private receiveChatMessage(message: string, player: Player) {

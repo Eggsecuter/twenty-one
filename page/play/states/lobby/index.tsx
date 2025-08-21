@@ -19,13 +19,11 @@ export class LobbyComponent extends StateComponent {
 	}
 
 	onload() {
-		this.subscriptions.push(
-			this.parent.socket.subscribe(ServerGameSettingsMessage, message => {
-				this.parent.gameSettings = message.gameSettings;
+		this.addSocketSubscription(ServerGameSettingsMessage, message => {
+			this.parent.gameSettings = message.gameSettings;
 
-				this.settingsComponent.reload();
-			})
-		);
+			this.settingsComponent.reload();
+		});
 	}
 
 	render() {

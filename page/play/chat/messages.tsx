@@ -1,7 +1,6 @@
 import { Component } from "@acryps/page";
 import { ChatComponent } from ".";
 import { ChatMessage } from "../../../shared/chat-message";
-import { ServerChatMessage } from "../../../shared/messages/server";
 
 export class ChatMessagesComponent extends Component {
 	declare rootNode: HTMLElement;
@@ -16,29 +15,27 @@ export class ChatMessagesComponent extends Component {
 	}
 
 	onload() {
-		this.parent.parent.subscriptions.push(
-			this.parent.parent.parent.socket.subscribe(ServerChatMessage, message => {
-				this.chatMessages.push(message.chatMessage);
-
-				const scrolledToBottom = message.chatMessage.player?.id == this.parent.parent.parent.player.id || this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight + this.scrollOffsetTolerance;
-				const scrollY = this.rootNode.scrollTop;
-
-				this.update();
-
-				requestAnimationFrame(() => {
-					// if scrolled to bottom automatically scroll down with new messages
-					this.rootNode.scrollTo({
-						top: scrolledToBottom ? this.rootNode.scrollHeight : scrollY,
-						behavior: 'instant'
-					});
-				});
-			})
-		);
-
 		// scroll to bottom initially
 		requestAnimationFrame(() => {
 			this.rootNode.scrollTo({
 				top: this.rootNode.scrollHeight,
+				behavior: 'instant'
+			});
+		});
+	}
+
+	addMessage(message: ChatMessage) {
+		this.chatMessages.push(message);
+
+		const scrolledToBottom = message.player?.id == this.parent.parent.parent.player.id || this.rootNode.scrollHeight - this.rootNode.scrollTop <= this.rootNode.clientHeight + this.scrollOffsetTolerance;
+		const scrollY = this.rootNode.scrollTop;
+
+		this.update();
+
+		requestAnimationFrame(() => {
+			// if scrolled to bottom automatically scroll down with new messages
+			this.rootNode.scrollTo({
+				top: scrolledToBottom ? this.rootNode.scrollHeight : scrollY,
 				behavior: 'instant'
 			});
 		});
