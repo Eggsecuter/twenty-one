@@ -1,6 +1,6 @@
 import { Component } from "@acryps/page";
 import { registerDismissible } from "../../shared/dismissible";
-import { Icon, IconComponent } from "../../shared/icon";
+import { Icon, IconComponent } from "../../shared";
 import { DialogLeaveComponent } from "./leave";
 
 export class MenuComponent extends Component {

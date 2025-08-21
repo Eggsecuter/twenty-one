@@ -15,7 +15,7 @@ export class Game {
 		private secondCompetitor: PlayerConnection,
 		private settings: GameSettings,
 		private broadcast: (message: BroadcastMessage) => void,
-		private onconclude: (winner: Player, loser: Player, winnerWonRounds: number) => void
+		private onconclude: (winner: Player, wonRounds: number) => void
 	) {
 		this.nextRound();
 
@@ -64,10 +64,10 @@ export class Game {
 		const firstCompetitorWonRounds = this.roundWinners.reduce((total, winner) => total + (winner.id == this.firstCompetitor.player.id ? 1 : 0), 0);
 
 		// game winner if won more than half the round (a tie isn't possible as there are only odd round counts)
-		const winnerWonRounds = firstCompetitorWonRounds > Math.floor(this.settings.roundCount / 2)
+		const wonRounds = firstCompetitorWonRounds > Math.floor(this.settings.roundCount / 2)
 			? firstCompetitorWonRounds
 			: this.settings.roundCount - firstCompetitorWonRounds;
 
-		this.onconclude(this.firstCompetitor.player, this.secondCompetitor.player, winnerWonRounds);
+		this.onconclude(this.firstCompetitor.player, wonRounds);
 	}
 }

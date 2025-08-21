@@ -2,7 +2,7 @@ import { Component } from "@acryps/page";
 import { Competitor } from "../../../../shared/competitor";
 import { PlayerComponent } from "../../player";
 import { GameComponent } from ".";
-import { IconComponent } from "../../../shared/icon";
+import { IconComponent } from "../../../shared";
 
 export class CompetitorComponent extends Component {
 	declare parent: GameComponent;

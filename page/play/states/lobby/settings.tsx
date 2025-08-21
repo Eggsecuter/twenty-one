@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { GameSettings, playerHealthOptions, roundCountOptions } from "../../../../shared/game-settings";
 import { LobbyComponent } from ".";
-import { IconComponent } from "../../../shared/icon";
+import { IconComponent } from "../../../shared";
 
 export class SettingsComponent extends Component {
 	declare parent: LobbyComponent;
@@ -44,7 +44,7 @@ export class SettingsComponent extends Component {
 				if (this.parent.parent.players.length >= 2) {
 					this.onstartgame();
 				}
-			}}>Start Game</ui-action>
+			}}>{this.parent.parent.isHost() ? 'Start Game' : 'Waiting for host...'}</ui-action>
 		</ui-settings>;
 	}
 

@@ -4,7 +4,7 @@ import { Player } from "../../../shared/player";
 import { PlayComponent } from "..";
 import { ClientKickMessage } from "../../../shared/messages/client";
 import { registerDismissible } from "../../shared/dismissible";
-import { IconComponent } from "../../shared/icon";
+import { IconComponent } from "../../shared";
 
 export class PlayerComponent extends Component {
 	declare rootNode: HTMLElement;

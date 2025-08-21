@@ -130,8 +130,8 @@ export class Lobby {
 			this.playerConnections[1],
 			this.settings,
 			message => this.broadcast(message),
-			(winner, loser, winnerWonRounds) => {
-				this.broadcast(new ServerGameResultMessage(winner, loser, winnerWonRounds));
+			(winner, wonRounds) => {
+				this.broadcast(new ServerGameResultMessage(winner, wonRounds));
 			}
 		)
 

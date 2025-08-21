@@ -181,4 +181,85 @@
 			}
 		}
 	}
+
+	> ui-result {
+		position: fixed;
+		inset: 0;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		backdrop-filter: blur(3px);
+		z-index: 100;
+
+		> ui-panel {
+			display: block;
+			margin: 2rem;
+			padding: 3rem;
+
+			color: var(--color-primary);
+			background: var(--color-background-dimmed);
+			box-shadow: var(--box-shadow);
+			border-radius: 2rem;
+
+			text-align: center;
+
+			> ui-title {
+				display: block;
+				margin-bottom: 2rem;
+
+				font-size: 2.5rem;
+			}
+
+			> ui-winner {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin-bottom: 5rem;
+
+				> ui-avatar {
+					position: relative;
+
+					display: block;
+					margin-bottom: 2rem;
+
+					> img {
+						display: block;
+						width: 8rem;
+
+						border-radius: 50%;
+						border: 5px solid var(--color-primary-dimmed);
+					}
+
+					> svg {
+						position: absolute;
+						bottom: 5%;
+						right: 0;
+
+						fill: var(--color-primary);
+						transform: rotate(20deg) scale(3);
+					}
+				}
+
+				> ui-name {
+					display: block;
+					margin-bottom: 0.5rem;
+
+					font-size: 1.2rem;
+				}
+
+				> ui-rounds-won {
+					display: block;
+					color: var(--color-primary-dimmed);
+				}
+			}
+
+			> ui-action {
+				@include components.action;
+
+				margin-top: auto;
+			}
+		}
+	}
 }}

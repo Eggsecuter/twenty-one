@@ -10,6 +10,7 @@ import { ClientDrawMessage, ClientStayMessage } from "../../../../shared/message
 import { SocketMessage } from "../../../../shared/messages/message";
 import { defaultPerfectSum } from "../../../../shared/constants";
 import { Observable } from "@acryps/page-observable";
+import { ResultComponent } from "./result";
 
 export class GameComponent extends StateComponent {
 	perfectSum = defaultPerfectSum;
@@ -24,6 +25,8 @@ export class GameComponent extends StateComponent {
 	private info = new Observable<string>();
 
 	private currentRound = 1;
+
+	private resultComponent: ResultComponent;
 
 	private get currentCompetitor() {
 		return this.currentCompetitorId == this.frontCompetitor.player.id ? this.frontCompetitor : this.backCompetitor;
@@ -146,7 +149,8 @@ export class GameComponent extends StateComponent {
 		}));
 
 		this.addSocketSubscription(ServerGameResultMessage, message => this.eventQueue.push(async () => {
-			// TODO
+			this.resultComponent = new ResultComponent(message);
+			this.update();
 		}));
 	}
 
@@ -175,6 +179,8 @@ export class GameComponent extends StateComponent {
 					<ui-action ui-click={() => this.sendAction(new ClientStayMessage())}>Stay</ui-action>
 				</ui-actions>
 			</ui-main>
+
+			{this.resultComponent ?? ''}
 		</ui-game>;
 	}
 

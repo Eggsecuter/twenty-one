@@ -123,8 +123,7 @@ export class ServerRoundResultMessage extends SocketMessage {
 export class ServerGameResultMessage extends SocketMessage {
 	constructor (
 		public winner: Player,
-		public loser: Player,
-		public winnerWonRounds: number
+		public wonRounds: number
 	) {
 		super();
 	}

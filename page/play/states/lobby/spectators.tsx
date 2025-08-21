@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { LobbyComponent } from ".";
 import { PlayerComponent } from "../../player";
-import { IconComponent } from "../../../shared/icon";
+import { IconComponent } from "../../../shared";
 
 export class SpectatorsComponent extends Component {
 	declare parent: LobbyComponent;
