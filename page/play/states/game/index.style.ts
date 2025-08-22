@@ -246,7 +246,6 @@ export const gameStyle = () => child('ui-game') (
 						bottom(percentage(5)),
 						right(0),
 
-						background(colorPrimary),
 						transform(rotate(deg(20)), scale(3))
 					)
 				),

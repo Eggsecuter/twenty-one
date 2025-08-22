@@ -71,11 +71,7 @@ export const lobbyStyle = () => child('ui-lobby') (
 			gap(rem(0.5)),
 
 			color(colorPrimary),
-			fontSize(rem(1.2)),
-
-			child('ui-icon') (
-				color(colorPrimary)
-			)
+			fontSize(rem(1.2))
 		),
 
 		child('ui-hint') (
@@ -119,12 +115,9 @@ export const lobbyStyle = () => child('ui-lobby') (
 			display('flex'),
 			alignItems('center'),
 			gap(rem(0.5)),
-			color(colorPrimary),
-			fontSize(rem(1.2)),
 
-			child('ui-icon') (
-				color(colorPrimary)
-			)
+			color(colorPrimary),
+			fontSize(rem(1.2))
 		),
 
 		child('ui-configurable') (
