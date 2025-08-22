@@ -4,7 +4,7 @@ import { Player } from "../../../shared/player";
 import { PlayComponent } from "..";
 import { ClientKickMessage } from "../../../shared/messages/client";
 import { registerDismissible } from "../../shared/dismissible";
-import { IconComponent } from "../../shared";
+import { crownIcon } from "../../built/icons";
 
 export class PlayerComponent extends Component {
 	declare rootNode: HTMLElement;
@@ -35,7 +35,7 @@ export class PlayerComponent extends Component {
 
 		return <ui-player ui-can-open-menu={canOpenMenu}>
 			<ui-avatar>
-				{currentIsHost && new IconComponent('crown')}
+				{currentIsHost && crownIcon()}
 				{this.avatarImage = this.avatarImage ?? <img src={characterSources[this.player.character]} />}
 			</ui-avatar>
 

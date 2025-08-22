@@ -2,7 +2,7 @@ import { Component } from "@acryps/page";
 import { Competitor } from "../../../../shared/competitor";
 import { PlayerComponent } from "../../player";
 import { GameComponent } from ".";
-import { IconComponent } from "../../../shared";
+import { heartEmptyIcon, heartFilledIcon } from "../../../built/icons";
 
 export class CompetitorComponent extends Component {
 	declare parent: GameComponent;
@@ -19,7 +19,7 @@ export class CompetitorComponent extends Component {
 				{new PlayerComponent(this.parent.parent, this.competitor.player)}
 
 				<ui-hearts>{Array(this.parent.parent.gameSettings.playerHealth).fill('').map((_, index) =>
-					new IconComponent(index < this.competitor.heartCount ? 'heart-filled' : 'heart-empty')
+					index < this.competitor.heartCount ? heartFilledIcon() : heartEmptyIcon()
 				)}</ui-hearts>
 
 				<ui-bet>{this.competitor.bet.toString().padStart(2, '0')}</ui-bet>

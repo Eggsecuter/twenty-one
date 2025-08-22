@@ -5,6 +5,7 @@ import { HomeComponent } from './home';
 import { PlayComponent } from './play';
 import { GuideComponent } from './guide';
 import { PlayerConfiguration } from './shared/player-configuration';
+import { applicationStyle } from './page.style';
 
 export class Application {
 	static router: Router;
@@ -39,6 +40,8 @@ export class Application {
 		this.router.onundefinedroute = () => this.router.navigate('/');
 
 		registerDirectives(Component, this.router);
+
+		applicationStyle().apply();
 
 		this.router.host(document.body);
 	}

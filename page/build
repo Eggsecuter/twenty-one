@@ -1,15 +1,12 @@
 const { build, context } = require('esbuild');
 const { execSync } = require('child_process');
-const { readFileSync, writeFileSync, mkdirSync, copyFileSync } = require('fs');
+const { readFileSync, writeFileSync, mkdirSync } = require('fs');
 const pageCompile = require('@acryps/esbuild-page');
-const sassPlugin = require('esbuild-sass-plugin').sassPlugin;
 
 const mode = process.argv[2];
 const commit = execSync('git rev-parse HEAD').toString().trim();
 
 mkdirSync('built', { recursive: true });
-
-copyFileSync('index.html', 'built/index.html');
 
 // replace js factory
 const typescriptConfiguration = JSON.parse(readFileSync('tsconfig.json'));
@@ -18,7 +15,7 @@ typescriptConfiguration.compilerOptions.jsxFactory = 'this.createElement';
 writeFileSync(typescriptConfigurationLocation, JSON.stringify(typescriptConfiguration));
 
 const options = {
-	entryPoints: ['index.ts', 'index.scss'],
+	entryPoints: ['index.ts'],
 	bundle: true,
 	minify: true,
 	sourcemap: true,
@@ -27,10 +24,7 @@ const options = {
 	chunkNames: 'fragment/[hash]',
 	target: 'es6',
 	outdir: 'built',
-	plugins: [
-		pageCompile,
-		sassPlugin()
-	],
+	plugins: [pageCompile],
 	tsconfig: typescriptConfigurationLocation,
 	define: {
 		buildMode: JSON.stringify(mode),
@@ -42,18 +36,18 @@ const options = {
 switch (mode) {
 	case 'bundle': {
 		options.sourcemap = false;
-	
+
 		build(options);
-		
+
 		break;
 	}
-	
+
 	case 'watch': {
 		context(options).then(build => build.watch());
-		
+
 		break;
 	}
-	
+
 	default: {
 		throw new Error(`Unknown build mode '${mode}'`);
 	}

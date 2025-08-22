@@ -1,7 +1,7 @@
 import { Component } from "@acryps/page";
 import { GameSettings, playerHealthOptions, roundCountOptions } from "../../../../shared/game-settings";
 import { LobbyComponent } from ".";
-import { IconComponent } from "../../../shared";
+import { optionsIcon } from "../../../built/icons";
 
 export class SettingsComponent extends Component {
 	declare parent: LobbyComponent;
@@ -21,7 +21,7 @@ export class SettingsComponent extends Component {
 
 	render() {
 		return <ui-settings ui-disabled={!this.parent.parent.isHost()}>
-			<ui-title>{new IconComponent('options')} Settings</ui-title>
+			<ui-title>{optionsIcon()} Settings</ui-title>
 
 			<ui-configurable>
 				<ui-setting>

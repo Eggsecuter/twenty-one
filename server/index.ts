@@ -31,10 +31,11 @@ app.use((request, response, next) => {
 
 new LobbyManager(app);
 
-app.use('/built', express.static(join(process.cwd(), '..', 'page', 'built')));
+app.use('/assets/icons', express.static(join(process.cwd(), '..', 'page', 'built', 'icons', 'font')));
 app.use('/assets', express.static(join(process.cwd(), '..', 'page', 'assets')));
-app.use('/', express.static(join(process.cwd(), '..', 'page', 'built')));
-app.use('*', express.static(join(process.cwd(), '..', 'page', 'built', 'index.html')));
+app.use('/built', express.static(join(process.cwd(), '..', 'page', 'built')));
+
+app.use('*', (_, response) => response.sendFile(join(process.cwd(), '..', 'page', 'assets', 'index.html')));
 
 const port = +process.env.PORT! || 3000;
 

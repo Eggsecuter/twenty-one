@@ -3,7 +3,7 @@ import { ServerGameResultMessage } from "../../../../shared/messages/server";
 import { GameComponent } from ".";
 import { ClientGameEndMessage } from "../../../../shared/messages/client";
 import { characterSources } from "../../../shared/characters-sources";
-import { IconComponent } from "../../../shared";
+import { trophyIcon } from "../../../built/icons";
 
 export class ResultComponent extends Component {
 	declare parent: GameComponent;
@@ -33,7 +33,7 @@ export class ResultComponent extends Component {
 				<ui-winner>
 					<ui-avatar>
 						<img src={characterSources[this.result.winner.character]} />
-						{new IconComponent('trophy')}
+						{trophyIcon()}
 					</ui-avatar>
 
 					<ui-name>{this.result.winner.name}</ui-name>
