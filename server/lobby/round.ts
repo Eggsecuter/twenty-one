@@ -34,6 +34,7 @@ export class Round {
 			new Competitor(secondCompetitor, startHealth)
 		];
 
+		this.currentCompetitorIndex = Math.random() < 0.5 ? 0 : 1;
 		this.initializeBoard();
 	}
 
@@ -87,9 +88,6 @@ export class Round {
 	}
 
 	private initializeBoard() {
-		// who begins is random
-		this.currentCompetitorIndex = Math.random() < 0.5 ? 0 : 1;
-
 		this.perfectSum = defaultPerfectSum;
 		this.stayCounter = 0;
 		this.deck = new Deck();
