@@ -1,10 +1,14 @@
-import { child, display, flexDirection, width, percentage, height, justifyContent, padding, rem, color, flexGrow, gap, margin, borderRadius, background, fontSize, flexWrap, position, marginRight, border, fontFamily, content, left, transform, maxHeight, maxWidth, aspectRatio, overflow, objectFit, opacity, pointerEvents, attribute, inset, alignItems, backdropFilter, zIndex, textAlign, marginBottom, bottom, right, marginTop, marginInline, paddingBlock, paddingInline, px, top, translateX, ratio, blur, rotate, deg, scale, before, flexBasis, flexShrink, seconds, is, repeatingLinearGradient, hex, colorStop, backgroundImage, perspective, rotateX, boxShadow, rgb, firstOfType } from "@acryps/style";
+import { seconds, child, display, flexDirection, width, percentage, height, justifyContent, padding, rem, color, flexGrow, flexShrink, flexBasis, is, gap, firstOfType, position, marginRight, borderRadius, border, px, background, fontFamily, fontSize, before, content, left, transform, translateX, paddingInline, flexWrap, alignItems, paddingBlock, maxHeight, maxWidth, aspectRatio, ratio, overflow, attribute, objectFit, bottom, right, opacity, pointerEvents, inset, backdropFilter, zIndex, margin, textAlign, marginBottom, rotate, deg, scale, marginTop, blur, top, Keyframes, vw } from "@acryps/style";
 import { colorPrimaryDimmed, colorPrimary, colorBackgroundDimmed, colorCard, action, panelBoxShadow } from "../../../global.style";
 import { menuStyle } from "../../menu/index.style";
 import { playerStyle } from "../../player/index.style";
 
 export const roundAnimationDuration = seconds(2);
 export const dealCardAnimationDuration = seconds(0.5);
+
+const dealCardAnimation = new Keyframes('ui-deal')
+	.addKeyframe('from', transform(translateX(vw(100)), rotate(deg(Math.random() * 30 + 60))))
+	.addKeyframe('to', transform(translateX(0), rotate(0)));
 
 export const gameStyle = () => child('ui-game') (
 	display('flex'),
@@ -156,6 +160,10 @@ export const gameStyle = () => child('ui-game') (
 
 						background(colorCard),
 						overflow('hidden'),
+
+						attribute('ui-deal') (
+							dealCardAnimation.animate(dealCardAnimationDuration, 'ease-out')
+						),
 
 						child('img') (
 							display('block'),

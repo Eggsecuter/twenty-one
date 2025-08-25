@@ -11,6 +11,8 @@ export class BoardCompetitorComponent extends Component {
 	private isLocalPlayer = false;
 	private actionRequired = false;
 
+	private cardsElement: HTMLElement;
+
 	get competitor() {
 		return GameComponent.context.competitorContexts[this.competitorContextIndex].competitor;
 	}
@@ -31,7 +33,11 @@ export class BoardCompetitorComponent extends Component {
 
 	async dealCard(card: number) {
 		this.competitor.cards.push(card);
-		this.update();
+
+		this.cardsElement.appendChild(
+			this.renderCard(card, true)
+		);
+
 		await Application.waitForSeconds(+dealCardAnimationDuration.value);
 	}
 
@@ -77,12 +83,7 @@ export class BoardCompetitorComponent extends Component {
 		}
 
 		return <ui-competitor-board>
-			<ui-cards>{this.competitor.cards.map(card =>
-				<ui-card>
-					<img src={`/assets/cards/${card ?? 'back'}.png`} />
-				</ui-card>
-			)}</ui-cards>
-
+			{this.cardsElement = <ui-cards>{this.competitor.cards.map(card => this.renderCard(card))}</ui-cards>}
 			<ui-sum>{sumText} / {defaultPerfectSum}</ui-sum>
 
 			{this.isLocalPlayer && <ui-actions ui-active={this.actionRequired}>
@@ -90,6 +91,12 @@ export class BoardCompetitorComponent extends Component {
 				<ui-action ui-click={() => this.sendAction(new ClientStayMessage())}>Stay</ui-action>
 			</ui-actions>}
 		</ui-competitor-board>;
+	}
+
+	renderCard(card: number, deal: boolean = false): HTMLElement {
+		return <ui-card ui-deal={deal}>
+			<img src={`/assets/cards/${card ?? 'back'}.png`} />
+		</ui-card>;
 	}
 
 	private sendAction(message: SocketMessage) {
