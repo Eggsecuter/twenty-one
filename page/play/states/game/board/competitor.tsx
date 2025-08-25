@@ -85,10 +85,10 @@ export class BoardCompetitorComponent extends Component {
 
 			<ui-sum>{sumText} / {defaultPerfectSum}</ui-sum>
 
-			<ui-actions ui-active={this.isLocalPlayer && this.actionRequired}>
+			{this.isLocalPlayer && <ui-actions ui-active={this.actionRequired}>
 				<ui-action ui-click={() => this.sendAction(new ClientDrawMessage())}>Draw</ui-action>
 				<ui-action ui-click={() => this.sendAction(new ClientStayMessage())}>Stay</ui-action>
-			</ui-actions>
+			</ui-actions>}
 		</ui-competitor-board>;
 	}
 

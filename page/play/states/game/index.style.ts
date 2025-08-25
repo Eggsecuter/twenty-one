@@ -1,4 +1,4 @@
-import { child, display, flexDirection, width, percentage, height, justifyContent, padding, rem, color, flexGrow, gap, margin, borderRadius, background, fontSize, flexWrap, position, marginRight, border, fontFamily, content, left, transform, maxHeight, maxWidth, aspectRatio, overflow, objectFit, opacity, pointerEvents, attribute, inset, alignItems, backdropFilter, zIndex, textAlign, marginBottom, bottom, right, marginTop, marginInline, paddingBlock, paddingInline, px, top, translateX, ratio, blur, rotate, deg, scale, nthOfType, before, flexBasis, flexShrink, seconds, is } from "@acryps/style";
+import { child, display, flexDirection, width, percentage, height, justifyContent, padding, rem, color, flexGrow, gap, margin, borderRadius, background, fontSize, flexWrap, position, marginRight, border, fontFamily, content, left, transform, maxHeight, maxWidth, aspectRatio, overflow, objectFit, opacity, pointerEvents, attribute, inset, alignItems, backdropFilter, zIndex, textAlign, marginBottom, bottom, right, marginTop, marginInline, paddingBlock, paddingInline, px, top, translateX, ratio, blur, rotate, deg, scale, before, flexBasis, flexShrink, seconds, is, repeatingLinearGradient, hex, colorStop, backgroundImage, perspective, rotateX, boxShadow, rgb, firstOfType } from "@acryps/style";
 import { colorPrimaryDimmed, colorPrimary, colorBackgroundDimmed, colorCard, action, panelBoxShadow } from "../../../global.style";
 import { menuStyle } from "../../menu/index.style";
 import { playerStyle } from "../../player/index.style";
@@ -48,7 +48,7 @@ export const gameStyle = () => child('ui-game') (
 				gap(rem(1)),
 
 				child('*') (
-					nthOfType(1) (
+					firstOfType() (
 						flexDirection('column-reverse')
 					)
 				)
@@ -180,6 +180,11 @@ export const gameStyle = () => child('ui-game') (
 				),
 
 				child('ui-actions') (
+					position('fixed'),
+					bottom(rem(1)),
+					left(0),
+					right(0),
+
 					display('flex'),
 					justifyContent('center'),
 					gap(rem(1)),

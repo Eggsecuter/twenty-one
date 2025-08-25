@@ -1,7 +1,7 @@
 import { attribute, background, border, borderColor, borderRadius, boxShadow, child, color, cursor, display, flexBasis, flexGrow, flexShrink, fontSize, gap, hex, hover, Keyframes, marginBottom, maxWidth, minHeight, minWidth, not, opacity, padding, percentage, pointerEvents, px, rem, textAlign, textTransform, transform, translateX, width } from "@acryps/style";
 
 // variables
-export const colorPrimary = hex('DBC5A7');
+export const colorPrimary = hex('dbc5a7');
 export const colorPrimaryDimmed = hex('928579');
 
 export const colorBackground = hex('323649');
@@ -9,7 +9,7 @@ export const colorBackgroundDimmed = hex('20222d');
 
 export const colorError = hex('ff3737');
 export const colorSystem = hex('6b6b6b');
-export const colorCard = hex('fffaf0');
+export const colorCard = hex('fffffc');
 
 export const boxShadowColor = hex('242424');
 export const navigationBoxShadow = boxShadow(boxShadowColor, 0, rem(0.05), rem(1));
