@@ -44,9 +44,7 @@ export class Round {
 		}
 
 		this.stayCounter++;
-		this.broadcast(new ServerStayMessage());
-
-		this.endTurn();
+		this.endTurn(new ServerStayMessage());
 	}
 
 	draw(player: Player) {
@@ -62,8 +60,7 @@ export class Round {
 		const trumpCard = TrumpCardPicker.drawByChance(this.current.storedTrumpCards.length);
 		this.current.storedTrumpCards.push(trumpCard);
 
-		this.broadcast(new ServerDrawMessage(card, trumpCard));
-		this.endTurn();
+		this.endTurn(new ServerDrawMessage(card, trumpCard));
 	}
 
 	useTrumpCard(player: Player, trumpCardIndex: number) {
@@ -83,7 +80,7 @@ export class Round {
 			this.current.playedTrumpCards.push(trumpCard);
 			// todo trump card effect
 
-			this.broadcast(new ServerUseTrumpCardMessage(trumpCard));
+			this.broadcast(new ServerUseTrumpCardMessage(trumpCardIndex));
 		}
 	}
 
@@ -92,8 +89,8 @@ export class Round {
 		this.stayCounter = 0;
 		this.deck = new Deck();
 
-		this.current.reset();
-		this.opponent.reset();
+		this.current.resetBoard();
+		this.opponent.resetBoard();
 
 		// draw initial cards for each competitor
 		this.current.cards.push(this.deck.draw(), this.deck.draw());
@@ -119,8 +116,13 @@ export class Round {
 		}));
 	}
 
-	private endTurn() {
-		if (this.stayCounter < 2 && !this.deck.empty) {
+	private endTurn(action: ServerStayMessage | ServerDrawMessage) {
+		const roundOver = this.stayCounter >= 2 || this.deck.empty;
+
+		action.roundOver = roundOver;
+		this.broadcast(action);
+
+		if (!roundOver) {
 			// swap beginning player after each turn
 			this.currentCompetitorIndex = this.currentCompetitorIndex ? 0 : 1;
 

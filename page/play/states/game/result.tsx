@@ -8,13 +8,22 @@ import { trophyIcon } from "../../../built/icons";
 export class ResultComponent extends Component {
 	declare parent: GameComponent;
 
-	constructor (
-		private result: ServerGameResultMessage
-	) {
+	private result: ServerGameResultMessage;
+
+	constructor () {
 		super();
 	}
 
+	show(message: ServerGameResultMessage) {
+		this.result = message;
+		this.update();
+	}
+
 	render() {
+		if (!this.result) {
+			return <ui-void></ui-void>;
+		}
+
 		const totalRounds = this.parent.parent.gameSettings.roundCount;
 		let victoryType = 'Honorable';
 

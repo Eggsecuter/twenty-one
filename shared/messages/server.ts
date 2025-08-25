@@ -85,8 +85,13 @@ export class ServerInitialBoardMessage extends SocketMessage {
 	}
 }
 
-export class ServerStayMessage extends SocketMessage {}
-export class ServerDrawMessage extends SocketMessage {
+export abstract class ServerActionMessage extends SocketMessage {
+	public roundOver: boolean;
+}
+
+export class ServerStayMessage extends ServerActionMessage {}
+
+export class ServerDrawMessage extends ServerActionMessage {
 	constructor (
 		public card: number,
 		public trumpCard?: TrumpCard
@@ -94,9 +99,10 @@ export class ServerDrawMessage extends SocketMessage {
 		super();
 	}
 }
+
 export class ServerUseTrumpCardMessage extends SocketMessage {
 	constructor (
-		public trumpCard: TrumpCard
+		public trumpCardIndex: number
 	) {
 		super();
 	}

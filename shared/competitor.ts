@@ -3,18 +3,13 @@ import { Player } from "./player";
 import { TrumpCard } from "./trump-card";
 
 export class Competitor {
-	storedTrumpCards: TrumpCard[] = [];
+	storedTrumpCards: TrumpCard[];
 
-	bet: number;
 	cards: number[];
 	playedTrumpCards: TrumpCard[];
 
 	get sum() {
 		return this.cards.reduce((accumulator, currentValue) => accumulator + (currentValue ?? 0), 0);
-	}
-
-	get heartCount() {
-		return this.health;
 	}
 
 	get dead() {
@@ -23,18 +18,19 @@ export class Competitor {
 
 	constructor (
 		public readonly player: Player,
-		private health: number
+		public health: number
 	) {
-		this.reset();
+		this.storedTrumpCards = [];
+
+		this.resetBoard();
 	}
 
-	reset() {
-		this.bet = defaultBet;
+	resetBoard() {
 		this.cards = [];
 		this.playedTrumpCards = [];
 	}
 
 	takeDamage() {
-		this.health -= this.bet;
+		this.health -= defaultBet;
 	}
 }

@@ -1,7 +1,10 @@
-import { child, display, flexDirection, width, percentage, height, justifyContent, padding, rem, color, flexGrow, gap, margin, borderRadius, background, fontSize, flexWrap, position, marginRight, border, fontFamily, content, left, transform, maxHeight, maxWidth, aspectRatio, overflow, objectFit, opacity, pointerEvents, attribute, inset, alignItems, backdropFilter, zIndex, textAlign, marginBottom, bottom, right, marginTop, marginInline, paddingBlock, paddingInline, px, top, translateX, ratio, blur, rotate, deg, scale, nthOfType, before, flexBasis, flexShrink } from "@acryps/style";
+import { child, display, flexDirection, width, percentage, height, justifyContent, padding, rem, color, flexGrow, gap, margin, borderRadius, background, fontSize, flexWrap, position, marginRight, border, fontFamily, content, left, transform, maxHeight, maxWidth, aspectRatio, overflow, objectFit, opacity, pointerEvents, attribute, inset, alignItems, backdropFilter, zIndex, textAlign, marginBottom, bottom, right, marginTop, marginInline, paddingBlock, paddingInline, px, top, translateX, ratio, blur, rotate, deg, scale, nthOfType, before, flexBasis, flexShrink, seconds, is } from "@acryps/style";
 import { colorPrimaryDimmed, colorPrimary, colorBackgroundDimmed, colorCard, action, panelBoxShadow } from "../../../global.style";
 import { menuStyle } from "../../menu/index.style";
 import { playerStyle } from "../../player/index.style";
+
+export const roundAnimationDuration = seconds(2);
+export const dealCardAnimationDuration = seconds(0.5);
 
 export const gameStyle = () => child('ui-game') (
 	display('flex'),
@@ -33,62 +36,33 @@ export const gameStyle = () => child('ui-game') (
 
 	child('ui-main') (
 		display('flex'),
-		flexDirection('column'),
 		flexGrow(1),
 		flexShrink(1),
 		flexBasis(0),
-		padding(rem(2)),
-		gap(rem(1)),
 
-		child('ui-info') (
-			display('block'),
-			marginInline('auto'),
+		child('*') (
+			is(['ui-stats'], ['ui-board']) (
+				display('flex'),
+				flexDirection('column'),
+				justifyContent('space-between'),
+				gap(rem(1)),
 
-			child('ui-message') (
-				display('block'),
-				paddingBlock(rem(0.5)),
-				paddingInline(rem(1)),
-
-				borderRadius(rem(0.25)),
-				background(colorBackgroundDimmed),
-				color(colorPrimary),
-
-				fontSize(rem(1.2))
+				child('*') (
+					nthOfType(1) (
+						flexDirection('column-reverse')
+					)
+				)
 			)
 		),
 
-		child('ui-competitor') (
-			display('flex'),
-			flexGrow(1),
-			flexShrink(1),
-			flexBasis(0),
-			gap(rem(1)),
+		child('ui-stats') (
+			width(percentage(20)),
+			padding(rem(2)),
 
-			nthOfType(2) (
-				child('ui-information') (
-					flexDirection('column-reverse')
-				),
-				child('ui-board') (
-					flexDirection('column-reverse')
-				)
-			),
-
-			child('ui-information') (
+			child('ui-competitor-stats') (
 				display('flex'),
 				flexDirection('column'),
 				gap(rem(1)),
-				width(percentage(20)),
-
-				playerStyle(),
-
-				child('ui-hearts') (
-					display('flex'),
-					flexWrap('wrap'),
-
-					child('ui-icon') (
-						color(colorPrimary)
-					)
-				),
 
 				child('ui-bet') (
 					position('relative'),
@@ -121,28 +95,51 @@ export const gameStyle = () => child('ui-game') (
 
 						fontSize(rem(1))
 					)
+				),
+
+				child('ui-hearts') (
+					display('flex'),
+					flexWrap('wrap'),
+
+					child('ui-icon') (
+						color(colorPrimary)
+					)
+				),
+
+				playerStyle()
+			)
+		),
+
+		child('ui-board') (
+			padding(rem(2)),
+
+			flexGrow(1),
+			flexShrink(1),
+			flexBasis(0),
+
+			child('ui-information') (
+				display('flex'),
+				justifyContent('center'),
+				alignItems('center'),
+				height(rem(3)),
+
+				child('ui-narration') (
+					display('block'),
+					paddingBlock(rem(0.5)),
+					paddingInline(rem(1)),
+
+					borderRadius(rem(0.25)),
+					background(colorBackgroundDimmed),
+					color(colorPrimary),
+
+					fontSize(rem(1.2))
 				)
 			),
 
-			child('ui-board') (
+			child('ui-competitor-board') (
 				display('flex'),
 				flexDirection('column'),
-				flexGrow(1),
-				flexShrink(1),
-				flexBasis(0),
 				gap(rem(1)),
-
-				child('ui-sum') (
-					display('block'),
-					marginRight('auto'),
-					padding(rem(0.5)),
-
-					border(px(1), 'solid', colorPrimary),
-					borderRadius(rem(2)),
-
-					color(colorPrimary),
-					background(colorBackgroundDimmed)
-				),
 
 				child('ui-cards') (
 					display('flex'),
@@ -168,25 +165,37 @@ export const gameStyle = () => child('ui-game') (
 							objectFit('cover')
 						)
 					)
+				),
+
+				child('ui-sum') (
+					display('block'),
+					marginRight('auto'),
+					padding(rem(0.5)),
+
+					border(px(1), 'solid', colorPrimary),
+					borderRadius(rem(2)),
+
+					color(colorPrimary),
+					background(colorBackgroundDimmed)
+				),
+
+				child('ui-actions') (
+					display('flex'),
+					justifyContent('center'),
+					gap(rem(1)),
+
+					opacity(0),
+					pointerEvents('none'),
+
+					attribute('ui-active') (
+						opacity(1),
+						pointerEvents('all')
+					),
+
+					child('ui-action') (
+						action()
+					)
 				)
-			)
-		),
-
-		child('ui-actions') (
-			display('flex'),
-			justifyContent('center'),
-			gap(rem(1)),
-
-			opacity(0.5),
-			pointerEvents('none'),
-
-			attribute('ui-active') (
-				opacity(1),
-				pointerEvents('all')
-			),
-
-			child('ui-action') (
-				action()
 			)
 		)
 	),
