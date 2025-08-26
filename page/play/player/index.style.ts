@@ -1,5 +1,5 @@
-import { alignItems, attribute, background, backdropFilter, borderRadius, child, color, cursor, display, flexGrow, gap, height, inset, justifyContent, overflow, padding, percentage, position, rem, right, textOverflow, top, transform, whiteSpace, width, rotate, deg, blur, px, StyleSelectorBody, not, hover, fontSize, flexBasis, flexShrink } from "@acryps/style";
-import { action, colorBackgroundDimmed, colorPrimary, colorPrimaryDimmed } from "../../global.style";
+import { alignItems, attribute, background, backdropFilter, borderRadius, child, color, cursor, display, gap, height, inset, justifyContent, overflow, padding, percentage, position, rem, right, textOverflow, top, transform, whiteSpace, width, rotate, deg, blur, px, StyleSelectorBody, not, hover, fontSize } from "@acryps/style";
+import { action, colorBackgroundDimmed, colorPrimary, colorPrimaryDimmed, flex } from "../../global.style";
 
 export const playerStyle = (...content: StyleSelectorBody[]) => child('ui-player') (
 	display('flex'),
@@ -47,9 +47,7 @@ export const playerStyle = (...content: StyleSelectorBody[]) => child('ui-player
 
 	child('ui-name') (
 		display('block'),
-		flexGrow(1),
-		flexShrink(1),
-		flexBasis(0),
+		flex(1),
 
 		color(colorPrimary),
 

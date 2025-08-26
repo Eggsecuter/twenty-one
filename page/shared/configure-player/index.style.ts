@@ -1,13 +1,11 @@
-import { alignItems, aspectRatio, borderRadius, child, color, cursor, display, flexBasis, flexDirection, flexGrow, flexShrink, fontSize, fontWeight, gap, height, hover, marginInline, overflow, padding, percentage, ratio, rem, userSelect } from "@acryps/style";
-import { colorPrimary, colorPrimaryDimmed } from "../../global.style";
+import { alignItems, aspectRatio, borderRadius, child, color, cursor, display, flexDirection, fontSize, fontWeight, gap, height, hover, marginInline, overflow, padding, percentage, ratio, rem, userSelect } from "@acryps/style";
+import { colorPrimary, colorPrimaryDimmed, flex } from "../../global.style";
 
 export const configurePlayerStyle = () => child('ui-configure-player') (
 	display('flex'),
 	flexDirection('column'),
 	gap(rem(2)),
-	flexGrow(1),
-	flexShrink(1),
-	flexBasis(0),
+	flex(1),
 
 	child('input') (
 		fontSize(rem(1.1))

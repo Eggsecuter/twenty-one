@@ -1,5 +1,5 @@
-import { alignItems, attribute, background, border, borderRadius, calc, child, color, cursor, display, flexBasis, flexDirection, flexGrow, flexShrink, fontSize, fr, gap, gridArea, gridTemplateAreas, gridTemplateColumns, gridTemplateRows, height, hover, lastChild, marginBottom, marginTop, maxWidth, opacity, overflow, overflowY, padding, percentage, pointerEvents, px, rem, textAlign, width } from "@acryps/style";
-import { action, colorBackground, colorBackgroundDimmed, colorPrimary, colorPrimaryDimmed, panelBoxShadow } from "../../../global.style";
+import { alignItems, attribute, background, border, borderRadius, calc, child, color, cursor, display, flexDirection, fontSize, fr, gap, gridArea, gridTemplateAreas, gridTemplateColumns, gridTemplateRows, height, hover, lastChild, marginBottom, marginTop, maxWidth, opacity, overflow, overflowY, padding, percentage, pointerEvents, px, rem, textAlign, width } from "@acryps/style";
+import { action, colorBackground, colorBackgroundDimmed, colorPrimary, colorPrimaryDimmed, flex, panelBoxShadow } from "../../../global.style";
 import { playerStyle } from "../../player/index.style";
 import { chatStyle } from "../../chat/index.style";
 import { menuStyle } from "../../menu/index.style";
@@ -125,10 +125,7 @@ export const lobbyStyle = () => child('ui-lobby') (
 			flexDirection('column'),
 			gap(rem(1.5)),
 
-			flexGrow(1),
-			flexShrink(1),
-			flexBasis(0),
-
+			flex(1),
 			overflowY('auto'),
 
 			child('ui-setting') (
@@ -153,9 +150,7 @@ export const lobbyStyle = () => child('ui-lobby') (
 
 					child('ui-option') (
 						display('block'),
-						flexGrow(1),
-						flexShrink(1),
-						flexBasis(0),
+						flex(1),
 						padding(rem(0.5)),
 
 						borderRadius(rem(2)),

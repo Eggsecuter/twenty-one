@@ -21,7 +21,7 @@ export class ResultComponent extends Component {
 
 	render() {
 		if (!this.result) {
-			return <ui-void></ui-void>;
+			return <ui-result></ui-result>;
 		}
 
 		const totalRounds = this.parent.parent.gameSettings.roundCount;
@@ -35,7 +35,7 @@ export class ResultComponent extends Component {
 			}
 		}
 
-		return <ui-result>
+		return <ui-result ui-active>
 			<ui-panel>
 				<ui-title>{victoryType} Victory</ui-title>
 

@@ -1,5 +1,5 @@
-import { alignSelf, attribute, background, child, color, display, flexBasis, flexDirection, flexGrow, flexShrink, fontSize, fontStyle, gap, nthChild, overflowY, padding, rem, StyleSelectorBody } from "@acryps/style";
-import { colorBackground, colorPrimary, colorSystem } from "../../global.style";
+import { alignSelf, attribute, background, child, color, display, flexDirection, fontSize, fontStyle, gap, nthChild, overflowY, padding, rem, StyleSelectorBody } from "@acryps/style";
+import { colorBackground, colorPrimary, colorSystem, flex } from "../../global.style";
 
 export const chatStyle = (...content: StyleSelectorBody[]) => child('ui-chat') (
 	display('flex'),
@@ -10,9 +10,7 @@ export const chatStyle = (...content: StyleSelectorBody[]) => child('ui-chat') (
 
 	child('ui-chat-messages') (
 		display('flex'),
-		flexGrow(1),
-		flexShrink(1),
-		flexBasis(0),
+		flex(1),
 
 		flexDirection('column'),
 		overflowY('auto'),
@@ -36,9 +34,7 @@ export const chatStyle = (...content: StyleSelectorBody[]) => child('ui-chat') (
 
 			child('ui-message') (
 				display('block'),
-				flexGrow(1),
-				flexShrink(1),
-				flexBasis(0)
+				flex(1)
 			),
 
 			child('ui-time') (

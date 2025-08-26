@@ -4,11 +4,11 @@ import { StateComponent } from "..";
 import { MenuComponent } from "../../menu";
 import { BoardComponent } from "./board";
 import { StatsComponent } from "./stats";
-import { ServerBoardResultMessage, ServerDrawMessage, ServerGameAbortMessage, ServerGameResultMessage, ServerInitialBoardMessage, ServerRoundResultMessage, ServerRoundStartMessage, ServerStayMessage, ServerUseTrumpCardMessage } from "../../../../shared/messages/server";
+import { AnonymousTrumpCard, ServerBoardResultMessage, ServerDrawMessage, ServerGameAbortMessage, ServerGameResultMessage, ServerInitialBoardMessage, ServerRoundResultMessage, ServerRoundStartMessage, ServerStayMessage, ServerUseTrumpCardMessage } from "../../../../shared/messages/server";
 import { GameContext } from "./context";
 import { RoundComponent } from "./round";
-import { TrumpCard } from "../../../../shared/trump-card";
 import { ResultComponent } from "./result";
+import { Application } from "../../..";
 
 export class GameComponent extends StateComponent {
 	static context: GameContext;
@@ -54,7 +54,7 @@ export class GameComponent extends StateComponent {
 
 		this.addSocketSubscription(ServerStayMessage, message => this.handlerQueue.push(() => this.handleEndTurnAction(message.roundOver)));
 		this.addSocketSubscription(ServerDrawMessage, message => this.handlerQueue.push(() => this.handleEndTurnAction(message.roundOver, message.card, message.trumpCard)));
-		this.addSocketSubscription(ServerUseTrumpCardMessage, message => this.handlerQueue.push(() => this.currentCompetitor.boardComponent.activateTrumpCard(message.trumpCardIndex)));
+		this.addSocketSubscription(ServerUseTrumpCardMessage, message => this.handlerQueue.push(() => this.currentCompetitor.boardComponent.activateTrumpCard(message.trumpCard)));
 
 		this.addSocketSubscription(ServerBoardResultMessage, message => this.handlerQueue.push(async () => {
 			await GameComponent.context.informationComponent.announce('The winner is...', 2);
@@ -93,7 +93,7 @@ export class GameComponent extends StateComponent {
 		this.addSocketSubscription(ServerGameResultMessage, message => this.handlerQueue.push(async () => this.resultComponent.show(message)));
 	}
 
-	async handleEndTurnAction(roundOver: boolean, card?: number, trumpCard?: TrumpCard) {
+	async handleEndTurnAction(roundOver: boolean, card?: number, trumpCard?: AnonymousTrumpCard) {
 		const promises = [];
 
 		promises.push(
@@ -101,11 +101,16 @@ export class GameComponent extends StateComponent {
 		);
 
 		if (card != null) {
-			promises.push(this.currentCompetitor.boardComponent.dealCard(card));
+			promises.push(
+				new Promise<void>(async done => {
+					if (trumpCard != null) {
+						await this.currentCompetitor.boardComponent.dealTrumpCard(trumpCard);
+					}
 
-			if (trumpCard) {
-				promises.push(this.currentCompetitor.boardComponent.dealTrumpCard(trumpCard));
-			}
+					await this.currentCompetitor.boardComponent.dealCard(card);
+					done();
+				})
+			)
 		}
 
 		await Promise.all(promises);
@@ -114,6 +119,9 @@ export class GameComponent extends StateComponent {
 			this.currentCompetitorIndex = 1 - this.currentCompetitorIndex;
 			await this.currentCompetitor.boardComponent.callForAction();
 		}
+
+		// if the player still has the trump card dialog open and the opponent ends his turn the events follow instantly which looks weird
+		await Application.waitForSeconds(1);
 	}
 
 	render() {

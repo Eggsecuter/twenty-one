@@ -1,4 +1,4 @@
-import { attribute, background, border, borderColor, borderRadius, boxShadow, child, color, cursor, display, flexBasis, flexGrow, flexShrink, fontSize, gap, hex, hover, Keyframes, marginBottom, maxWidth, minHeight, minWidth, not, opacity, padding, percentage, pointerEvents, px, rem, textAlign, textTransform, transform, translateX, width } from "@acryps/style";
+import { attribute, background, border, borderColor, borderRadius, boxShadow, child, color, cursor, display, flexBasis, flexGrow, flexShrink, fontSize, gap, hex, hover, Integer, Keyframes, marginBottom, maxWidth, minHeight, minWidth, not, opacity, padding, percentage, pointerEvents, px, rem, textAlign, textTransform, transform, translateX, width } from "@acryps/style";
 
 // variables
 export const colorPrimary = hex('dbc5a7');
@@ -21,6 +21,13 @@ export const shakeAnimation = new Keyframes('shake')
 	.addKeyframe(percentage(25), transform(translateX(rem(0.25))))
 	.addKeyframe(percentage(50), transform(translateX(rem(-0.25))))
 	.addKeyframe(percentage(75), transform(translateX(rem(0.25))));
+
+// helper
+export const flex = (growOrder: Integer) => [
+	flexGrow(growOrder),
+	flexShrink(1),
+	flexBasis(0)
+];
 
 // components
 export const action = () => [
@@ -102,9 +109,7 @@ export const dialog = () => [
 		child('ui-action') (
 			action(),
 
-			flexGrow(1),
-			flexShrink(1),
-			flexBasis(0)
+			flex(1)
 		)
 	)
 ];

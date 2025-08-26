@@ -1,10 +1,11 @@
 import { BroadcastMessage } from ".";
 import { defaultPerfectSum } from "../../shared/constants";
-import { ServerBoardResultMessage, ServerDrawMessage, ServerInitialBoardMessage, ServerStayMessage, ServerUseTrumpCardMessage } from "../../shared/messages/server";
+import { AnonymousTrumpCard, ServerBoardResultMessage, ServerDrawMessage, ServerInitialBoardMessage, ServerStayMessage, ServerUseTrumpCardMessage } from "../../shared/messages/server";
 import { Player } from "../../shared/player";
 import { Deck } from "./deck";
 import { Competitor } from "../../shared/competitor";
 import { TrumpCardPicker } from "./trump-card-picker";
+import { PlayerConnection } from "./player-connection";
 
 export class Round {
 	private competitors: Competitor[];
@@ -20,6 +21,10 @@ export class Round {
 
 	get opponent() {
 		return this.competitors[1 - this.currentCompetitorIndex];
+	}
+
+	get roundOver() {
+		return this.stayCounter >= 2 || this.deck.empty;
 	}
 
 	constructor(
@@ -44,7 +49,9 @@ export class Round {
 		}
 
 		this.stayCounter++;
-		this.endTurn(new ServerStayMessage());
+
+		this.broadcast(new ServerStayMessage(this.roundOver));
+		this.endTurn();
 	}
 
 	draw(player: Player) {
@@ -60,7 +67,8 @@ export class Round {
 		const trumpCard = TrumpCardPicker.drawByChance(this.current.storedTrumpCards.length);
 		this.current.storedTrumpCards.push(trumpCard);
 
-		this.endTurn(new ServerDrawMessage(card, trumpCard));
+		this.broadcast(connection => new ServerDrawMessage(this.roundOver, card, connection.player == player ? trumpCard : 'hidden'));
+		this.endTurn();
 	}
 
 	useTrumpCard(player: Player, trumpCardIndex: number) {
@@ -76,11 +84,9 @@ export class Round {
 
 		if (trumpCard) {
 			this.current.storedTrumpCards.splice(trumpCardIndex, 1);
-
 			this.current.playedTrumpCards.push(trumpCard);
-			// todo trump card effect
 
-			this.broadcast(new ServerUseTrumpCardMessage(trumpCardIndex));
+			this.broadcast(new ServerUseTrumpCardMessage(trumpCard));
 		}
 	}
 
@@ -97,32 +103,28 @@ export class Round {
 		this.opponent.cards.push(this.deck.draw(), this.deck.draw());
 
 		// at the start of each new board a trump card gets picked
-		const currentTrumpCard = TrumpCardPicker.drawCertain(this.current.storedTrumpCards.length);
-		this.current.storedTrumpCards.push(currentTrumpCard);
-		const opponentTrumpCard = TrumpCardPicker.drawCertain(this.opponent.storedTrumpCards.length);
-		this.opponent.storedTrumpCards.push(opponentTrumpCard);
+		this.current.storedTrumpCards.push(TrumpCardPicker.drawCertain(this.current.storedTrumpCards.length));
+		this.opponent.storedTrumpCards.push(TrumpCardPicker.drawCertain(this.opponent.storedTrumpCards.length));
 
 		// conditional broadcast as the hidden card only gets shown to the competitor themselves
-		this.broadcast(connection => new ServerInitialBoardMessage({
-			id: this.current.player.id,
-			trumpCard: currentTrumpCard,
-			hiddenCard: connection.player.id == this.current.player.id ? this.current.cards[0] : null,
-			shownCard: this.current.cards[1]
-		}, {
-			id: this.opponent.player.id,
-			trumpCard: opponentTrumpCard,
-			hiddenCard: connection.player.id == this.opponent.player.id ? this.opponent.cards[0] : null,
-			shownCard: this.opponent.cards[1]
-		}));
+		this.broadcast(connection => {
+			const createInitialBoard = (connection: PlayerConnection, competitor: Competitor) => {
+				const anonymous = connection.player != competitor.player;
+
+				return {
+					id: competitor.player.id,
+					trumpCard: (anonymous ? 'hidden' : competitor.storedTrumpCards.at(-1)) as AnonymousTrumpCard,
+					hiddenCard: anonymous ? null : competitor.cards[0],
+					shownCard: competitor.cards[1]
+				}
+			}
+
+			return new ServerInitialBoardMessage(createInitialBoard(connection, this.current), createInitialBoard(connection, this.opponent));
+		});
 	}
 
-	private endTurn(action: ServerStayMessage | ServerDrawMessage) {
-		const roundOver = this.stayCounter >= 2 || this.deck.empty;
-
-		action.roundOver = roundOver;
-		this.broadcast(action);
-
-		if (!roundOver) {
+	private endTurn() {
+		if (!this.roundOver) {
 			// swap beginning player after each turn
 			this.currentCompetitorIndex = this.currentCompetitorIndex ? 0 : 1;
 

@@ -4,6 +4,10 @@ import { Player } from "../player";
 import { TrumpCard } from "../trump-card";
 import { SocketMessage } from "./message";
 
+// expand trump card to be able to differ between "no trump card" and "hidden trump card"
+// dealt trump cards are by default hidden and only shown to the player that it belongs to
+export type AnonymousTrumpCard = TrumpCard | 'hidden';
+
 export type CompetitorReveal = {
 	id: string,
 	cards: number[]
@@ -11,7 +15,7 @@ export type CompetitorReveal = {
 
 export type InitialBoardCompetitor = {
 	id: string,
-	trumpCard?: TrumpCard,
+	trumpCard?: AnonymousTrumpCard,
 	hiddenCard?: number,
 	shownCard: number
 }
@@ -86,23 +90,28 @@ export class ServerInitialBoardMessage extends SocketMessage {
 }
 
 export abstract class ServerActionMessage extends SocketMessage {
-	public roundOver: boolean;
+	constructor (
+		public roundOver: boolean
+	) {
+		super();
+	}
 }
 
 export class ServerStayMessage extends ServerActionMessage {}
 
 export class ServerDrawMessage extends ServerActionMessage {
 	constructor (
+		roundOver: boolean,
 		public card: number,
-		public trumpCard?: TrumpCard
+		public trumpCard?: AnonymousTrumpCard
 	) {
-		super();
+		super(roundOver);
 	}
 }
 
 export class ServerUseTrumpCardMessage extends SocketMessage {
 	constructor (
-		public trumpCardIndex: number
+		public trumpCard: TrumpCard
 	) {
 		super();
 	}
