@@ -1,10 +1,15 @@
-import { seconds, child, display, alignItems, backdropFilter, background, border, borderRadius, bottom, color, deg, flexDirection, fontSize, height, inset, justifyContent, margin, marginBottom, marginTop, padding, percentage, position, px, rem, right, rotate, scale, textAlign, transform, width, zIndex, blur, attribute, not } from "@acryps/style";
+import { seconds, child, display, alignItems, backdropFilter, background, border, borderRadius, bottom, color, deg, flexDirection, fontSize, height, inset, justifyContent, margin, marginBottom, marginTop, padding, percentage, position, px, rem, right, rotate, scale, textAlign, transform, width, zIndex, blur, attribute, not, Keyframes, opacity } from "@acryps/style";
 import { colorPrimaryDimmed, colorPrimary, colorBackgroundDimmed, action, panelBoxShadow, flex } from "../../../global.style";
 import { menuStyle } from "../../menu/index.style";
 import { statsStyle } from "./stats/index.style";
 import { boardStyle } from "./board/index.style";
 
-export const roundAnimationDuration = seconds(2);
+export const roundAnimationDuration = seconds(3);
+
+const roundAnimation = new Keyframes('ui-announce')
+	.addKeyframe(percentage(0), transform(scale(15)))
+	.addKeyframe(percentage(20), transform(scale(1)), opacity(1))
+	.addKeyframe(percentage(100), opacity(0));
 
 const headerHeight = rem(5);
 
@@ -22,6 +27,21 @@ export const gameStyle = () => child('ui-game') (
 		child('ui-round') (
 			display('block'),
 			padding(rem(1)),
+
+			attribute('ui-announce') (
+				roundAnimation.animate(roundAnimationDuration, 'ease-in'),
+
+				position('fixed'),
+				inset(0),
+
+				display('flex'),
+				justifyContent('center'),
+				alignItems('center'),
+
+				background(colorBackgroundDimmed),
+				fontSize(rem(3)),
+				zIndex(100)
+			),
 
 			child('ui-label') (
 				display('block'),
