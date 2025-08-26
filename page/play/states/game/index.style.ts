@@ -1,10 +1,12 @@
-import { seconds, child, display, alignItems, backdropFilter, background, border, borderRadius, bottom, color, deg, firstOfType, flexDirection, fontSize, gap, height, inset, is, justifyContent, margin, marginBottom, marginTop, padding, percentage, position, px, rem, right, rotate, scale, textAlign, transform, width, zIndex, blur, attribute, not } from "@acryps/style";
+import { seconds, child, display, alignItems, backdropFilter, background, border, borderRadius, bottom, color, deg, flexDirection, fontSize, height, inset, justifyContent, margin, marginBottom, marginTop, padding, percentage, position, px, rem, right, rotate, scale, textAlign, transform, width, zIndex, blur, attribute, not } from "@acryps/style";
 import { colorPrimaryDimmed, colorPrimary, colorBackgroundDimmed, action, panelBoxShadow, flex } from "../../../global.style";
 import { menuStyle } from "../../menu/index.style";
 import { statsStyle } from "./stats/index.style";
 import { boardStyle } from "./board/index.style";
 
 export const roundAnimationDuration = seconds(2);
+
+const headerHeight = rem(5);
 
 export const gameStyle = () => child('ui-game') (
 	display('flex'),
@@ -14,6 +16,7 @@ export const gameStyle = () => child('ui-game') (
 
 	child('ui-header') (
 		display('flex'),
+		height(headerHeight),
 		justifyContent('space-between'),
 
 		child('ui-round') (
@@ -36,22 +39,7 @@ export const gameStyle = () => child('ui-game') (
 
 	child('ui-main') (
 		display('flex'),
-		flex(1),
-
-		child('*') (
-			is(['ui-stats'], ['ui-board']) (
-				display('flex'),
-				flexDirection('column'),
-				justifyContent('space-between'),
-				gap(rem(1)),
-
-				child('*') (
-					firstOfType() (
-						flexDirection('column-reverse')
-					)
-				)
-			)
-		),
+		height(percentage(100).subtract(headerHeight)),
 
 		statsStyle(),
 		boardStyle()

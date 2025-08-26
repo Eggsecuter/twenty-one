@@ -1,8 +1,13 @@
-import { child, width, percentage, padding, rem, display, flexDirection, gap, position, marginRight, borderRadius, border, px, background, color, fontFamily, fontSize, before, content, left, transform, translateX, paddingInline, flexWrap, top } from "@acryps/style";
+import { child, width, percentage, padding, rem, display, flexDirection, gap, position, marginRight, borderRadius, border, px, background, color, fontFamily, fontSize, before, content, left, transform, translateX, paddingInline, flexWrap, top, firstOfType, justifyContent } from "@acryps/style";
 import { colorPrimary, colorBackgroundDimmed } from "../../../../global.style";
 import { playerStyle } from "../../../player/index.style";
 
 export const statsStyle = () => child('ui-stats') (
+	display('flex'),
+	flexDirection('column'),
+	justifyContent('space-between'),
+	gap(rem(1)),
+
 	width(percentage(20)),
 	padding(rem(2)),
 
@@ -10,6 +15,10 @@ export const statsStyle = () => child('ui-stats') (
 		display('flex'),
 		flexDirection('column'),
 		gap(rem(1)),
+
+		firstOfType() (
+			flexDirection('column-reverse')
+		),
 
 		child('ui-bet') (
 			position('relative'),

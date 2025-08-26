@@ -1,15 +1,54 @@
-import { alignItems, aspectRatio, attribute, backdropFilter, background, blur, border, borderRadius, bottom, child, color, deg, display, flexDirection, fontSize, gap, height, inset, justifyContent, Keyframes, left, marginBlock, marginBottom, marginInline, marginRight, maxWidth, not, objectFit, opacity, overflow, padding, paddingBlock, paddingInline, percentage, pointerEvents, position, px, ratio, rem, right, rotate, scale, seconds, textAlign, transform, translateX, vw, width, zIndex } from "@acryps/style";
+import { alignItems, aspectRatio, attribute, backdropFilter, background, blur, border, borderRadius, bottom, child, color, deg, display, firstOfType, flexDirection, fontSize, gap, height, inset, justifyContent, Keyframes, left, marginBlock, marginBottom, marginInline, marginRight, maxHeight, maxWidth, not, objectFit, opacity, overflow, padding, paddingBlock, paddingInline, percentage, pointerEvents, position, px, ratio, rem, right, rotate, rotate3d, scale, seconds, textAlign, transform, translateX, vw, width, zIndex } from "@acryps/style";
 import { colorBackgroundDimmed, colorPrimary, colorCard, action, flex, panelBoxShadow, colorPrimaryDimmed } from "../../../../global.style";
 
 export const dealCardAnimationDuration = seconds(0.5);
+export const activateTrumpCardAnimationDuration = seconds(1);
 
-const trumpCardScale = scale(1.25);
+const informationHeight = rem(3);
+const trumpCardImageScale = scale(1.25);
 
 const dealCardAnimation = new Keyframes('ui-deal')
 	.addKeyframe('from', transform(translateX(vw(100)), rotate(deg(Math.random() * 30 + 60))))
 	.addKeyframe('to', transform(translateX(0), rotate(0)));
 
+const activateTrumpCardAnimation = new Keyframes('ui-activate')
+	.addKeyframe(percentage(0), transform(scale(10)), opacity(0))
+	.addKeyframe(percentage(25), transform(scale(1)), opacity(1))
+	.addKeyframe(percentage(30), transform(rotate3d(1, 1, 0, deg(10))))
+	.addKeyframe(percentage(35), transform(rotate3d(1, -1, 0, deg(10))))
+	.addKeyframe(percentage(40), transform(rotate3d(-1, -1, 0, deg(10))))
+	.addKeyframe(percentage(45), transform(rotate3d(-1, 1, 0, deg(10))))
+	.addKeyframe(percentage(50), transform(rotate3d(1, 1, 0, deg(10))))
+	.addKeyframe(percentage(55), transform(rotate3d(1, -1, 0, deg(10))))
+	.addKeyframe(percentage(60), transform(rotate3d(-1, -1, 0, deg(10))))
+	.addKeyframe(percentage(65), transform(rotate3d(-1, 1, 0, deg(10))))
+	.addKeyframe(percentage(70), transform(rotate3d(1, 1, 0, deg(10))))
+	.addKeyframe(percentage(75), transform(rotate3d(1, -1, 0, deg(10))))
+	.addKeyframe(percentage(80), transform(rotate3d(-1, -1, 0, deg(10))))
+	.addKeyframe(percentage(90), transform(rotate3d(-1, 1, 0, deg(10))))
+	.addKeyframe(percentage(100), transform(rotate(0)));
+
+const physicalCardBorderWidth = px(5);
+const physicalCard = () => [
+	border(physicalCardBorderWidth, 'solid', colorPrimary),
+	borderRadius(rem(0.5)),
+
+	background(colorCard),
+	overflow('hidden'),
+
+	child('img') (
+		display('block'),
+		width(percentage(100)),
+		height(percentage(100)),
+
+		objectFit('cover')
+	)
+];
+
 export const boardStyle = () => child('ui-board') (
+	display('flex'),
+	flexDirection('column'),
+
 	padding(rem(2)),
 	flex(1),
 
@@ -17,7 +56,7 @@ export const boardStyle = () => child('ui-board') (
 		display('flex'),
 		justifyContent('center'),
 		alignItems('center'),
-		height(rem(3)),
+		height(informationHeight),
 
 		child('ui-narration') (
 			display('block'),
@@ -35,43 +74,60 @@ export const boardStyle = () => child('ui-board') (
 	child('ui-competitor-board') (
 		display('flex'),
 		flexDirection('column'),
+		height(percentage(50).subtract(informationHeight.divide(2))),
+
+		justifyContent('end'),
 		gap(rem(1)),
+
+		firstOfType() (
+			flexDirection('column-reverse'),
+			justifyContent('start')
+		),
+
+		child('ui-trump-cards') (
+			display('flex'),
+			height(percentage(25)),
+			gap(rem(1)),
+
+			child('ui-trump-card') (
+				display('block'),
+				physicalCard(),
+
+				attribute('ui-activate') (
+					activateTrumpCardAnimation.animate(activateTrumpCardAnimationDuration, 'linear')
+				),
+
+				child('img') (
+					transform(trumpCardImageScale)
+				)
+			)
+		),
 
 		child('ui-cards') (
 			display('flex'),
+			height(percentage(50)),
 			alignItems('center'),
 			gap(rem(1)),
 
 			child('ui-card') (
 				display('block'),
+				maxHeight(percentage(100).subtract(physicalCardBorderWidth.multiply(2))),
 				maxWidth(percentage(12)),
 				aspectRatio(ratio(1, 1.4)),
 
-				border(px(5), 'solid', colorPrimary),
-				borderRadius(rem(0.5)),
-
-				background(colorCard),
-				overflow('hidden'),
+				physicalCard(),
 
 				attribute('ui-trump-card') (
 					height(percentage(50)),
 					aspectRatio(ratio(1, 1)),
 
 					child('img') (
-						transform(trumpCardScale)
+						transform(trumpCardImageScale)
 					)
 				),
 
 				attribute('ui-deal') (
 					dealCardAnimation.animate(dealCardAnimationDuration, 'ease-out')
-				),
-
-				child('img') (
-					display('block'),
-					width(percentage(100)),
-					height(percentage(100)),
-
-					objectFit('cover')
 				)
 			)
 		),
@@ -163,7 +219,7 @@ export const boardStyle = () => child('ui-board') (
 						height(percentage(100)),
 						objectFit('contain'),
 
-						transform(trumpCardScale)
+						transform(trumpCardImageScale)
 					)
 				),
 
