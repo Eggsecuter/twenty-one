@@ -93,6 +93,7 @@ export class BoardCompetitorComponent extends Component {
 
 	async reveal(cards: number[]) {
 		this.competitor.cards = cards;
+		this.sumText.emit(`${this.competitor.sum}`);
 		this.update();
 	}
 

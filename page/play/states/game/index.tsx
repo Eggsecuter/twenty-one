@@ -8,7 +8,6 @@ import { AnonymousTrumpCard, ServerBoardResultMessage, ServerDrawMessage, Server
 import { GameContext } from "./context";
 import { RoundComponent } from "./round";
 import { ResultComponent } from "./result";
-import { Application } from "../../..";
 
 export class GameComponent extends StateComponent {
 	static context: GameContext;
@@ -119,9 +118,6 @@ export class GameComponent extends StateComponent {
 			this.currentCompetitorIndex = 1 - this.currentCompetitorIndex;
 			await this.currentCompetitor.boardComponent.callForAction();
 		}
-
-		// if the player still has the trump card dialog open and the opponent ends his turn the events follow instantly which looks weird
-		await Application.waitForSeconds(1);
 	}
 
 	render() {
