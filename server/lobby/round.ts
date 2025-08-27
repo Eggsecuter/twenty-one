@@ -67,7 +67,16 @@ export class Round {
 		const trumpCard = TrumpCardPicker.drawByChance(this.current.storedTrumpCards.length);
 		this.current.storedTrumpCards.push(trumpCard);
 
-		this.broadcast(connection => new ServerDrawMessage(this.roundOver, card, connection.player == player ? trumpCard : 'hidden'));
+		this.broadcast(connection => {
+			let anonymousTrumpCard = null;
+
+			if (trumpCard) {
+				anonymousTrumpCard = connection.player == player ? trumpCard : 'hidden';
+			}
+
+			return new ServerDrawMessage(this.roundOver, card, anonymousTrumpCard);
+		});
+
 		this.endTurn();
 	}
 
