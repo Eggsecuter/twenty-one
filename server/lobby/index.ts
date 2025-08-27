@@ -58,7 +58,6 @@ export class Lobby {
 		this.playerConnections.push(playerConnection);
 
 		const joinMessage = `${playerConnection.player.name} ${this.playerConnections.length == 1 ? 'started hosting' : 'joined'}`;
-		this.audit(joinMessage);
 		this.sendAndAuditSystemChatMessage(joinMessage);
 	}
 
