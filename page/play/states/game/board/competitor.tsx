@@ -5,10 +5,11 @@ import { TrumpCard } from "../../../../../shared/trump-card";
 import { SocketMessage } from "../../../../../shared/messages/message";
 import { ClientDrawMessage, ClientStayMessage } from "../../../../../shared/messages/client";
 import { Application } from "../../../..";
-import { activateTrumpCardAnimationDuration, dealCardAnimationDuration } from "../board/index.style";
+import { activateTrumpCardDuration, dealCardDuration, flipCardDuration } from "../board/index.style";
 import { TrumpCardDialogComponent } from "./trump-card-dialog";
 import { AnonymousTrumpCard } from "../../../../../shared/messages/server";
 import { Observable } from "@acryps/page-observable";
+import { CardComponent } from "./card";
 
 export class BoardCompetitorComponent extends Component {
 	private isLocalPlayer = false;
@@ -42,7 +43,7 @@ export class BoardCompetitorComponent extends Component {
 		this.competitor.cards.push(card);
 
 		this.cardsElement.appendChild(
-			this.renderDealCard(card)
+			new CardComponent(card).deal().render()
 		);
 
 		let sumText = `${this.competitor.sum}`;
@@ -53,23 +54,19 @@ export class BoardCompetitorComponent extends Component {
 
 		this.sumText.emit(sumText);
 
-		await Application.waitForSeconds(+dealCardAnimationDuration.value);
+		await Application.waitForSeconds(+dealCardDuration.value);
 	}
 
-	async dealTrumpCard(card: AnonymousTrumpCard) {
-		if (card == null) {
-			return;
-		}
-
-		const trumpCardElement = this.renderDealTrumpCard();
+	async dealTrumpCard(trumpCard: AnonymousTrumpCard) {
+		const trumpCardElement = new CardComponent('hidden').deal().render();
 		this.cardsElement.appendChild(trumpCardElement);
 
 		// wait for animation plus a little extra to present backside
-		await Application.waitForSeconds(+dealCardAnimationDuration.value + 0.5);
+		await Application.waitForSeconds(+dealCardDuration.value + 0.5);
 
-		if (card != 'hidden') {
-			this.competitor.storedTrumpCards.push(card);
-			await this.trumpCardDialog.present(card);
+		if (trumpCard != 'hidden') {
+			this.competitor.storedTrumpCards.push(trumpCard);
+			await this.trumpCardDialog.present(trumpCard);
 		}
 
 		trumpCardElement.remove();
@@ -84,10 +81,10 @@ export class BoardCompetitorComponent extends Component {
 		this.competitor.playedTrumpCards.push(trumpCard);
 
 		this.trumpCardsElement.appendChild(
-			this.renderActivateTrumpCard(trumpCard)
+			new CardComponent(trumpCard).deal().render()
 		);
 
-		await Application.waitForSeconds(+activateTrumpCardAnimationDuration.value);
+		await Application.waitForSeconds(+activateTrumpCardDuration.value);
 		await this.trumpCardDialog.present(trumpCard, this.competitor.player);
 	}
 
@@ -95,6 +92,9 @@ export class BoardCompetitorComponent extends Component {
 		this.competitor.cards = cards;
 		this.sumText.emit(`${this.competitor.sum}`);
 		this.update();
+
+		// extra wait time to savor reveal
+		await Application.waitForSeconds(+flipCardDuration.value + 2);
 	}
 
 	async resetBoard() {
@@ -109,8 +109,18 @@ export class BoardCompetitorComponent extends Component {
 
 	render() {
 		return <ui-competitor-board>
-			{this.trumpCardsElement = <ui-trump-cards style='perspective: 800px'>{this.competitor.playedTrumpCards.map(card => this.renderTrumpCard(card))}</ui-trump-cards>}
-			{this.cardsElement = <ui-cards>{this.competitor.cards.map(card => this.renderCard(card))}</ui-cards>}
+			{this.trumpCardsElement = <ui-trump-cards>{this.competitor.playedTrumpCards.map(card => new CardComponent(card))}</ui-trump-cards>}
+
+			{this.cardsElement = <ui-cards>{this.competitor.cards.map((card, index) => {
+				const component = new CardComponent(card);
+
+				if (index == 0 && card != null && !this.isLocalPlayer) {
+					component.flip();
+				}
+
+				return component;
+			})}</ui-cards>}
+
 			<ui-sum>{this.sumText.map(value => value)} / {defaultPerfectSum}</ui-sum>
 
 			{this.isLocalPlayer && <ui-actions ui-active={this.actionRequired}>
@@ -120,39 +130,6 @@ export class BoardCompetitorComponent extends Component {
 
 			{this.trumpCardDialog = new TrumpCardDialogComponent()}
 		</ui-competitor-board>;
-	}
-
-	renderDealTrumpCard() {
-		const element = this.renderDealCard(null);
-		element.setAttribute('ui-trump-card', '');
-
-		return element;
-	}
-
-	renderDealCard(card: number) {
-		const element = this.renderCard(card);
-		element.setAttribute('ui-deal', '');
-
-		return element;
-	}
-
-	renderCard(card: number): HTMLElement {
-		return <ui-card>
-			<img src={`/assets/cards/${card ?? 'back'}.png`} />
-		</ui-card>;
-	}
-
-	renderActivateTrumpCard(card: TrumpCard) {
-		const element = this.renderTrumpCard(card);
-		element.setAttribute('ui-activate', '');
-
-		return element;
-	}
-
-	renderTrumpCard(card: TrumpCard): HTMLElement {
-		return <ui-trump-card>
-			<img src={`/assets/trump-cards/${card.icon}.webp`} />
-		</ui-trump-card>;
 	}
 
 	private sendAction(message: SocketMessage) {
