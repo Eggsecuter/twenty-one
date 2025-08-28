@@ -1,5 +1,5 @@
-import { alignItems, attribute, background, border, borderRadius, calc, child, color, cursor, descendant, display, flexDirection, fontFamily, gap, height, hover, is, justifyContent, margin, not, outline, paddingBlock, paddingInline, percentage, position, px, rem, root, style, top, vh, width } from "@acryps/style";
-import { colorBackground, colorBackgroundDimmed, colorPrimary, flex, navigationBoxShadow } from "./global.style";
+import { alignItems, attribute, background, border, borderRadius, calc, child, color, cursor, descendant, display, flex, flexDirection, fontFamily, gap, height, hover, is, justifyContent, margin, not, outline, paddingBlock, paddingInline, percentage, position, px, rem, root, style, top, vh, width } from "@acryps/style";
+import { colorBackground, colorBackgroundDimmed, colorPrimary, navigationBoxShadow } from "./global.style";
 import { iconFont, icons } from "./built/icons";
 import { guideStyle } from "./guide/index.style";
 import { homeStyle } from "./home/index.style";

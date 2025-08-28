@@ -1,5 +1,5 @@
-import { alignSelf, attribute, background, child, color, display, flexDirection, fontSize, fontStyle, gap, nthChild, overflowY, padding, rem, StyleSelectorBody } from "@acryps/style";
-import { colorBackground, colorPrimary, colorSystem, flex } from "../../global.style";
+import { alignSelf, attribute, background, child, color, display, flex, flexDirection, fontSize, fontStyle, gap, nthChild, overflowY, padding, rem, StyleSelectorBody } from "@acryps/style";
+import { colorBackground, colorPrimary, colorSystem } from "../../global.style";
 
 export const chatStyle = (...content: StyleSelectorBody[]) => child('ui-chat') (
 	display('flex'),

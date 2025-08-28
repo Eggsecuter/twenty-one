@@ -1,5 +1,5 @@
-import { alignItems, aspectRatio, borderRadius, child, color, cursor, display, flexDirection, fontSize, fontWeight, gap, height, hover, marginInline, overflow, padding, percentage, ratio, rem, userSelect } from "@acryps/style";
-import { colorPrimary, colorPrimaryDimmed, flex } from "../../global.style";
+import { alignItems, aspectRatio, borderRadius, child, color, cursor, display, flex, flexDirection, fontSize, fontWeight, gap, height, hover, marginInline, overflow, padding, percentage, ratio, rem, userSelect } from "@acryps/style";
+import { colorPrimary, colorPrimaryDimmed } from "../../global.style";
 
 export const configurePlayerStyle = () => child('ui-configure-player') (
 	display('flex'),

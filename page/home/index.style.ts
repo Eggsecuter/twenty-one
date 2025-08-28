@@ -1,5 +1,5 @@
-import { alignItems, attribute, background, borderBottomLeftRadius, borderBottomRightRadius, borderColor, borderLeftWidth, borderRadius, borderTopLeftRadius, borderTopRightRadius, child, color, cursor, display, flexDirection, fontSize, fr, gap, gridTemplateColumns, justifyContent, letterSpacing, maxHeight, maxWidth, opacity, overflowY, padding, paddingInline, percentage, pointerEvents, rem, rowGap, seconds, textTransform, userSelect } from "@acryps/style";
-import { action, colorBackground, colorBackgroundDimmed, colorError, flex, panelBoxShadow, shakeAnimation } from "../global.style";
+import { alignItems, attribute, background, borderBottomLeftRadius, borderBottomRightRadius, borderColor, borderLeftWidth, borderRadius, borderTopLeftRadius, borderTopRightRadius, child, color, cursor, display, flex, flexDirection, fontSize, fr, gap, gridTemplateColumns, justifyContent, letterSpacing, maxHeight, maxWidth, opacity, overflowY, padding, paddingInline, percentage, pointerEvents, rem, rowGap, seconds, textTransform, userSelect } from "@acryps/style";
+import { action, colorBackground, colorBackgroundDimmed, colorError, panelBoxShadow, shakeAnimation } from "../global.style";
 import { configurePlayerStyle } from "../shared/configure-player/index.style";
 
 export const homeStyle = () => child('ui-home') (
