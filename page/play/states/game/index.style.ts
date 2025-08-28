@@ -1,5 +1,5 @@
-import { seconds, child, display, alignItems, backdropFilter, background, border, borderRadius, bottom, color, deg, flexDirection, fontSize, height, inset, justifyContent, margin, marginBottom, marginTop, padding, percentage, position, px, rem, right, rotate, scale, textAlign, transform, width, zIndex, blur, attribute, not, Keyframes, opacity } from "@acryps/style";
-import { colorPrimaryDimmed, colorPrimary, colorBackgroundDimmed, action, panelBoxShadow, flex } from "../../../global.style";
+import { seconds, child, display, alignItems, backdropFilter, background, border, borderRadius, bottom, color, deg, flexDirection, fontSize, height, inset, justifyContent, margin, marginBottom, marginTop, padding, percentage, position, px, rem, right, rotate, scale, textAlign, transform, width, zIndex, blur, attribute, not, Keyframes, opacity, gap } from "@acryps/style";
+import { colorPrimaryDimmed, colorPrimary, colorBackgroundDimmed, action, panelBoxShadow } from "../../../global.style";
 import { menuStyle } from "../../menu/index.style";
 import { statsStyle } from "./stats/index.style";
 import { boardStyle } from "./board/index.style";
@@ -37,6 +37,7 @@ export const gameStyle = () => child('ui-game') (
 				display('flex'),
 				justifyContent('center'),
 				alignItems('center'),
+				gap(rem(1)),
 
 				background(colorBackgroundDimmed),
 				fontSize(rem(3)),
