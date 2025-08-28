@@ -1,12 +1,16 @@
 import { Component } from "@acryps/page";
 import { TrumpCard } from "../../../../../shared/trump-card";
 import { Player } from "../../../../../shared/player";
+import { inspectTrumpCardTiltX, inspectTrumpCardTiltY } from "./index.style";
+import { deg } from "@acryps/style";
 
 export class TrumpCardDialogComponent extends Component {
 	declare rootNode: HTMLElement;
 
 	private trumpCard: TrumpCard;
 	private player: Player;
+
+	private readonly maxTiltDegree = 30;
 
 	private resolvePresent?: () => void;
 
@@ -33,6 +37,20 @@ export class TrumpCardDialogComponent extends Component {
 		if (!this.trumpCard) {
 			return <ui-trump-card-dialog></ui-trump-card-dialog>;
 		}
+
+		requestAnimationFrame(() => {
+			this.rootNode.onmousemove = (event: MouseEvent) => {
+				const halfWidth = window.innerWidth / 2;
+				const halfHeight = window.innerHeight / 2;
+
+				// rotation axis is the same as position axis -> height is x tilt and width is y tilt
+				const xTilt = -this.maxTiltDegree * (event.y - halfHeight) / halfHeight;
+				const yTilt = this.maxTiltDegree * (event.x - halfWidth) / halfWidth;
+
+				inspectTrumpCardTiltX.update(deg(xTilt));
+				inspectTrumpCardTiltY.update(deg(yTilt));
+			}
+		});
 
 		return <ui-trump-card-dialog ui-active ui-click={() => this.close()}>
 			<ui-trump-card>

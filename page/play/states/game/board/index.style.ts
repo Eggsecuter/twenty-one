@@ -1,5 +1,8 @@
-import { alignItems, aspectRatio, attribute, backdropFilter, background, blur, border, borderRadius, bottom, child, color, deg, display, firstOfType, flexDirection, fontSize, gap, height, inset, justifyContent, Keyframes, left, marginBlock, marginBottom, marginInline, marginRight, maxHeight, maxWidth, not, objectFit, opacity, overflow, padding, paddingBlock, paddingInline, percentage, pointerEvents, position, px, ratio, rem, right, rotate, rotate3d, scale, seconds, textAlign, transform, translateX, vw, width, zIndex } from "@acryps/style";
+import { alignItems, aspectRatio, attribute, backdropFilter, background, blur, border, borderRadius, bottom, child, color, Deg, deg, display, firstOfType, flexDirection, fontSize, gap, height, inset, justifyContent, Keyframes, left, marginBlock, marginBottom, marginInline, marginRight, maxHeight, maxWidth, not, objectFit, opacity, overflow, padding, paddingBlock, paddingInline, percentage, perspective, pointerEvents, position, px, ratio, rem, right, rotate, rotate3d, rotateX, rotateY, scale, seconds, textAlign, transform, transformStyle, translateX, Variable, vw, width, zIndex } from "@acryps/style";
 import { colorBackgroundDimmed, colorPrimary, colorCard, action, flex, panelBoxShadow, colorPrimaryDimmed } from "../../../../global.style";
+
+export const inspectTrumpCardTiltX = new Variable<Deg>('ui-inspect-trump-card-tilt-x');
+export const inspectTrumpCardTiltY = new Variable<Deg>('ui-inspect-trump-card-tilt-y');
 
 export const dealCardAnimationDuration = seconds(0.5);
 export const activateTrumpCardAnimationDuration = seconds(1);
@@ -190,10 +193,10 @@ export const boardStyle = () => child('ui-board') (
 
 				borderRadius(rem(2)),
 				background(colorBackgroundDimmed),
-
 				panelBoxShadow,
-
 				textAlign('center'),
+
+				perspective(px(1000)),
 
 				child('ui-title') (
 					display('block'),
@@ -212,6 +215,11 @@ export const boardStyle = () => child('ui-board') (
 					borderRadius(rem(0.5)),
 
 					overflow('hidden'),
+
+					inspectTrumpCardTiltX,
+					inspectTrumpCardTiltY,
+					transform(rotateX(inspectTrumpCardTiltX), rotateY(inspectTrumpCardTiltY)),
+					transformStyle('preserve-3d'),
 
 					child('img') (
 						display('block'),
