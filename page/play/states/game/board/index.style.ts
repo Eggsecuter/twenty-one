@@ -1,4 +1,4 @@
-import { Variable, Deg, seconds, rem, scale, Keyframes, transform, translateX, vw, rotate, deg, percentage, opacity, rotate3d, rotateY, px, position, border, borderRadius, background, transformStyle, child, inset, display, width, height, overflow, objectFit, backfaceVisibility, attribute, flexDirection, padding, justifyContent, alignItems, paddingBlock, paddingInline, color, fontSize, gap, firstOfType, perspective, aspectRatio, ratio, maxWidth, maxHeight, marginRight, bottom, left, right, pointerEvents, not, zIndex, backdropFilter, textAlign, marginBlock, marginInline, rotateX, marginBottom, blur, Percentage, descendant, flex } from "@acryps/style";
+import { Variable, Deg, seconds, rem, scale, Keyframes, transform, translateX, vw, rotate, deg, percentage, opacity, rotate3d, rotateY, px, position, border, borderRadius, background, transformStyle, child, inset, display, width, height, overflow, objectFit, backfaceVisibility, attribute, flexDirection, padding, justifyContent, alignItems, paddingBlock, paddingInline, color, fontSize, gap, firstOfType, perspective, aspectRatio, ratio, maxWidth, marginRight, bottom, left, right, pointerEvents, not, zIndex, backdropFilter, textAlign, marginBlock, marginInline, rotateX, marginBottom, blur, Percentage, descendant, flex, overflowX } from "@acryps/style";
 import { colorBackgroundDimmed, colorPrimary, colorCard, action, panelBoxShadow, colorPrimaryDimmed } from "../../../../global.style";
 
 export const inspectTrumpCardTiltX = new Variable<Deg>('ui-inspect-trump-card-tilt-x');
@@ -50,11 +50,8 @@ const playingCards = (heightPercentage: Percentage) => [
 		position('relative'),
 
 		display('block'),
-		maxWidth(percentage(12)),
-		maxHeight(percentage(100)),
+		height(percentage(100)),
 		aspectRatio(ratio(1, 1.4)),
-
-		flex(1),
 
 		transformStyle('preserve-3d'),
 
@@ -170,7 +167,7 @@ export const boardStyle = () => child('ui-board') (
 
 			child('ui-card') (
 				attribute('ui-trump') (
-					maxHeight(percentage(50))
+					height(percentage(50))
 				)
 			)
 		),
