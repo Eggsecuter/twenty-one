@@ -3,6 +3,7 @@ import { TrumpCard } from "../../../../../shared/trump-card";
 import { Player } from "../../../../../shared/player";
 import { inspectTrumpCardTiltX, inspectTrumpCardTiltY } from "./index.style";
 import { deg } from "@acryps/style";
+import { Application } from "../../../..";
 
 export class TrumpCardDialogComponent extends Component {
 	declare rootNode: HTMLElement;
@@ -18,6 +19,8 @@ export class TrumpCardDialogComponent extends Component {
 		this.trumpCard = trumpCard;
 		this.player = player;
 		this.update();
+
+		Application.playSound('show-trump-card');
 
 		return new Promise<void>(done => this.resolvePresent = done);
 	}
