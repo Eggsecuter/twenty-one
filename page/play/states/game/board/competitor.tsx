@@ -5,13 +5,15 @@ import { TrumpCard } from "../../../../../shared/trump-card";
 import { SocketMessage } from "../../../../../shared/messages/message";
 import { ClientDrawMessage, ClientStayMessage } from "../../../../../shared/messages/client";
 import { Application } from "../../../..";
-import { activateTrumpCardDuration, dealCardDuration, flipCardDuration } from "../board/index.style";
+import { activateTrumpCardDuration, dealCardDuration, flipCardDuration, resetCardDuration } from "../board/index.style";
 import { TrumpCardDialogComponent } from "./trump-card-dialog";
 import { AnonymousTrumpCard } from "../../../../../shared/messages/server";
 import { Observable } from "@acryps/page-observable";
 import { CardComponent } from "./card";
 
 export class BoardCompetitorComponent extends Component {
+	declare rootNode: HTMLElement;
+
 	private isLocalPlayer = false;
 	private actionRequired = false;
 
@@ -62,7 +64,7 @@ export class BoardCompetitorComponent extends Component {
 		this.cardsElement.appendChild(trumpCardElement);
 
 		// wait for animation plus a little extra to present backside
-		await Application.waitForSeconds(+dealCardDuration.value + 0.5);
+		await Application.waitForSeconds(+dealCardDuration.value + 0.25);
 
 		if (trumpCard != 'hidden') {
 			this.competitor.storedTrumpCards.push(trumpCard);
@@ -94,12 +96,21 @@ export class BoardCompetitorComponent extends Component {
 		this.update();
 
 		// extra wait time to savor reveal
-		await Application.waitForSeconds(+flipCardDuration.value + 2);
+		await Application.waitForSeconds(+flipCardDuration.value + 1);
 	}
 
 	async resetBoard() {
 		this.competitor.resetBoard();
+
+		this.rootNode.setAttribute('ui-reset', '');
+		Application.playSound('reset-board');
+
+		await Application.waitForSeconds(+resetCardDuration.value);
+		this.rootNode.removeAttribute('ui-reset');
+
 		this.update();
+		// extra wait time to savor reveal
+		await Application.waitForSeconds(1);
 	}
 
 	async resetStoredTrumpCards() {

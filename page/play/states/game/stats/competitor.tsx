@@ -29,9 +29,7 @@ export class StatsCompetitorComponent extends Component {
 	async takeDamage() {
 		this.competitor.takeDamage();
 
-		setTimeout(() => {
-			new Audio('/assets/sfx/take-damage.wav').play();
-		}, (+takeDamageDuration.value - 0.1) * 1000);
+		setTimeout(() => Application.playSound('take-damage'), (+takeDamageDuration.value - 0.1) * 1000);
 
 		this.rootNode.setAttribute('ui-take-damage', '');
 		await Application.waitForSeconds(+takeDamageDuration.value);

@@ -27,10 +27,12 @@ const activateTrumpCardAnimation = new Keyframes('ui-activate-trump-card')
 	.addKeyframe(percentage(90), transform(rotate3d(-1, 1, 0, deg(10))))
 	.addKeyframe(percentage(100), transform(rotate(0)));
 
-export const flipCardDuration = seconds(0.8);
+export const flipCardDuration = seconds(0.5);
 const flipCardAnimation = new Keyframes('ui-flip-card')
 	.addKeyframe('from', transform(rotateY(deg(180))))
 	.addKeyframe('to', transform(rotateY(deg(0))));
+
+export const resetCardDuration = seconds(1);
 
 const boardPerspective = perspective(px(500));
 const informationHeight = rem(3);
@@ -141,6 +143,16 @@ export const boardStyle = () => child('ui-board') (
 		firstOfType() (
 			flexDirection('column-reverse'),
 			justifyContent('start')
+		),
+
+		attribute('ui-reset') (
+			descendant('ui-card') (
+				transform(scale(2), rotate3d(0.2, 1, 0, deg(270))).transition(resetCardDuration),
+
+				child('ui-face') (
+					opacity(0).transition(resetCardDuration)
+				)
+			)
 		),
 
 		child('ui-trump-cards') (

@@ -49,6 +49,10 @@ export class Application {
 	static waitForSeconds(seconds: number) {
 		return new Promise<void>(done => setTimeout(() => done(), seconds * 1000));
 	}
+
+	static playSound(name: string) {
+		new Audio(`/assets/sfx/${name}.wav`).play();
+	}
 }
 
 Application.main();
