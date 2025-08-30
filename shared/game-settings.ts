@@ -1,10 +1,9 @@
-export const roundCounts = [1, 3, 5];
+export const roundCountOptions = [1, 3, 5];
+export const playerHealthOptions = [3, 5, 10];
 
-export const defaultRoundCount = 3;
-export const defaultBet = 1;
-export const defaultPerfectSum = 21;
-
-export const competitorStartHealth = 5;
-export const initialCardCount = 4;
-
-export const resultShowDurationSeconds = 5;
+export class GameSettings {
+	constructor (
+		public roundCount = 3,
+		public playerHealth = 5
+	) {}
+}

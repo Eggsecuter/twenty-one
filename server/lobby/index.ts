@@ -1,0 +1,178 @@
+import { ChatMessage } from "../../shared/chat-message";
+import { GameSettings } from "../../shared/game-settings";
+import { ClientChatMessage, ClientGameEndMessage, ClientGameSettingsMessage, ClientGameStartMessage, ClientKickMessage } from "../../shared/messages/client";
+import { SocketMessage } from "../../shared/messages/message";
+import { ServerChatMessage, ServerGameAbortMessage, ServerGameEndMessage, ServerGameResultMessage, ServerGameSettingsMessage, ServerGameStartMessage, ServerKickMessage, ServerPlayerJoinMessage, ServerPlayerLeaveMessage } from "../../shared/messages/server";
+import { Player } from "../../shared/player";
+import { generateToken } from "../../shared/token";
+import { Game } from "./game";
+import { PlayerConnection } from "./player-connection";
+
+const maxPlayerConnections = 20;
+const emptyLobbyClosingDelay = 1000 * 60;
+
+export type BroadcastMessage = SocketMessage | ((playerConnection: PlayerConnection) => SocketMessage);
+
+export class Lobby {
+	readonly token: string;
+
+	playerConnections: PlayerConnection[] = [];
+	kickedDeviceIds: string[] = [];
+
+	settings: GameSettings;
+	chatMessages: ChatMessage[] = [];
+
+	game: Game;
+
+	private closingTimeout: any;
+
+	get isFull() {
+		return this.playerConnections.length >= maxPlayerConnections;
+	}
+
+	get host() {
+		return this.playerConnections[0];
+	}
+
+	constructor (
+		private onclose: () => void
+	) {
+		this.token = generateToken();
+		this.settings = new GameSettings();
+	}
+
+	join(playerConnection: PlayerConnection) {
+		if (this.closingTimeout) {
+			clearTimeout(this.closingTimeout);
+		}
+
+		// doesn't need to be unsubscribed as the socket gets closed beforehand
+		playerConnection.socket.subscribe(ClientChatMessage, message => this.receiveChatMessage(message.message, playerConnection.player))
+		playerConnection.socket.subscribe(ClientGameSettingsMessage, message => this.isHost(playerConnection.player) && this.updateSettings(message.gameSettings))
+		playerConnection.socket.subscribe(ClientKickMessage, message => this.isHost(playerConnection.player) && this.kick(message.player))
+		playerConnection.socket.subscribe(ClientGameStartMessage, () => this.isHost(playerConnection.player) && this.start())
+		playerConnection.socket.subscribe(ClientGameEndMessage, () => this.isHost(playerConnection.player) && this.end());
+
+		// broadcast server player join except sender themselves
+		this.broadcast(new ServerPlayerJoinMessage(playerConnection.player));
+		this.playerConnections.push(playerConnection);
+
+		const joinMessage = `${playerConnection.player.name} ${this.playerConnections.length == 1 ? 'started hosting' : 'joined'}`;
+		this.sendAndAuditSystemChatMessage(joinMessage);
+	}
+
+	leave(leavingPlayerConnection: PlayerConnection) {
+		const hostLeaving = this.host.player.id == leavingPlayerConnection.player.id;
+		// when one of the competitors leave (first and second player in the lobby) on a running game it gets aborted and it goes back to the lobby
+		const abortGame = this.game && (hostLeaving || this.playerConnections.indexOf(leavingPlayerConnection) == 1);
+
+		this.playerConnections.splice(this.playerConnections.findIndex(other => other.player.id == leavingPlayerConnection.player.id), 1);
+		this.broadcast(new ServerPlayerLeaveMessage(leavingPlayerConnection.player));
+
+		this.sendAndAuditSystemChatMessage(`${leavingPlayerConnection.player.name} left`);
+
+		if (this.playerConnections.length) {
+			if (abortGame) {
+				this.game.close();
+				this.game = null;
+
+				this.broadcast(new ServerGameAbortMessage());
+				this.sendAndAuditSystemChatMessage(`Game has been aborted due to missing player`);
+			}
+
+			if (hostLeaving) {
+				this.sendAndAuditSystemChatMessage(`${this.host?.player.name} is now hosting`);
+			}
+		} else {
+			this.closingTimeout = setTimeout(() => {
+				if (!this.playerConnections.length) {
+					this.audit('closing lobby');
+					this.onclose();
+				}
+			}, emptyLobbyClosingDelay);
+		}
+	}
+
+	private kick(player: Player) {
+		const playerConnection = this.playerConnections.find(playerConnection => playerConnection.player.id == player.id);
+
+		if (!playerConnection) {
+			return;
+		}
+
+		// broadcast kick
+		this.kickedDeviceIds.push(playerConnection.deviceId);
+		this.broadcast(new ServerKickMessage(playerConnection.player));
+
+		// remove player
+		const kickedPlayerIndex = this.playerConnections.findIndex(other => other.player.id == playerConnection.player.id);
+		this.playerConnections[kickedPlayerIndex].socket.disable();
+		this.playerConnections.splice(kickedPlayerIndex, 1);
+
+		this.sendAndAuditSystemChatMessage(`${this.host.player.name} kicked ${playerConnection.player.name}`);
+	}
+
+	private updateSettings(gameSettings: GameSettings) {
+		this.settings = gameSettings;
+		this.broadcast(new ServerGameSettingsMessage(this.settings));
+	}
+
+	private start() {
+		if (this.playerConnections.length < 2) {
+			return;
+		}
+
+		this.broadcast(new ServerGameStartMessage());
+
+		this.game = new Game(
+			this.playerConnections[0],
+			this.playerConnections[1],
+			this.settings,
+			message => this.broadcast(message),
+			(winner, wonRounds) => {
+				this.broadcast(new ServerGameResultMessage(winner, wonRounds));
+			}
+		)
+
+		this.audit('game started');
+	}
+
+	private end() {
+		this.game.close();
+		this.game = null;
+
+		this.audit('game ended');
+		this.broadcast(new ServerGameEndMessage());
+	}
+
+	private isHost(player: Player) {
+		return this.host.player.id == player.id;
+	}
+
+	private sendAndAuditSystemChatMessage(message: string) {
+		const serverChatMessage = new ServerChatMessage(message);
+		this.chatMessages.push(serverChatMessage.chatMessage);
+		this.broadcast(serverChatMessage);
+
+		this.audit(message);
+	}
+
+	private receiveChatMessage(message: string, player: Player) {
+		const serverChatMessage = new ServerChatMessage(message, player);
+		this.chatMessages.push(serverChatMessage.chatMessage);
+
+		this.broadcast(serverChatMessage);
+	}
+
+	private audit(message: string) {
+		console.log(`[${this.token}] ${message}`);
+	}
+
+	private broadcast(message: BroadcastMessage) {
+		for (const playerConnection of this.playerConnections) {
+			const result = typeof message == 'function' ? message(playerConnection) : message;
+
+			playerConnection.socket.send(result);
+		}
+	}
+}

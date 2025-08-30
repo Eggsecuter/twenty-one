@@ -1,17 +1,43 @@
-import { gameManager } from "./game.manager";
-import { join } from "path";
+import * as express from 'express';
+import * as webSockets from 'express-ws';
+import cookieParser = require('cookie-parser');
+import { join } from 'path';
+import { randomUUID } from 'crypto';
+import { LobbyManager } from './lobby/manager';
 
-const express = require('express');
-const webSockets = require('express-ws');
+const deviceIdCookieName = '__udi';
+export const getDeviceId = (request) => request.cookies[deviceIdCookieName] as string;
 
 const app = express();
+
 app.use(express.json());
+app.use(cookieParser());
 webSockets(app);
 
-gameManager(app);
+// set unique device identifier
+app.use((request, response, next) => {
+	let deviceId = getDeviceId(request);
 
-app.use(express.static(join(process.cwd(), '..', 'page', 'built')));
+	if (!deviceId) {
+		deviceId = randomUUID();
 
-app.get('*', (_, res) => res.sendFile(join(process.cwd(), '..', 'page', 'built', 'index.html')));
+		response.cookie(deviceIdCookieName, deviceId, {
+			maxAge: 30 * 24 * 60 * 60 * 1000
+		});
+	}
 
-app.listen(+process.env.PORT! || 3000);
+	next();
+});
+
+new LobbyManager(app);
+
+app.use('/assets/icons', express.static(join(process.cwd(), '..', 'page', 'built', 'icons', 'font')));
+app.use('/assets', express.static(join(process.cwd(), '..', 'page', 'assets')));
+app.use('/built', express.static(join(process.cwd(), '..', 'page', 'built')));
+
+app.use('*', (_, response) => response.sendFile(join(process.cwd(), '..', 'page', 'assets', 'index.html')));
+
+const port = +process.env.PORT! || 3000;
+
+app.listen(port);
+console.log(`app started on ${port}`);

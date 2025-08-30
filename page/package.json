@@ -1,17 +1,21 @@
 {
 	"name": "page",
 	"scripts": {
-		"watch": "parcel watch index.html --no-hmr --no-cache --dist-dir built",
-		"build": "parcel build index.html --no-source-maps --no-scope-hoist --no-cache --dist-dir built"
-	},
-	"devDependencies": {
-		"@parcel/transformer-sass": "^2.9.3"
+		"watch": "npm run build:glyph && node build watch",
+		"build": "npm run build:glyph && node build bundle",
+		"build:glyph": "glyph assets/icons built/icons /assets/icons",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@acryps/page": "^1.2.0",
-		"@acryps/page-default-directives": "^1.1.4",
+		"@acryps/glyph": "^0.1.0",
+		"@acryps/page": "^1.7.3",
+		"@acryps/page-default-directives": "^1.2.0",
 		"@acryps/page-observable": "^1.4.1",
-		"@acryps/parcel-transformer-page": "^1.0.1",
+		"@acryps/style": "^0.21.0",
 		"qrcode": "^1.5.3"
+	},
+	"devDependencies": {
+		"@acryps/esbuild-page": "^0.0.1",
+		"esbuild": "^0.24.0"
 	}
 }
