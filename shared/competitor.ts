@@ -6,7 +6,7 @@ export class Competitor {
 	storedTrumpCards: TrumpCard[];
 
 	cards: number[];
-	playedTrumpCards: TrumpCard[];
+	activeTrumpCards: TrumpCard[];
 
 	get sum() {
 		return this.cards.reduce((accumulator, currentValue) => accumulator + (currentValue ?? 0), 0);
@@ -27,7 +27,7 @@ export class Competitor {
 
 	resetBoard() {
 		this.cards = [];
-		this.playedTrumpCards = [];
+		this.activeTrumpCards = [];
 	}
 
 	takeDamage() {

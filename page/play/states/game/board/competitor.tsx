@@ -80,14 +80,19 @@ export class BoardCompetitorComponent extends Component {
 			this.competitor.storedTrumpCards.splice(trumpCardIndex, 1);
 		}
 
-		this.competitor.playedTrumpCards.push(trumpCard);
-
-		this.trumpCardsElement.appendChild(
-			new CardComponent(trumpCard).deal().render()
-		);
+		const trumpCardElement = new CardComponent(trumpCard).deal().render() as HTMLElement;
+		this.trumpCardsElement.appendChild(trumpCardElement);
 
 		await Application.waitForSeconds(+activateTrumpCardDuration.value);
 		await this.trumpCardDialog.present(trumpCard, this.competitor.player);
+
+		// TODO effect
+
+		if (trumpCard.permanent) {
+			this.competitor.activeTrumpCards.push(trumpCard);
+		} else {
+			trumpCardElement.remove();
+		}
 	}
 
 	async reveal(cards: number[]) {
@@ -120,7 +125,7 @@ export class BoardCompetitorComponent extends Component {
 
 	render() {
 		return <ui-competitor-board>
-			{this.trumpCardsElement = <ui-trump-cards>{this.competitor.playedTrumpCards.map(card => new CardComponent(card))}</ui-trump-cards>}
+			{this.trumpCardsElement = <ui-trump-cards>{this.competitor.activeTrumpCards.map(card => new CardComponent(card))}</ui-trump-cards>}
 
 			{this.cardsElement = <ui-cards>{this.competitor.cards.map((card, index) => {
 				const component = new CardComponent(card);

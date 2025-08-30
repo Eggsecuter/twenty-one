@@ -2,7 +2,8 @@ export abstract class TrumpCard {
 	constructor (
 		public readonly name: string,
 		public readonly description: string,
-		public readonly icon: string
+		public readonly icon: string,
+		public readonly permanent: boolean
 	) {}
 }
 
@@ -11,7 +12,8 @@ export class OneUpTrumpCard extends TrumpCard {
 		super(
 			'One Up',
 			`Your opponent\'s bet increases by 1 while this card is on the table. Also, draw 1 trump card.`,
-			'one-up'
+			'one-up',
+			true
 		);
 	}
 }
@@ -21,7 +23,8 @@ export class TwoUpTrumpCard extends TrumpCard {
 		super(
 			'Two Up',
 			`Your opponent\'s bet increases by 2 while this card is on the table. Also, draw 1 trump card.`,
-			'two-up'
+			'two-up',
+			true
 		);
 	}
 }
@@ -31,7 +34,8 @@ export class TwoUpPlusTrumpCard extends TrumpCard {
 		super(
 			'Two Up +',
 			`Return your opponent's last face-up card to the deck. Also, your opponent's bet increases by 2 while this card is on the table.`,
-			'two-up-plus'
+			'two-up-plus',
+			true
 		);
 	}
 }
@@ -41,7 +45,8 @@ export class TwoCardTrumpCard extends TrumpCard {
 		super(
 			'2 Card',
 			`Draw the 2 card. If it is no longer in the deck, nothing happens.`,
-			'two-card'
+			'two-card',
+			false
 		);
 	}
 }
@@ -51,7 +56,8 @@ export class ThreeCardTrumpCard extends TrumpCard {
 		super(
 			'3 Card',
 			`Draw the 3 card. If it is no longer in the deck, nothing happens.`,
-			'three-card'
+			'three-card',
+			false
 		);
 	}
 }
@@ -61,7 +67,8 @@ export class FourCardTrumpCard extends TrumpCard {
 		super(
 			'4 Card',
 			`Draw the 4 card. If it is no longer in the deck, nothing happens.`,
-			'four-card'
+			'four-card',
+			false
 		);
 	}
 }
@@ -71,7 +78,8 @@ export class FiveCardTrumpCard extends TrumpCard {
 		super(
 			'5 Card',
 			`Draw the 5 card. If it is no longer in the deck, nothing happens.`,
-			'five-card'
+			'five-card',
+			false
 		);
 	}
 }
@@ -81,7 +89,8 @@ export class SixCardTrumpCard extends TrumpCard {
 		super(
 			'6 Card',
 			`Draw the 6 card. If it is no longer in the deck, nothing happens.`,
-			'six-card'
+			'six-card',
+			false
 		);
 	}
 }
@@ -91,7 +100,8 @@ export class SevenCardTrumpCard extends TrumpCard {
 		super(
 			'7 Card',
 			`Draw the 7 card. If it is no longer in the deck, nothing happens.`,
-			'seven-card'
+			'seven-card',
+			false
 		);
 	}
 }
@@ -101,7 +111,8 @@ export class RemoveTrumpCard extends TrumpCard {
 		super(
 			'Remove',
 			`Return the last face-up card your opponent drew to the deck.`,
-			'remove'
+			'remove',
+			false
 		);
 	}
 }
@@ -111,7 +122,8 @@ export class ReturnTrumpCard extends TrumpCard {
 		super(
 			'Return',
 			`Return the last face-up card you drew to the deck.`,
-			'return'
+			'return',
+			false
 		);
 	}
 }
@@ -121,7 +133,8 @@ export class ExchangeTrumpCard extends TrumpCard {
 		super(
 			'Exchange',
 			`Swap the last cards drawn by you and your opponent. (Face-down cards cannot be swapped.)`,
-			'exchange'
+			'exchange',
+			false
 		);
 	}
 }
@@ -131,7 +144,8 @@ export class TrumpSwitchTrumpCard extends TrumpCard {
 		super(
 			'Trump Switch',
 			`Discard two of your trump cards at random, then draw three more trump cards. This card can be used even if you posses less than 2 other trump cards.`,
-			'trump-switch'
+			'trump-switch',
+			false
 		);
 	}
 }
@@ -141,7 +155,8 @@ export class TrumpSwitchPlusTrumpCard extends TrumpCard {
 		super(
 			'Trump Switch +',
 			`Discard one of your trump cards at random, then draw four more trump cards. This card can be used even if you posses less than 1 other trump cards.`,
-			'trump-switch-plus'
+			'trump-switch-plus',
+			false
 		);
 	}
 }
@@ -151,7 +166,8 @@ export class ShieldTrumpCard extends TrumpCard {
 		super(
 			'Shield',
 			`Your bet is reduced by 1 while this card is on the table.`,
-			'shield'
+			'shield',
+			true
 		);
 	}
 }
@@ -161,7 +177,8 @@ export class ShieldPlusTrumpCard extends TrumpCard {
 		super(
 			'Shield +',
 			`Your bet is reduced by 2 while this card is on the table.`,
-			'shield-plus'
+			'shield-plus',
+			true
 		);
 	}
 }
@@ -171,7 +188,8 @@ export class DestroyTrumpCard extends TrumpCard {
 		super(
 			'Destroy',
 			`Remove the last trump card your opponent places on the table.`,
-			'destroy'
+			'destroy',
+			false
 		);
 	}
 }
@@ -181,7 +199,8 @@ export class DestroyPlusTrumpCard extends TrumpCard {
 		super(
 			'Destroy +',
 			`Remove all your opponent's trump cards from the table.`,
-			'destroy-plus'
+			'destroy-plus',
+			false
 		);
 	}
 }
@@ -191,7 +210,8 @@ export class DestroyPlusPlusTrumpCard extends TrumpCard {
 		super(
 			'Destroy ++',
 			`Remove all of your opponent's trump cards from the table. Your opponent cannot use trump cards while this is on the table.`,
-			'destroy-plus-plus'
+			'destroy-plus-plus',
+			true
 		);
 	}
 }
@@ -201,7 +221,8 @@ export class PerfectDrawTrumpCard extends TrumpCard {
 		super(
 			'Perfect Draw',
 			`Draw the best possible card from the deck.`,
-			'perfect-draw'
+			'perfect-draw',
+			false
 		);
 	}
 }
@@ -211,7 +232,8 @@ export class PerfectDrawPlusTrumpCard extends TrumpCard {
 		super(
 			'Perfect Draw +',
 			`Draw the best possible card from the deck. Also, your opponent's bet increases by 5 while this card is on the table.`,
-			'perfect-draw-plus'
+			'perfect-draw-plus',
+			true
 		);
 	}
 }
@@ -221,7 +243,8 @@ export class UltimateDrawTrumpCard extends TrumpCard {
 		super(
 			'Ultimate Draw',
 			`Draw the best possible card from the deck. Also, draw two trump cards.`,
-			'ultimate-draw'
+			'ultimate-draw',
+			false
 		);
 	}
 }
@@ -231,7 +254,8 @@ export class GoFor17TrumpCard extends TrumpCard {
 		super(
 			'Go For 17',
 			`The closest to 17 wins while this card is on the table. Replaces other "Go For" cards that are already on the table.`,
-			'go-for-17'
+			'go-for-17',
+			true
 		);
 	}
 }
@@ -241,7 +265,8 @@ export class GoFor24TrumpCard extends TrumpCard {
 		super(
 			'Go For 24',
 			`The closest to 24 wins while this card is on the table. Replaces other "Go For" cards that are already on the table.`,
-			'go-for-24'
+			'go-for-24',
+			true
 		);
 	}
 }
@@ -251,7 +276,8 @@ export class GoFor27TrumpCard extends TrumpCard {
 		super(
 			'Go For 27',
 			`The closest to 27 wins while this card is on the table. Replaces other "Go For" cards that are already on the table.`,
-			'go-for-27'
+			'go-for-27',
+			true
 		);
 	}
 }
@@ -261,7 +287,8 @@ export class LoveYourEnemyTrumpCard extends TrumpCard {
 		super(
 			'Love Your Enemy',
 			`Your opponent draws the best possible card for them from the deck.`,
-			'love-your-enemy'
+			'love-your-enemy',
+			false
 		);
 	}
 }

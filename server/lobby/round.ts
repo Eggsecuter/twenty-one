@@ -93,7 +93,12 @@ export class Round {
 
 		if (trumpCard) {
 			this.current.storedTrumpCards.splice(trumpCardIndex, 1);
-			this.current.playedTrumpCards.push(trumpCard);
+
+			// TODO effect
+
+			if (trumpCard.permanent) {
+				this.current.activeTrumpCards.push(trumpCard);
+			}
 
 			this.broadcast(new ServerUseTrumpCardMessage(trumpCard));
 		}
