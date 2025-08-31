@@ -6,6 +6,7 @@ import { Deck } from "./deck";
 import { Competitor } from "../../shared/competitor";
 import { TrumpCardPicker } from "./trump-card-picker";
 import { PlayerConnection } from "./player-connection";
+import { TrumpCardEffectHandler } from "../../shared/trump-card";
 
 export class Round {
 	private competitors: Competitor[];
@@ -91,17 +92,86 @@ export class Round {
 
 		const trumpCard = this.current.storedTrumpCards[trumpCardIndex];
 
-		if (trumpCard) {
-			this.current.storedTrumpCards.splice(trumpCardIndex, 1);
+		if (!trumpCard) {
+			return;
+		}
 
-			// TODO effect
+		this.current.storedTrumpCards.splice(trumpCardIndex, 1);
+		const message = new ServerUseTrumpCardMessage(trumpCard);
 
-			if (trumpCard.permanent) {
-				this.current.activeTrumpCards.push(trumpCard);
+		const effectHandler = new TrumpCardEffectHandler(
+			(card: number | 'best', opponent: boolean) => {
+				const competitor = opponent ? this.opponent : this.current;
+				const drawnCard = card == 'best' ? this.deck.drawBest(this.perfectSum - competitor.sum) : this.deck.drawSpecific(card);
+
+				if (drawnCard) {
+					competitor.cards.push(drawnCard);
+					message.drawnCard = drawnCard;
+				}
+			},
+			(opponent: boolean) => {
+				const competitor = opponent ? this.opponent : this.current;
+
+				// can't remove first (face down) card
+				if (competitor.cards.length <= 1) {
+					return;
+				}
+
+				const lastCard = competitor.cards.splice(-1, 1)[0];
+				this.deck.putBack(lastCard);
+			},
+			() => {
+				// can't exchange first (face down) cards
+				if (this.current.cards.length <= 1 || this.opponent.cards.length <= 1) {
+					return;
+				}
+
+				const swap = this.current.cards.splice(-1, 1)[0];
+				this.current.cards.push(this.opponent.cards.splice(-1, 1)[0]);
+				this.opponent.cards.push(swap);
+			},
+			(count: number) => {
+				const drawnTrumpCards = Array(count).fill('').map(() => TrumpCardPicker.forceDraw());
+
+				this.current.storedTrumpCards.push(...drawnTrumpCards);
+				message.drawnTrumpCards.push(...drawnTrumpCards);
+			},
+			(count: number) => {
+				while (count > 0) {
+					const index = Math.floor(Math.random() * this.current.storedTrumpCards.length);
+
+					message.removedTrumpCards.push(
+						this.current.storedTrumpCards.splice(index, 1)[0]
+					);
+
+					count--;
+				}
+			},
+			(count: number | 'all') => {
+				if (count == 'all') {
+					this.opponent.activeTrumpCards = [];
+				} else {
+					this.opponent.activeTrumpCards = this.opponent.activeTrumpCards.slice(0, -count);
+				}
+			}
+		);
+
+		trumpCard.executeEffect(effectHandler);
+
+		if (trumpCard.permanent) {
+			this.current.activeTrumpCards.push(trumpCard);
+		}
+
+		this.broadcast(connection => {
+			if (connection.player == player) {
+				return message;
 			}
 
-			this.broadcast(new ServerUseTrumpCardMessage(trumpCard));
-		}
+			const clone: ServerUseTrumpCardMessage = JSON.parse(JSON.stringify(message));
+			clone.drawnTrumpCards.map(() => 'hidden' as AnonymousTrumpCard);
+
+			return clone;
+		});
 	}
 
 	private initializeBoard() {

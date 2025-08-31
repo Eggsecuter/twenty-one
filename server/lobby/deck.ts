@@ -1,28 +1,70 @@
 export class Deck {
-	private availableCards: number[];
+	private cards: boolean[];
 
 	get empty() {
-		return !this.availableCards.length;
+		return !this.cards.some(card => card);
 	}
 
 	constructor() {
-		this.availableCards = Array(11).fill(0).map((_, index) => index + 1);
+		this.cards = Array(11).fill(0).map(() => true);
 	}
 
 	draw() {
-		if (this.empty) {
+		const availableCount = this.cards.filter(card => card).length;
+
+		if (availableCount == 0) {
 			return;
 		}
 
 		// draw from random index
-		return this.availableCards.splice(Math.floor(Math.random() * this.availableCards.length), 1)[0];
+		let target = Math.floor(Math.random() * availableCount);
+
+		for (let index = 0; index < this.cards.length; index++) {
+			if (this.cards[index]) {
+				if (target == 0) {
+					this.cards[target] = false;
+					return index;
+				}
+
+				target--;
+			}
+		}
 	}
 
-	insert(card: number) {
-		if (this.availableCards.includes(card)) {
+	drawSpecific(card: number) {
+		if (this.cards[card]) {
+			this.cards[card] = false;
+
+			return card;
+		}
+	}
+
+	drawBest(differenceToPerfectSum: number) {
+		if (this.empty) {
 			return;
 		}
 
-		this.availableCards.push(card);
+		let bestIndex = -1;
+
+		if (differenceToPerfectSum <= 0) {
+			// return smallest card
+			bestIndex = this.cards.findIndex(card => card);
+		} else {
+			const maxIndex = Math.min(this.cards.length - 1, differenceToPerfectSum);
+
+			for (let index = maxIndex; index >= 0; index--) {
+				if (this.cards[index]) {
+					bestIndex = index;
+					break;
+				}
+			}
+		}
+
+		this.cards[bestIndex] = false;
+		return bestIndex;
+	}
+
+	putBack(card: number) {
+		this.cards[card] = true;
 	}
 }

@@ -110,6 +110,10 @@ export class ServerDrawMessage extends ServerActionMessage {
 }
 
 export class ServerUseTrumpCardMessage extends SocketMessage {
+	removedTrumpCards: TrumpCard[] = [];
+	drawnTrumpCards: AnonymousTrumpCard[] = [];
+	drawnCard: number;
+
 	constructor (
 		public trumpCard: TrumpCard
 	) {

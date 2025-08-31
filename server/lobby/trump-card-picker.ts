@@ -33,24 +33,32 @@ export class TrumpCardPicker {
 
 	private static maxDrawChance = 0.5;
 
+	static forceDraw() {
+		return this.draw();
+	}
+
 	static drawCertain(storedTrumpCardCount: number) {
-		return this.draw(storedTrumpCardCount);
-	}
-
-	static drawByChance(storedTrumpCardCount: number) {
-		const chance = this.maxDrawChance - storedTrumpCardCount * this.maxDrawChance / maxTrumpCards;
-		const roll = Math.random();
-
-		if (roll < chance) {
-			return this.draw(storedTrumpCardCount);
-		}
-	}
-
-	private static draw(storedTrumpCardCount: number) {
 		if (storedTrumpCardCount >= maxTrumpCards) {
 			return;
 		}
 
+		return this.draw();
+	}
+
+	static drawByChance(storedTrumpCardCount: number) {
+		if (storedTrumpCardCount >= maxTrumpCards) {
+			return;
+		}
+
+		const chance = this.maxDrawChance - storedTrumpCardCount * this.maxDrawChance / maxTrumpCards;
+		const roll = Math.random();
+
+		if (roll < chance) {
+			return this.draw();
+		}
+	}
+
+	private static draw() {
 		const trumpCard = new this.trumpCards[Math.floor(Math.random() * this.trumpCards.length)]();
 
 		if (trumpCard) {

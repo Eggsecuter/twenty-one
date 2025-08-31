@@ -1,3 +1,14 @@
+export class TrumpCardEffectHandler {
+	constructor (
+		public drawCard: (card: number | 'best', opponent: boolean) => void | Promise<void>,
+		public returnLastCard: (opponent: boolean) => void | Promise<void>,
+		public exchangeLastCards: () => void | Promise<void>,
+		public drawTrumpCard: (count: number) => void | Promise<void>,
+		public removeStoredTrumpCards: (count: number) => void | Promise<void>,
+		public opponentRemoveTrumpCards: (count: number | 'all') => void | Promise<void>
+	) {}
+}
+
 export abstract class TrumpCard {
 	constructor (
 		public readonly name: string,
@@ -5,6 +16,8 @@ export abstract class TrumpCard {
 		public readonly icon: string,
 		public readonly permanent: boolean
 	) {}
+
+	abstract executeEffect(handler: TrumpCardEffectHandler): Promise<void>;
 }
 
 export class OneUpTrumpCard extends TrumpCard {
@@ -15,6 +28,10 @@ export class OneUpTrumpCard extends TrumpCard {
 			'one-up',
 			true
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawTrumpCard(1);
 	}
 }
 
@@ -27,6 +44,10 @@ export class TwoUpTrumpCard extends TrumpCard {
 			true
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawTrumpCard(1);
+	}
 }
 
 export class TwoUpPlusTrumpCard extends TrumpCard {
@@ -37,6 +58,10 @@ export class TwoUpPlusTrumpCard extends TrumpCard {
 			'two-up-plus',
 			true
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.returnLastCard(true);
 	}
 }
 
@@ -49,6 +74,10 @@ export class TwoCardTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard(2, false);
+	}
 }
 
 export class ThreeCardTrumpCard extends TrumpCard {
@@ -59,6 +88,10 @@ export class ThreeCardTrumpCard extends TrumpCard {
 			'three-card',
 			false
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard(3, false);
 	}
 }
 
@@ -71,6 +104,10 @@ export class FourCardTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard(4, false);
+	}
 }
 
 export class FiveCardTrumpCard extends TrumpCard {
@@ -81,6 +118,10 @@ export class FiveCardTrumpCard extends TrumpCard {
 			'five-card',
 			false
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard(5, false);
 	}
 }
 
@@ -93,6 +134,10 @@ export class SixCardTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard(6, false);
+	}
 }
 
 export class SevenCardTrumpCard extends TrumpCard {
@@ -103,6 +148,10 @@ export class SevenCardTrumpCard extends TrumpCard {
 			'seven-card',
 			false
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard(7, false);
 	}
 }
 
@@ -115,6 +164,10 @@ export class RemoveTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.returnLastCard(true);
+	}
 }
 
 export class ReturnTrumpCard extends TrumpCard {
@@ -125,6 +178,10 @@ export class ReturnTrumpCard extends TrumpCard {
 			'return',
 			false
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.returnLastCard(false);
 	}
 }
 
@@ -137,6 +194,10 @@ export class ExchangeTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.exchangeLastCards();
+	}
 }
 
 export class TrumpSwitchTrumpCard extends TrumpCard {
@@ -147,6 +208,11 @@ export class TrumpSwitchTrumpCard extends TrumpCard {
 			'trump-switch',
 			false
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.removeStoredTrumpCards(2);
+		await handler.drawTrumpCard(3);
 	}
 }
 
@@ -159,6 +225,11 @@ export class TrumpSwitchPlusTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.removeStoredTrumpCards(1);
+		await handler.drawTrumpCard(4);
+	}
 }
 
 export class ShieldTrumpCard extends TrumpCard {
@@ -170,6 +241,8 @@ export class ShieldTrumpCard extends TrumpCard {
 			true
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {}
 }
 
 export class ShieldPlusTrumpCard extends TrumpCard {
@@ -181,6 +254,8 @@ export class ShieldPlusTrumpCard extends TrumpCard {
 			true
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {}
 }
 
 export class DestroyTrumpCard extends TrumpCard {
@@ -191,6 +266,10 @@ export class DestroyTrumpCard extends TrumpCard {
 			'destroy',
 			false
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.opponentRemoveTrumpCards(1);
 	}
 }
 
@@ -203,6 +282,10 @@ export class DestroyPlusTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.opponentRemoveTrumpCards('all');
+	}
 }
 
 export class DestroyPlusPlusTrumpCard extends TrumpCard {
@@ -213,6 +296,10 @@ export class DestroyPlusPlusTrumpCard extends TrumpCard {
 			'destroy-plus-plus',
 			true
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.opponentRemoveTrumpCards('all');
 	}
 }
 
@@ -225,6 +312,10 @@ export class PerfectDrawTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard('best', false);
+	}
 }
 
 export class PerfectDrawPlusTrumpCard extends TrumpCard {
@@ -235,6 +326,10 @@ export class PerfectDrawPlusTrumpCard extends TrumpCard {
 			'perfect-draw-plus',
 			true
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard('best', false);
 	}
 }
 
@@ -247,6 +342,11 @@ export class UltimateDrawTrumpCard extends TrumpCard {
 			false
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard('best', false);
+		await handler.drawTrumpCard(1);
+	}
 }
 
 export class GoFor17TrumpCard extends TrumpCard {
@@ -258,6 +358,8 @@ export class GoFor17TrumpCard extends TrumpCard {
 			true
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {}
 }
 
 export class GoFor24TrumpCard extends TrumpCard {
@@ -269,6 +371,8 @@ export class GoFor24TrumpCard extends TrumpCard {
 			true
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {}
 }
 
 export class GoFor27TrumpCard extends TrumpCard {
@@ -280,6 +384,8 @@ export class GoFor27TrumpCard extends TrumpCard {
 			true
 		);
 	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {}
 }
 
 export class LoveYourEnemyTrumpCard extends TrumpCard {
@@ -290,5 +396,9 @@ export class LoveYourEnemyTrumpCard extends TrumpCard {
 			'love-your-enemy',
 			false
 		);
+	}
+
+	async executeEffect(handler: TrumpCardEffectHandler) {
+		await handler.drawCard('best', true);
 	}
 }

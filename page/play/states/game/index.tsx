@@ -53,7 +53,7 @@ export class GameComponent extends StateComponent {
 
 		this.addSocketSubscription(ServerStayMessage, message => this.handlerQueue.push(() => this.handleEndTurnAction(message.roundOver)));
 		this.addSocketSubscription(ServerDrawMessage, message => this.handlerQueue.push(() => this.handleEndTurnAction(message.roundOver, message.card, message.trumpCard)));
-		this.addSocketSubscription(ServerUseTrumpCardMessage, message => this.handlerQueue.push(() => this.currentCompetitor.boardComponent.activateTrumpCard(message.trumpCard)));
+		this.addSocketSubscription(ServerUseTrumpCardMessage, message => this.handlerQueue.push(() => this.currentCompetitor.boardComponent.activateTrumpCard(message)));
 
 		this.addSocketSubscription(ServerBoardResultMessage, message => this.handlerQueue.push(async () => {
 			await GameComponent.context.informationComponent.announce('The winner is...', 2);

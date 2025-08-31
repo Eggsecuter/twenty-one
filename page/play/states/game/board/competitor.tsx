@@ -7,7 +7,7 @@ import { ClientDrawMessage, ClientStayMessage } from "../../../../../shared/mess
 import { Application } from "../../../..";
 import { activateTrumpCardDuration, dealCardDuration, flipCardDuration, resetCardDuration } from "../board/index.style";
 import { TrumpCardDialogComponent } from "./trump-card-dialog";
-import { AnonymousTrumpCard } from "../../../../../shared/messages/server";
+import { AnonymousTrumpCard, ServerUseTrumpCardMessage } from "../../../../../shared/messages/server";
 import { Observable } from "@acryps/page-observable";
 import { CardComponent } from "./card";
 
@@ -74,22 +74,22 @@ export class BoardCompetitorComponent extends Component {
 		trumpCardElement.remove();
 	}
 
-	async activateTrumpCard(trumpCard: TrumpCard) {
+	async activateTrumpCard(message: ServerUseTrumpCardMessage) {
 		if (this.isLocalPlayer) {
-			const trumpCardIndex = this.competitor.storedTrumpCards.findIndex(other => other.name == trumpCard.name);
+			const trumpCardIndex = this.competitor.storedTrumpCards.findIndex(other => other.name == message.trumpCard.name);
 			this.competitor.storedTrumpCards.splice(trumpCardIndex, 1);
 		}
 
-		const trumpCardElement = new CardComponent(trumpCard).deal().render() as HTMLElement;
+		const trumpCardElement = new CardComponent(message.trumpCard).deal().render() as HTMLElement;
 		this.trumpCardsElement.appendChild(trumpCardElement);
 
 		await Application.waitForSeconds(+activateTrumpCardDuration.value);
-		await this.trumpCardDialog.present(trumpCard, this.competitor.player);
+		await this.trumpCardDialog.present(message.trumpCard, this.competitor.player);
 
 		// TODO effect
 
-		if (trumpCard.permanent) {
-			this.competitor.activeTrumpCards.push(trumpCard);
+		if (message.trumpCard.permanent) {
+			this.competitor.activeTrumpCards.push(message.trumpCard);
 		} else {
 			trumpCardElement.remove();
 		}
