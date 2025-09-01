@@ -8,6 +8,7 @@ import { AnonymousTrumpCard, ServerBoardResultMessage, ServerDrawMessage, Server
 import { GameContext } from "./context";
 import { RoundComponent } from "./round";
 import { ResultComponent } from "./result";
+import { TrumpCardEffectHandler } from "../../../../shared/trump-card";
 
 export class GameComponent extends StateComponent {
 	static context: GameContext;
@@ -53,7 +54,55 @@ export class GameComponent extends StateComponent {
 
 		this.addSocketSubscription(ServerStayMessage, message => this.handlerQueue.push(() => this.handleEndTurnAction(message.roundOver)));
 		this.addSocketSubscription(ServerDrawMessage, message => this.handlerQueue.push(() => this.handleEndTurnAction(message.roundOver, message.card, message.trumpCard)));
-		this.addSocketSubscription(ServerUseTrumpCardMessage, message => this.handlerQueue.push(() => this.currentCompetitor.boardComponent.activateTrumpCard(message)));
+
+		this.addSocketSubscription(ServerUseTrumpCardMessage, message => this.handlerQueue.push(async () => {
+			const effectHandler = new TrumpCardEffectHandler(
+				async (_, opponent: boolean) => {
+					if (message.drawnCard) {
+						await (opponent ? this.waitingCompetitor : this.currentCompetitor).boardComponent.dealCard(message.drawnCard);
+					}
+				},
+				async (opponent: boolean) => {
+					const competitor = opponent ? this.waitingCompetitor : this.currentCompetitor;
+
+					// face down cards can't be removed
+					if (competitor.competitor.cards.length > 1) {
+						await competitor.boardComponent.returnLastCard();
+					}
+				},
+				async () => {
+					// face down cards can't be swapped
+					if (this.currentCompetitor.competitor.cards.length > 1 && this.waitingCompetitor.competitor.cards.length > 1) {
+						const currentLastCard = this.currentCompetitor.competitor.cards.at(-1);
+						const waitingLastCard = this.waitingCompetitor.competitor.cards.at(-1);
+
+						await Promise.all([
+							this.currentCompetitor.boardComponent.returnLastCard(),
+							this.waitingCompetitor.boardComponent.returnLastCard()
+						]);
+
+						await Promise.all([
+							this.currentCompetitor.boardComponent.dealCard(currentLastCard),
+							this.waitingCompetitor.boardComponent.dealCard(waitingLastCard)
+						]);
+					}
+				},
+				async (_) => {
+					for (const trumpCard of message.drawnTrumpCards) {
+						this.currentCompetitor.boardComponent.dealTrumpCard(trumpCard);
+					}
+				},
+				async (_) => {
+					for (const trumpCard of message.removedTrumpCards) {
+						const index = this.currentCompetitor.competitor.storedTrumpCards.findIndex(other => other.name == trumpCard.name);
+						this.currentCompetitor.competitor.storedTrumpCards.splice(index, 1);
+					}
+				},
+				(count: number | 'all') => this.waitingCompetitor.boardComponent.destroyTrumpCards(count)
+			);
+
+			await this.currentCompetitor.boardComponent.activateTrumpCard(message.trumpCard, effectHandler);
+		}));
 
 		this.addSocketSubscription(ServerBoardResultMessage, message => this.handlerQueue.push(async () => {
 			await GameComponent.context.informationComponent.announce('The winner is...', 2);

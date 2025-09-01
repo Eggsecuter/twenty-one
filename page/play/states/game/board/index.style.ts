@@ -1,4 +1,4 @@
-import { Variable, Deg, seconds, rem, scale, Keyframes, transform, translateX, vw, rotate, deg, percentage, opacity, rotate3d, rotateY, px, position, border, borderRadius, background, transformStyle, child, inset, display, width, height, overflow, objectFit, backfaceVisibility, attribute, flexDirection, padding, justifyContent, alignItems, paddingBlock, paddingInline, color, fontSize, gap, firstOfType, perspective, aspectRatio, ratio, maxWidth, marginRight, bottom, left, right, pointerEvents, not, zIndex, backdropFilter, textAlign, marginBlock, marginInline, rotateX, marginBottom, blur, Percentage, descendant, flex, overflowX } from "@acryps/style";
+import { Variable, Deg, seconds, rem, scale, Keyframes, transform, translateX, vw, rotate, deg, percentage, opacity, rotate3d, rotateY, px, position, border, borderRadius, background, transformStyle, child, inset, display, width, height, overflow, objectFit, backfaceVisibility, attribute, flexDirection, padding, justifyContent, alignItems, paddingBlock, paddingInline, color, fontSize, gap, firstOfType, perspective, aspectRatio, ratio, maxWidth, marginRight, bottom, left, right, pointerEvents, not, zIndex, backdropFilter, textAlign, marginBlock, marginInline, rotateX, marginBottom, blur, Percentage, descendant, flex } from "@acryps/style";
 import { colorBackgroundDimmed, colorPrimary, colorCard, action, panelBoxShadow, colorPrimaryDimmed } from "../../../../global.style";
 
 export const inspectTrumpCardTiltX = new Variable<Deg>('ui-inspect-trump-card-tilt-x');
@@ -37,6 +37,14 @@ export const resetCardDuration = seconds(1);
 const boardPerspective = perspective(px(500));
 const informationHeight = rem(3);
 const trumpCardImageScale = scale(1.25);
+
+const playingCardReset = () => [
+	transform(scale(2), rotate3d(0.2, 1, 0, deg(270))).transition(resetCardDuration),
+
+	child('ui-face') (
+		opacity(0).transition(resetCardDuration)
+	)
+]
 
 const playingCards = (heightPercentage: Percentage) => [
 	boardPerspective,
@@ -144,20 +152,20 @@ export const boardStyle = () => child('ui-board') (
 
 		attribute('ui-reset') (
 			descendant('ui-card') (
-				transform(scale(2), rotate3d(0.2, 1, 0, deg(270))).transition(resetCardDuration),
-
-				child('ui-face') (
-					opacity(0).transition(resetCardDuration)
-				)
+				playingCardReset()
 			)
 		),
 
 		child('ui-trump-cards') (
 			playingCards(percentage(25)),
 
-			child('ui-child') (
+			child('ui-card') (
 				attribute('ui-animate') (
 					activateTrumpCardAnimation.animate(activateTrumpCardDuration, 'linear')
+				),
+
+				attribute('ui-destroy') (
+					playingCardReset()
 				)
 			)
 		),
@@ -168,6 +176,10 @@ export const boardStyle = () => child('ui-board') (
 			child('ui-card') (
 				attribute('ui-trump') (
 					height(percentage(50))
+				),
+
+				attribute('ui-return') (
+					playingCardReset()
 				)
 			)
 		),

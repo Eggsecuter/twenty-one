@@ -1,13 +1,13 @@
 import { Component } from "@acryps/page";
 import { defaultPerfectSum } from "../../../../../shared/constants";
 import { GameComponent } from "..";
-import { TrumpCard } from "../../../../../shared/trump-card";
+import { TrumpCard, TrumpCardEffectHandler } from "../../../../../shared/trump-card";
 import { SocketMessage } from "../../../../../shared/messages/message";
 import { ClientDrawMessage, ClientStayMessage } from "../../../../../shared/messages/client";
 import { Application } from "../../../..";
 import { activateTrumpCardDuration, dealCardDuration, flipCardDuration, resetCardDuration } from "../board/index.style";
 import { TrumpCardDialogComponent } from "./trump-card-dialog";
-import { AnonymousTrumpCard, ServerUseTrumpCardMessage } from "../../../../../shared/messages/server";
+import { AnonymousTrumpCard } from "../../../../../shared/messages/server";
 import { Observable } from "@acryps/page-observable";
 import { CardComponent } from "./card";
 
@@ -74,24 +74,52 @@ export class BoardCompetitorComponent extends Component {
 		trumpCardElement.remove();
 	}
 
-	async activateTrumpCard(message: ServerUseTrumpCardMessage) {
+	async activateTrumpCard(trumpCard: TrumpCard, effectHandler: TrumpCardEffectHandler) {
 		if (this.isLocalPlayer) {
-			const trumpCardIndex = this.competitor.storedTrumpCards.findIndex(other => other.name == message.trumpCard.name);
+			const trumpCardIndex = this.competitor.storedTrumpCards.findIndex(other => other.name == trumpCard.name);
 			this.competitor.storedTrumpCards.splice(trumpCardIndex, 1);
 		}
 
-		const trumpCardElement = new CardComponent(message.trumpCard).deal().render() as HTMLElement;
+		const trumpCardElement = new CardComponent(trumpCard).deal().render() as HTMLElement;
 		this.trumpCardsElement.appendChild(trumpCardElement);
 
 		await Application.waitForSeconds(+activateTrumpCardDuration.value);
-		await this.trumpCardDialog.present(message.trumpCard, this.competitor.player);
+		await this.trumpCardDialog.present(trumpCard, this.competitor.player);
 
-		// TODO effect
+		await trumpCard.executeEffect(effectHandler);
 
-		if (message.trumpCard.permanent) {
-			this.competitor.activeTrumpCards.push(message.trumpCard);
+		if (trumpCard.permanent) {
+			this.competitor.activeTrumpCards.push(trumpCard);
 		} else {
 			trumpCardElement.remove();
+		}
+	}
+
+	async returnLastCard() {
+		this.competitor.cards.splice(-1, 1);
+
+		const cardElement = this.cardsElement.lastChild as HTMLElement;
+		cardElement.setAttribute('ui-return', '');
+		await Application.waitForSeconds(+resetCardDuration.value);
+		cardElement.remove();
+	}
+
+	async destroyTrumpCards(count: number | 'all') {
+		if (count == 'all') {
+			count = this.competitor.activeTrumpCards.length;
+		}
+
+		this.competitor.activeTrumpCards.splice(-1, count);
+		const children = Array.from(this.trumpCardsElement.children).slice(count - 1);
+
+		for (const child of children) {
+			child.setAttribute('ui-destroy', '');
+		}
+
+		await Application.waitForSeconds(+resetCardDuration.value);
+
+		for (const child of children) {
+			child.remove();
 		}
 	}
 
